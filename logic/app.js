@@ -901,12 +901,13 @@
         Math.hypot(e.clientX - panelCandidate.x, e.clientY - panelCandidate.y) >
           10
       ) {
-        if (e.pointerType === "touch" || e.pointerType === "pen")
-          panelScroll = {
-            pointerId: e.pointerId,
-            y: panelCandidate.y,
-            scrollTop: board.scrollTop,
-          };
+        // Desktop-site browsers may report a touchscreen swipe as mouse input.
+        // Moving before the hold scrolls for every pointer; holding still edits.
+        panelScroll = {
+          pointerId: e.pointerId,
+          y: panelCandidate.y,
+          scrollTop: board.scrollTop,
+        };
         cancelCandidate();
       }
       if (panelScroll && e.pointerId === panelScroll.pointerId) {
