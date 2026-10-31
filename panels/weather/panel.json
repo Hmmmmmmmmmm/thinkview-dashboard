@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "id": "weather",
+  "title": "Weather",
+  "version": "1.0.0",
+  "rootClass": "weather-panel",
+  "colorRole": "secondary",
+  "entries": {
+    "html": "panel.html",
+    "css": "panel.css",
+    "js": "panel.js"
+  },
+  "capabilities": ["network", "location", "storage"],
+  "assets": [],
+  "defaultEnabled": true,
+  "networkOrigins": [
+    "https://api.open-meteo.com",
+    "https://geocoding-api.open-meteo.com"
+  ]
+}

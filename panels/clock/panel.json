@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "id": "clock",
+  "title": "Clock",
+  "version": "1.0.0",
+  "rootClass": "clock-panel",
+  "colorRole": "primary",
+  "entries": {
+    "html": "panel.html",
+    "css": "panel.css",
+    "js": "panel.js"
+  },
+  "capabilities": ["local-time"],
+  "assets": [],
+  "defaultEnabled": true
+}

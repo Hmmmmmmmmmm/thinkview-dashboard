@@ -1,0 +1,22 @@
+{
+  "name": "thinkview-dashboard",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A modular, local-first always-on dashboard for touchscreen displays",
+  "license": "MIT",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "build": "python3 tools/build.py",
+    "check": "node --test tests/*.test.cjs && python3 -m unittest discover -s tests -p 'test_*.py' && python3 tools/build.py --check",
+    "test": "npm run check",
+    "serve": "python3 -m http.server 8767 --bind 127.0.0.1 --directory dist",
+    "theme": "node tools/generate-theme.mjs",
+    "format": "prettier --write 'web/**/*.{html,css}' 'logic/**/*.js' 'panels/**/*.{html,css,js,json}' 'tools/*.mjs' 'themes/*.json' 'schemas/*.json' '*.json' '*.md' 'docs/*.md'"
+  },
+  "devDependencies": {
+    "@material/material-color-utilities": "0.4.0",
+    "prettier": "3.6.2"
+  }
+}

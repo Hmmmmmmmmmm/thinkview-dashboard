@@ -1,0 +1,325 @@
+:where([data-panel="clock"]).clock-panel {
+  grid-area: clock;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 10px 0 24px;
+  border-bottom: 1px solid var(--line);
+}
+:where([data-panel="clock"]) .clock-line {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  white-space: nowrap;
+  font-size: clamp(100px, 23vw, 236px);
+  line-height: 1.03;
+  letter-spacing: -0.065em;
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+:where([data-panel="clock"]) .colon {
+  animation: clock-blink 1s steps(1, end) infinite;
+  display: inline-block;
+  letter-spacing: -0.03em;
+  transform: translateY(-0.045em);
+  margin: 0 0.025em;
+}
+:where([data-panel="clock"]) .date-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  font-size: clamp(17px, 3vw, 25px);
+  margin-top: 20px;
+}
+:where([data-panel="clock"]) .timezone {
+  font-size: 12px;
+  letter-spacing: 0.07em;
+  color: var(--muted);
+}
+:where([data-panel="clock"]).clock-panel > .eyebrow {
+  text-align: center;
+  margin-bottom: 16px;
+}
+@keyframes clock-blink {
+  50% {
+    opacity: 0.18;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  :where([data-panel="clock"]) .colon {
+    animation: none;
+  }
+}
+@media (min-aspect-ratio: 11/10) {
+  :where([data-panel="clock"]).clock-panel {
+    padding: 15px 28px 15px 0;
+    border-bottom: 0;
+    border-right: 1px solid var(--line);
+  }
+  :where([data-panel="clock"]) .clock-line {
+    font-size: clamp(78px, 11.4vw, 200px);
+  }
+  :where([data-panel="clock"]).clock-panel > .eyebrow {
+    margin-bottom: 25px;
+    text-align: left;
+  }
+  :where([data-panel="clock"]) .date-line {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    margin-top: 25px;
+    font-size: clamp(17px, 2.2vw, 29px);
+  }
+}
+@media (max-width: 560px) {
+  :where([data-panel="clock"]).clock-panel {
+    padding-bottom: 22px;
+  }
+  :where([data-panel="clock"]).clock-panel > .eyebrow {
+    font-size: 11px;
+    margin-bottom: 18px;
+  }
+  :where([data-panel="clock"]) .clock-line {
+    font-size: 23vw;
+  }
+  :where([data-panel="clock"]) .date-line {
+    font-size: 19px;
+    margin-top: 15px;
+  }
+  :where([data-panel="clock"]) .timezone {
+    font-size: 10px;
+  }
+}
+@media (max-height: 650px) and (max-aspect-ratio: 11/10) {
+  :where([data-panel="clock"]).clock-panel {
+    padding: 5px 0 12px;
+  }
+  :where([data-panel="clock"]).clock-panel > .eyebrow {
+    margin-bottom: 4px;
+  }
+  :where([data-panel="clock"]) .clock-line {
+    font-size: clamp(64px, 19vw, 120px);
+  }
+  :where([data-panel="clock"]) .date-line {
+    margin-top: 4px;
+    font-size: 15px;
+  }
+}
+@media (max-height: 500px) and (min-aspect-ratio: 11/10) {
+  :where([data-panel="clock"]).clock-panel {
+    padding-right: 18px;
+  }
+  :where([data-panel="clock"]).clock-panel > .eyebrow {
+    margin-bottom: 12px;
+    font-size: 10px;
+  }
+  :where([data-panel="clock"]) .date-line {
+    margin-top: 12px;
+    gap: 7px;
+  }
+}
+:where([data-panel="clock"]).clock-panel {
+  grid-area: auto;
+  border: 0;
+  border-radius: 26px;
+  background: var(--surface);
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+:where([data-panel="clock"]).clock-panel {
+  padding: 42px 28px 26px;
+}
+@media (min-aspect-ratio: 11/10) {
+  :where([data-panel="clock"]).clock-panel {
+    border: 0;
+    padding: 44px 24px 26px;
+  }
+  :where([data-panel="clock"]).clock-panel > .eyebrow {
+    font-size: 11px;
+  }
+}
+@media (max-width: 560px) {
+  :where([data-panel="clock"]).clock-panel {
+    padding: 38px 20px 20px;
+  }
+  :where([data-panel="clock"]) .clock-line {
+    font-size: 22vw;
+  }
+  :where([data-panel="clock"]).clock-panel > .eyebrow {
+    font-size: 9px;
+    margin-bottom: 10px;
+  }
+  :where([data-panel="clock"]) .date-line {
+    font-size: 17px;
+  }
+  :where([data-panel="clock"]) .timezone {
+    font-size: 9px;
+  }
+}
+@media (max-height: 650px) and (max-aspect-ratio: 11/10) {
+  :where([data-panel="clock"]).clock-panel {
+    padding: 30px 15px 12px;
+  }
+  :where([data-panel="clock"]) .clock-line {
+    font-size: 18vw;
+  }
+  :where([data-panel="clock"]).clock-panel > .eyebrow {
+    margin-bottom: 5px;
+  }
+}
+@media (max-height: 650px) and (min-aspect-ratio: 11/10) {
+  :where([data-panel="clock"]).clock-panel {
+    padding: 38px 18px 20px;
+    border-radius: 22px;
+  }
+  :where([data-panel="clock"]).clock-panel > .eyebrow {
+    font-size: 9px;
+    letter-spacing: 0.13em;
+  }
+  :where([data-panel="clock"]) .clock-line {
+    font-size: 10.6vw;
+  }
+}
+:where([data-panel="clock"]).clock-panel {
+  container-name: clock-panel;
+  container-type: size;
+}
+@supports (font-size: 1cqw) {
+  :where([data-panel="clock"]) .clock-line {
+    font-size: clamp(64px, 40cqw, 230px);
+  }
+}
+@container clock-panel (max-width:320px) {
+  :where([data-panel="clock"]).clock-panel > .eyebrow {
+    font-size: 9px;
+    line-height: 1.6;
+    text-align: left;
+    letter-spacing: 0.11em;
+    margin-bottom: 16px;
+  }
+  :where([data-panel="clock"]) .date-line {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 9px;
+    font-size: 18px;
+    margin-top: 20px;
+  }
+  :where([data-panel="clock"]) .timezone {
+    font-size: 10px;
+    overflow-wrap: anywhere;
+    max-width: 100%;
+  }
+}
+@container clock-panel (min-width:321px) {
+  :where([data-panel="clock"]) .date-line {
+    font-size: clamp(17px, 4cqw, 25px);
+  }
+  :where([data-panel="clock"]) .timezone {
+    font-size: clamp(9px, 1.9cqw, 12px);
+  }
+}
+@supports (font-size: 1cqh) {
+  :where([data-panel="clock"]) .clock-line {
+    font-size: clamp(64px, min(40cqw, 64cqh), 230px);
+  }
+}
+@container clock-panel (max-height:160px) {
+  :where([data-panel="clock"]).clock-panel > .eyebrow {
+    display: none;
+  }
+  :where([data-panel="clock"]) .date-line {
+    flex-direction: row;
+    align-items: center;
+    font-size: 14px;
+    margin-top: 8px;
+    gap: 8px;
+  }
+  :where([data-panel="clock"]) .timezone {
+    font-size: 9px;
+  }
+}
+@supports (font-size: 1cqh) {
+  :where([data-panel="clock"]) .clock-line {
+    font-size: clamp(60px, min(34cqw, 60cqh), 196px);
+  }
+}
+:where([data-panel="clock"]) .clock-line {
+  font-weight: 400;
+  letter-spacing: -0.055em;
+}
+:where([data-panel="clock"]) .date-line {
+  font-weight: 400;
+}
+@container clock-panel (min-width:321px) {
+  :where([data-panel="clock"]) .date-line {
+    font-size: clamp(17px, 4cqw, 23px);
+  }
+}
+@container clock-panel (max-width:320px) and (max-height:240px) {
+  :where([data-panel="clock"]) .date-line {
+    font-size: 13px;
+    gap: 5px;
+    margin-top: 10px;
+  }
+  :where([data-panel="clock"]) .timezone {
+    font-size: 9px;
+  }
+}
+:where([data-panel="clock"]) .timezone {
+  opacity: 0.78;
+}
+@container clock-panel (min-width:650px) and (max-height:220px) {
+  :where([data-panel="clock"]) .clock-line {
+    justify-content: flex-start;
+    font-size: clamp(60px, 70cqh, 150px);
+  }
+  :where([data-panel="clock"]) .date-line {
+    position: absolute;
+    right: 28px;
+    top: 50%;
+    transform: translateY(-50%);
+    margin: 0;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+    font-size: 24px;
+  }
+  :where([data-panel="clock"]) .timezone {
+    font-size: 12px;
+  }
+}
+@container clock-panel (max-height:110px) {
+  :where([data-panel="clock"]) .clock-line {
+    font-size: clamp(28px, min(34cqw, 80cqh), 96px);
+  }
+  :where([data-panel="clock"]) .date-line {
+    display: none;
+  }
+}
+@container clock-panel (min-width:450px) and (max-height:110px) {
+  :where([data-panel="clock"]) .clock-line {
+    justify-content: flex-start;
+  }
+  :where([data-panel="clock"]) .date-line {
+    display: flex;
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+    margin: 0;
+    font-size: 18px;
+  }
+  :where([data-panel="clock"]) .timezone {
+    font-size: 10px;
+  }
+}

@@ -1,0 +1,46 @@
+<div class="weather-top">
+  <button
+    class="location-button eyebrow"
+    id="location-open"
+    aria-label="Change weather location"
+  >
+    <svg><use href="#pin" /></svg
+    ><span id="location-name">Hong Kong</span></button
+  ><button
+    class="icon-button"
+    id="refresh-weather"
+    aria-label="Refresh weather"
+    style="width: 30px; height: 30px; border: 0"
+    title="Refresh weather"
+  >
+    <svg style="width: 18px; height: 18px">
+      <path
+        d="M20 7v5h-5M4 17v-5h5M6 7a7 7 0 0 1 12-1l2 3M4 15l2 3a7 7 0 0 0 12-1"
+      />
+    </svg>
+  </button>
+</div>
+<div class="weather-main">
+  <div>
+    <div class="temperature">
+      <span id="temperature">--</span><span class="degree">°C</span>
+    </div>
+    <div class="weather-description" id="weather-description">
+      Getting weather…
+    </div>
+  </div>
+  <svg class="weather-art" aria-hidden="true">
+    <use id="weather-icon" href="#cloud" />
+  </svg>
+</div>
+<div class="weather-meta">
+  <span id="high-low">H —° &nbsp; L —°</span
+  ><span id="humidity">Humidity —%</span>
+</div>
+<div class="weather-source">
+  <span class="tiny-dot"></span
+  ><span id="weather-freshness">Preview city · fetching latest</span
+  ><a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer"
+    >Open-Meteo</a
+  >
+</div>

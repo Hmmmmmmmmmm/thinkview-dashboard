@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "id": "calendar",
+  "title": "Calendar",
+  "version": "1.0.0",
+  "rootClass": "calendar-panel",
+  "colorRole": "surface",
+  "entries": {
+    "html": "panel.html",
+    "css": "panel.css",
+    "js": "panel.js"
+  },
+  "capabilities": ["local-time"],
+  "assets": [],
+  "defaultEnabled": true
+}

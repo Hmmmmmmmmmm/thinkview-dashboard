@@ -1,0 +1,28 @@
+<div class="calendar-header">
+  <button
+    type="button"
+    data-action="previous"
+    class="calendar-nav"
+    aria-label="Previous month"
+  >
+    <svg><use href="#back" /></svg></button
+  ><button
+    type="button"
+    data-month
+    class="calendar-month"
+    aria-label="Go to this month"
+  ></button
+  ><button
+    type="button"
+    data-action="next"
+    class="calendar-nav"
+    aria-label="Next month"
+  >
+    <svg><use href="#arrow" /></svg>
+  </button>
+</div>
+<div class="calendar-weekdays" aria-hidden="true">
+  <span>M</span><span>T</span><span>W</span><span>T</span><span>F</span
+  ><span>S</span><span>S</span>
+</div>
+<div class="calendar-days" role="grid" aria-label="Calendar"></div>

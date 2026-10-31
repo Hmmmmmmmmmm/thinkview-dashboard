@@ -1,0 +1,33 @@
+<div class="dot-content">
+  <button type="button" class="dot-entry" id="open-chat">
+    <span class="portrait"
+      ><img
+        class="case-avatar"
+        alt="{{COMPANION_NAME}}, your Dot"
+        src="{{COMPANION_AVATAR}}" /><svg
+        class="outline-avatar"
+        aria-hidden="true"
+      >
+        <use href="#companion-outline" /></svg></span
+    ><span class="dot-name">{{COMPANION_NAME}}</span>
+  </button>
+  <div class="dot-actions" aria-label="Talk to Dot">
+    <button
+      type="button"
+      class="dot-action"
+      id="quick-call"
+      aria-label="Call {{COMPANION_NAME}} in ChatGPT"
+      title="Open ChatGPT to start a call"
+    >
+      <svg><use href="#phone" /></svg><span>Call</span></button
+    ><button
+      type="button"
+      class="dot-action"
+      id="quick-dictate"
+      aria-label="Dictate a message to {{COMPANION_NAME}}"
+      title="Dictate into the local chat preview"
+    >
+      <svg><use href="#mic" /></svg><span>Dictate</span>
+    </button>
+  </div>
+</div>

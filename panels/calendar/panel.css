@@ -1,0 +1,122 @@
+.panel[data-panel="calendar"] {
+  padding: 18px;
+  container-name: calendar;
+  container-type: size;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.calendar-nav {
+  width: 30px;
+  height: 30px;
+  padding: 4px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.calendar-nav svg {
+  width: 17px;
+  height: 17px;
+}
+.calendar-month {
+  border-radius: 10px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-size: clamp(12px, 5cqw, 22px);
+  padding: 2px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.calendar-weekdays,
+.calendar-days {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 3px;
+  text-align: center;
+}
+.calendar-weekdays {
+  font-size: clamp(9px, 3.5cqw, 13px);
+  opacity: 0.65;
+}
+.calendar-days {
+  grid-template-rows: repeat(6, minmax(0, 1fr));
+  min-height: 0;
+  flex: 1;
+  font-size: clamp(10px, 4cqw, 18px);
+}
+.calendar-day {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  aspect-ratio: 1;
+  max-height: 100%;
+  justify-self: center;
+  align-self: center;
+  min-width: 18px;
+  border-radius: 50%;
+}
+.calendar-day[data-today="true"] {
+  background: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+}
+html[data-theme="minimal"] .calendar-nav,
+html[data-theme="minimal"] .calendar-month {
+  background: transparent;
+  border: 1px solid var(--md-sys-color-primary);
+}
+html[data-theme="minimal"] .calendar-day[data-today="true"] {
+  background: transparent;
+  color: var(--md-sys-color-on-surface);
+  outline: 1px solid var(--md-sys-color-outline);
+}
+@container calendar (max-height:150px) {
+  .calendar-header {
+    height: 24px;
+  }
+  .calendar-nav {
+    width: 24px;
+    height: 24px;
+  }
+  .calendar-month {
+    font-size: 12px;
+  }
+  .calendar-weekdays {
+    font-size: 9px;
+  }
+  .calendar-days {
+    font-size: 10px;
+    gap: 1px;
+  }
+  .calendar-day {
+    min-width: 13px;
+  }
+  .calendar-weekdays {
+    gap: 1px;
+  }
+}
+
+@container calendar (max-height:110px) {
+  .calendar-days {
+    grid-template-rows: minmax(0, 1fr);
+    font-size: 13px;
+  }
+  .calendar-day:not([data-compact="true"]) {
+    display: none;
+  }
+  .calendar-day {
+    min-width: 20px;
+  }
+}

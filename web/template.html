@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="en" data-theme="bright" data-idle="false">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="darkreader-lock" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#f3df86" />
+    <title>At a glance · {{COMPANION_NAME}}</title>
+    <style>
+      /* DASHBOARD_STYLES */
+    </style>
+  </head>
+  <body>
+    <svg
+      aria-hidden="true"
+      style="position: absolute; width: 0; height: 0; overflow: hidden"
+    >
+      <defs>
+        <symbol id="grip-icon" viewBox="0 0 24 24">
+          <path
+            d="M8 5h.01M16 5h.01M8 12h.01M16 12h.01M8 19h.01M16 19h.01"
+            stroke-width="3.5"
+          />
+        </symbol>
+        <symbol id="pin-panel-icon" viewBox="0 0 24 24">
+          <path d="m8 3 8 0-1 6 4 4v2H5v-2l4-4-1-6ZM12 15v7" />
+        </symbol>
+        <symbol id="companion-outline" viewBox="0 0 100 100">
+          <path d="M48 8Q50 4 52 8L87 83Q90 89 83 90H17Q10 89 13 83Z" />
+          <path d="m23 43 5-1m44 0 5 1" />
+          <ellipse cx="38" cy="36" rx="11" ry="15" />
+          <ellipse cx="62" cy="36" rx="11" ry="15" />
+          <path d="M49 35h2M39 30v11m22-11v11" stroke-width="3" />
+          <path d="M39 59q11 9 22 0" />
+          <path d="M47 78 34 70q-5 8 0 17l13-6m6-3 13-8q5 8 0 17l-13-6" />
+          <rect x="47" y="76" width="6" height="8" rx="2" />
+        </symbol>
+        <symbol id="sun" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="4" />
+          <path
+            d="M12 2v2m0 16v2M2 12h2m16 0h2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"
+          />
+        </symbol>
+        <symbol id="moon" viewBox="0 0 24 24">
+          <path d="M20.4 14A9 9 0 0 1 10 3.6 9 9 0 1 0 20.4 14Z" />
+        </symbol>
+        <symbol id="minimal" viewBox="0 0 24 24">
+          <rect x="4" y="4" width="16" height="16" rx="4" />
+          <path d="M10 12h4" />
+        </symbol>
+        <symbol id="settings-icon" viewBox="0 0 24 24">
+          <path d="M4 7h16M4 17h16" />
+          <circle cx="9" cy="7" r="3" fill="var(--bg)" />
+          <circle cx="15" cy="17" r="3" fill="var(--bg)" />
+        </symbol>
+        <symbol id="expand" viewBox="0 0 24 24">
+          <path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5" />
+        </symbol>
+        <symbol id="pin" viewBox="0 0 24 24">
+          <path d="M19 10c0 5-7 11-7 11S5 15 5 10a7 7 0 1 1 14 0Z" />
+          <circle cx="12" cy="10" r="2" />
+        </symbol>
+        <symbol id="arrow" viewBox="0 0 24 24">
+          <path d="M5 12h14m-5-5 5 5-5 5" />
+        </symbol>
+        <symbol id="back" viewBox="0 0 24 24">
+          <path d="M19 12H5m5-5-5 5 5 5" />
+        </symbol>
+        <symbol id="close" viewBox="0 0 24 24">
+          <path d="m6 6 12 12M6 18 18 6" />
+        </symbol>
+        <symbol id="external" viewBox="0 0 24 24">
+          <path d="M14 4h6v6m0-6L10 14M9 4H4v16h16v-5" />
+        </symbol>
+        <symbol id="phone" viewBox="0 0 24 24">
+          <path
+            d="m7 3 3 5-2.5 2a16 16 0 0 0 6.5 6.5l2-2.5 5 3c0 3-2 4-4 4C10 20 4 14 3 7c0-2 1-4 4-4Z"
+          />
+        </symbol>
+        <symbol id="mic" viewBox="0 0 24 24">
+          <rect x="9" y="3" width="6" height="12" rx="3" />
+          <path d="M5 10v2a7 7 0 0 0 14 0v-2m-7 9v3m-4 0h8" />
+        </symbol>
+        <symbol id="send" viewBox="0 0 24 24">
+          <path d="M12 20V4M6 10l6-6 6 6" />
+        </symbol>
+        <symbol id="cloud" viewBox="0 0 24 24">
+          <path d="M6 18a5 5 0 1 1 1.5-9.8A6 6 0 0 1 19 10a4 4 0 0 1-1 8Z" />
+        </symbol>
+        <symbol id="rain" viewBox="0 0 24 24">
+          <path
+            d="M6 15a4 4 0 1 1 1.5-7.8A5 5 0 0 1 17 8a3.5 3.5 0 0 1 1 7M8 18l-1 3m6-3-1 3m6-3-1 3"
+          />
+        </symbol>
+        <symbol id="snow" viewBox="0 0 24 24">
+          <path
+            d="M12 2v20M3.3 7l17.4 10M3.3 17 20.7 7M9 4l3 3 3-3M9 20l3-3 3 3M4 10l4-1-1-4m10 14-1-4 4-1M4 14l4 1-1 4M17 5l-1 4 4 1"
+          />
+        </symbol>
+      </defs>
+    </svg>
+    <main class="display" id="display">
+      <div class="shell">
+        <header class="toolbar">
+          <div class="toolbar-right">
+            <div class="modes" aria-label="Display color">
+              <button
+                type="button"
+                data-mode="bright"
+                aria-label="Bright yellow"
+                aria-pressed="true"
+                title="Bright"
+              >
+                <svg><use href="#sun" /></svg></button
+              ><button
+                type="button"
+                data-mode="dark"
+                aria-label="Dark yellow"
+                aria-pressed="false"
+                title="Dark"
+              >
+                <svg><use href="#moon" /></svg></button
+              ><button
+                type="button"
+                data-mode="minimal"
+                aria-label="Minimal frame"
+                aria-pressed="false"
+                title="Minimal"
+              >
+                <svg><use href="#minimal" /></svg>
+              </button>
+            </div>
+            <button
+              type="button"
+              class="icon-button"
+              id="fullscreen"
+              aria-label="Full screen and keep awake"
+              title="Full screen & keep awake"
+            >
+              <svg><use href="#expand" /></svg></button
+            ><button
+              type="button"
+              class="icon-button"
+              id="settings-open"
+              aria-label="Display settings"
+              title="Settings"
+            >
+              <svg><use href="#settings-icon" /></svg>
+            </button>
+          </div>
+        </header>
+        <div class="board">
+          <!-- PANEL_MARKUP -->
+        </div>
+      </div>
+      <section
+        class="overlay"
+        id="chat"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="chat-heading"
+        hidden
+        inert
+      >
+        <header class="chat-header">
+          <button
+            class="icon-button"
+            id="close-chat"
+            aria-label="Back to display"
+          >
+            <svg><use href="#back" /></svg></button
+          ><span class="portrait"
+            ><img class="case-avatar" alt="" src="{{COMPANION_AVATAR}}" /><svg
+              class="outline-avatar"
+              aria-hidden="true"
+            >
+              <use href="#companion-outline" /></svg
+          ></span>
+          <div class="chat-title">
+            <strong id="chat-heading">{{COMPANION_NAME}}</strong
+            ><small>Chat layout preview</small>
+          </div>
+          <a
+            class="real-chat-link"
+            id="real-chat"
+            href="{{COMPANION_URL}}"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Open ChatGPT <svg><use href="#external" /></svg
+          ></a>
+        </header>
+        <div class="chat-history" id="chat-history">
+          <div class="chat-date">Design preview · larger type</div>
+          <div class="message">
+            <span class="message-author"
+              >{{COMPANION_NAME}} · SAMPLE MESSAGE</span
+            >What’s on your mind?<span class="preview-note"
+              >This is a local layout preview. Your real conversation stays in
+              ChatGPT. Open ChatGPT to message or call {{COMPANION_NAME}}.</span
+            >
+          </div>
+        </div>
+        <div class="composer-wrap">
+          <div id="composer-status" class="composer-status" role="status">
+            Try the layout. Preview messages stay on this page.
+          </div>
+          <form class="composer" id="composer">
+            <button
+              type="button"
+              class="icon-button call-button"
+              id="call"
+              aria-label="Open {{COMPANION_NAME}} in ChatGPT to call"
+              title="Call in ChatGPT"
+            >
+              <svg><use href="#phone" /></svg>
+            </button>
+            <div class="input-shell">
+              <textarea
+                id="message-input"
+                aria-label="Preview message"
+                placeholder="Message {{COMPANION_NAME}}…"
+                rows="1"
+              ></textarea
+              ><button
+                class="icon-button"
+                id="send-message"
+                type="submit"
+                aria-label="Add message to local preview"
+                disabled
+              >
+                <svg><use href="#send" /></svg>
+              </button>
+            </div>
+            <button
+              type="button"
+              class="icon-button"
+              id="dictate"
+              aria-label="Dictate preview message"
+              aria-pressed="false"
+              title="Dictate"
+            >
+              <svg><use href="#mic" /></svg>
+            </button>
+          </form>
+          <div class="composer-labels">
+            <span>CALL</span><span>LOCAL PREVIEW</span><span>DICTATE</span>
+          </div>
+        </div>
+      </section>
+      <section
+        class="settings"
+        id="settings"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="settings-heading"
+        hidden
+        inert
+      >
+        <div class="settings-header">
+          <h1 id="settings-heading">Settings</h1>
+          <button
+            class="icon-button"
+            id="settings-close"
+            aria-label="Close settings"
+          >
+            <svg><use href="#close" /></svg>
+          </button>
+        </div>
+        <h2>Weather location</h2>
+        <p>
+          The first preview uses Hong Kong. Choose your city or use your current
+          location. The clock always follows this device’s local time.
+        </p>
+        <label for="city-search">City</label>
+        <form class="search-row" id="city-form">
+          <input
+            id="city-search"
+            placeholder="Search a city, e.g. Hong Kong"
+            autocomplete="off"
+            minlength="2"
+            required
+          /><button class="text-button primary" type="submit">Search</button>
+        </form>
+        <div class="search-results" id="search-results"></div>
+        <button class="text-button" type="button" id="use-location">
+          Use current location
+        </button>
+        <div class="settings-status" id="settings-status" role="status"></div>
+        <small
+          >City search and weather use Open-Meteo. Current location is rounded
+          to two decimal places before requesting weather.</small
+        >
+        <details>
+          <summary style="margin-top: 18px; font-size: 13px; cursor: pointer">
+            Use coordinates instead
+          </summary>
+          <form id="coordinates-form">
+            <div class="coordinates">
+              <div>
+                <label for="latitude">Latitude</label
+                ><input
+                  id="latitude"
+                  type="number"
+                  min="-90"
+                  max="90"
+                  step="any"
+                  required
+                  placeholder="22.32"
+                />
+              </div>
+              <div>
+                <label for="longitude">Longitude</label
+                ><input
+                  id="longitude"
+                  type="number"
+                  min="-180"
+                  max="180"
+                  step="any"
+                  required
+                  placeholder="114.17"
+                />
+              </div>
+            </div>
+            <button class="text-button" type="submit" style="margin-top: 12px">
+              Use these coordinates
+            </button>
+          </form>
+        </details>
+        <h2>Always-on display</h2>
+        <p>
+          Bright and dark keep warm yellow tones. After 30 seconds without
+          activity, minimal mode uses pale yellow button outlines on dim,
+          neutral panels. The clock colon stays steady and {{COMPANION_NAME}}
+          becomes an outline portrait. Touch or move to wake. Drafts stay in
+          place.
+        </p>
+        <div class="setting-actions">
+          <button class="text-button" type="button" id="preview-rest">
+            Preview minimal mode</button
+          ><button class="text-button" type="button" id="keep-awake">
+            Keep screen awake
+          </button>
+        </div>
+        <p>
+          Full screen and screen wake lock depend on browser support. Minimal
+          mode reduces the page’s brightness; device backlight settings remain
+          separate.
+        </p>
+        <h2>Panels</h2>
+        <div id="panel-library" class="panel-library"></div>
+        <h2>Arrange your panels</h2>
+        <p>
+          Long-press a panel for half a second to reveal its corner menu and
+          enable dragging. Big fills the width and one-third of the height;
+          Medium fills half the width and one-third of the height. Auto fit
+          restores the responsive arrangement. Pin locks the panel’s order. A
+          keyboard user can focus a panel and press Enter for its menu.
+        </p>
+        <button class="text-button" type="button" id="reset-panels">
+          Reset panel arrangement
+        </button>
+        <h2>Your Dot</h2>
+        <p>
+          {{COMPANION_NAME}}’s portrait is included in this file. The chat view
+          previews larger text and a bottom row for call, message and dictation.
+          The panel also offers Call and Dictate shortcuts. Real messages and
+          calls open in ChatGPT.
+        </p>
+        <small id="storage-note"
+          >Display and location choices are stored on this browser when storage
+          is available. Preview messages are kept in memory only.</small
+        >
+      </section>
+      <div
+        id="panel-menu"
+        class="panel-context-menu"
+        role="dialog"
+        aria-label="Panel options"
+        hidden
+      >
+        <div class="panel-menu-heading" id="panel-menu-heading">
+          Panel options
+        </div>
+        <button type="button" id="panel-size-big" aria-pressed="false">
+          Big<small>Full width · ⅓ height</small></button
+        ><button type="button" id="panel-size-medium" aria-pressed="false">
+          Medium<small>Half width · ⅓ height</small></button
+        ><button type="button" id="panel-size-auto" aria-pressed="true">
+          Auto fit</button
+        ><button type="button" id="panel-menu-pin">Pin panel</button
+        ><button type="button" id="panel-exit-fullscreen" hidden>
+          Leave full screen</button
+        ><button type="button" class="menu-done" id="panel-menu-done">
+          Done
+        </button>
+      </div>
+      <div class="status-toast" id="toast" role="status" hidden></div>
+    </main>
+    <!-- PANEL_MANIFEST -->
+    <script>
+      var DashboardConfig = JSON.parse(
+        document.getElementById("dashboard-config").textContent,
+      );
+      /* CORE_MODULES */
+      /* PANEL_RUNTIME */
+      /* PANEL_MODULES */
+      /* APP_SCRIPT */
+    </script>
+  </body>
+</html>

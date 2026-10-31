@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "id": "notes",
+  "title": "Notes",
+  "version": "1.0.0",
+  "rootClass": "notes-panel",
+  "colorRole": "surface",
+  "entries": {
+    "html": "panel.html",
+    "css": "panel.css",
+    "js": "panel.js"
+  },
+  "capabilities": ["storage"],
+  "assets": [],
+  "defaultEnabled": true
+}

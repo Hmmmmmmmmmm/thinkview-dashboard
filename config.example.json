@@ -1,0 +1,18 @@
+{
+  "companion": {
+    "name": "Dot",
+    "chatUrl": "https://chatgpt.com/dots",
+    "avatar": "assets/companion.svg"
+  },
+  "weather": {
+    "name": "Hong Kong",
+    "latitude": 22.32,
+    "longitude": 114.17,
+    "isPreview": true
+  },
+  "display": {
+    "idleTimeoutMs": 30000,
+    "weatherRefreshMs": 900000
+  },
+  "storagePrefix": "thinkview."
+}

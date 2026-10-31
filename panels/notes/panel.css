@@ -1,0 +1,51 @@
+.panel[data-panel="notes"] {
+  padding: 22px;
+  container-name: notes;
+  container-type: size;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  touch-action: pan-y;
+}
+.notes-heading {
+  font-size: 14px;
+  letter-spacing: 0.03em;
+  touch-action: none;
+}
+.notes-input {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  resize: none;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-family: inherit;
+  font-size: clamp(15px, 5cqw, 23px);
+  line-height: 1.6;
+  padding: 0;
+  outline: none;
+  user-select: text;
+  -webkit-user-select: text;
+  touch-action: pan-y;
+}
+.notes-input:focus-visible {
+  outline: 1px solid var(--accent);
+  outline-offset: 5px;
+  border-radius: 4px;
+}
+.notes-input::-webkit-scrollbar {
+  width: 3px;
+}
+.notes-input::-webkit-scrollbar-thumb {
+  background: var(--line);
+}
+@container notes (max-height:150px) {
+  .notes-heading {
+    font-size: 12px;
+  }
+  .notes-input {
+    font-size: 14px;
+    line-height: 1.45;
+  }
+}

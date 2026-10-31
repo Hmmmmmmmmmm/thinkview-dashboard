@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:thinkview:panel:1",
+  "title": "Local display panel package v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "id",
+    "title",
+    "version",
+    "rootClass",
+    "colorRole",
+    "entries",
+    "capabilities",
+    "assets",
+    "defaultEnabled"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "id": { "type": "string", "pattern": "^[a-z][a-z0-9-]{0,39}$" },
+    "title": { "type": "string", "minLength": 1 },
+    "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "rootClass": { "type": "string", "pattern": "^[a-z][a-z0-9-]{0,39}$" },
+    "colorRole": { "enum": ["primary", "secondary", "tertiary", "surface"] },
+    "description": { "type": "string" },
+    "entries": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["html", "css", "js"],
+      "properties": {
+        "html": { "type": "string" },
+        "css": { "type": "string" },
+        "js": { "type": "string" }
+      }
+    },
+    "capabilities": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "local-time",
+          "storage",
+          "network",
+          "location",
+          "microphone",
+          "external-navigation"
+        ]
+      }
+    },
+    "networkOrigins": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^https://[A-Za-z0-9.-]+(:[0-9]+)?$"
+      }
+    },
+    "assets": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string" }
+    },
+    "defaultEnabled": { "type": "boolean" }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "capabilities": { "contains": { "const": "network" } } }
+      },
+      "then": {
+        "required": ["networkOrigins"],
+        "properties": { "networkOrigins": { "minItems": 1 } }
+      }
+    }
+  ]
+}

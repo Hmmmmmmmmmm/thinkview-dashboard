@@ -1,0 +1,251 @@
+html[data-theme="dark"] {
+  --bg: #191a14;
+  --surface: #24251b;
+  --surface-2: #303123;
+  --ink: #dfcc7b;
+  --muted: #a69963;
+  --line: #4e4b31;
+  --accent: #c5ae50;
+  --frame: #716531;
+  --button: #d6bd5b;
+  --button-ink: #242317;
+  color-scheme: dark;
+}
+html[data-theme="minimal"] {
+  --bg: #080909;
+  --surface: #101111;
+  --surface-2: #181919;
+  --ink: #929592;
+  --muted: #686b68;
+  --line: #303332;
+  --accent: #a0a39f;
+  --frame: #93865a;
+  --button: #858984;
+  --button-ink: #0a0b0b;
+  color-scheme: dark;
+}
+html[data-theme="minimal"] .shell {
+  filter: brightness(0.65);
+}
+html[data-theme="minimal"] .portrait {
+  filter: grayscale(1);
+  opacity: 0.65;
+}
+html[data-theme="minimal"] .toolbar {
+  opacity: 0.65;
+}
+html[data-theme="minimal"] .frame {
+  border-color: #b3a36a;
+}
+html[data-theme="minimal"] .panel {
+  background: #0e1010;
+  box-shadow: none;
+}
+html[data-theme="minimal"] .shell {
+  filter: none;
+}
+html[data-theme="minimal"] .toolbar {
+  opacity: 0.7;
+}
+html[data-theme="minimal"] .clock-panel,
+html[data-theme="minimal"] .weather-panel,
+html[data-theme="minimal"] .dot-panel {
+  color: #717572;
+}
+html[data-theme="minimal"] .colon {
+  animation: none;
+  opacity: 0.75;
+}
+html[data-theme="minimal"] .portrait {
+  filter: none;
+  opacity: 1;
+  background: transparent;
+  border: 0;
+  color: #9a8d5c;
+}
+html[data-theme="minimal"] .portrait img {
+  display: none;
+}
+html[data-theme="minimal"] .outline-avatar {
+  display: block;
+}
+html[data-theme="minimal"] .icon-button,
+html[data-theme="minimal"] .text-button,
+html[data-theme="minimal"] .dot-entry,
+html[data-theme="minimal"] .panel-tools button,
+html[data-theme="minimal"] .input-shell {
+  border: 1px solid #9a8d5c;
+  background: transparent;
+  color: #858984;
+}
+html[data-theme="minimal"] .modes {
+  border: 0;
+  padding: 4px;
+  gap: 5px;
+}
+html[data-theme="minimal"] .modes button {
+  border: 1px solid #9a8d5c;
+  background: transparent;
+  color: #858984;
+}
+html[data-theme="minimal"] .modes button[aria-pressed="true"] {
+  color: #c1ad68;
+  background: transparent;
+}
+html[data-theme="minimal"] .panel-pin[aria-pressed="true"] {
+  border-color: #c1ad68;
+  background: transparent;
+  color: #c1ad68;
+}
+html[data-theme="minimal"] .panel-pin[aria-pressed="true"] svg {
+  fill: none;
+  stroke: currentColor;
+}
+html[data-theme="minimal"] .panel-tools button {
+  opacity: 0.65;
+}
+html[data-theme="minimal"] .dot-entry {
+  border-radius: 22px;
+}
+html[data-theme="minimal"] .input-shell .icon-button {
+  background: transparent;
+}
+html[data-theme="minimal"] .weather-art {
+  opacity: 0.7;
+}
+html[data-theme="minimal"] .eyebrow,
+html[data-theme="minimal"] .weather-meta,
+html[data-theme="minimal"] .timezone {
+  color: #575d58;
+}
+html[data-theme="minimal"] .dot-action {
+  border-color: #9a8d5c;
+  background: transparent;
+  color: #858984;
+}
+html[data-theme="minimal"] .colon {
+  animation: none !important;
+  transition: none !important;
+  opacity: 1;
+}
+html[data-theme] {
+  --bg: var(--md-sys-color-surface);
+  --surface: var(--md-sys-color-surface-container);
+  --surface-2: var(--md-sys-color-surface-container-highest);
+  --ink: var(--md-sys-color-on-surface);
+  --muted: var(--md-sys-color-on-surface-variant);
+  --line: var(--md-sys-color-outline-variant);
+  --accent: var(--md-sys-color-primary);
+  --frame: var(--md-sys-color-primary);
+  --button: var(--md-sys-color-primary);
+  --button-ink: var(--md-sys-color-on-primary);
+}
+html[data-theme] .clock-panel {
+  background: var(--md-sys-color-primary-container);
+  --ink: var(--md-sys-color-on-primary-container);
+  --muted: var(--md-sys-color-on-primary-container);
+  color: var(--ink);
+}
+html[data-theme] .weather-panel {
+  background: var(--md-sys-color-secondary-container);
+  --ink: var(--md-sys-color-on-secondary-container);
+  --muted: var(--md-sys-color-on-secondary-container);
+  color: var(--ink);
+}
+html[data-theme] .dot-panel {
+  background: var(--md-sys-color-tertiary-container);
+  --ink: var(--md-sys-color-on-tertiary-container);
+  --muted: var(--md-sys-color-on-tertiary-container);
+  color: var(--ink);
+}
+html[data-theme] .panel .weather-meta,
+html[data-theme] .panel .weather-source,
+html[data-theme] .panel .timezone,
+html[data-theme] .panel .dot-hint,
+html[data-theme] .panel .eyebrow {
+  color: var(--muted);
+}
+html[data-theme] .dot-action {
+  background: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+  border-color: transparent;
+}
+html[data-theme] #quick-dictate {
+  background: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+}
+html[data-theme="minimal"] .panel {
+  background: var(--md-sys-color-surface-container-low);
+  --ink: var(--md-sys-color-on-surface);
+  --muted: var(--md-sys-color-on-surface-variant);
+  color: var(--ink);
+}
+html[data-theme="minimal"] .icon-button,
+html[data-theme="minimal"] .text-button,
+html[data-theme="minimal"] .dot-entry,
+html[data-theme="minimal"] .panel-tools button,
+html[data-theme="minimal"] .dot-action,
+html[data-theme="minimal"] #quick-dictate,
+html[data-theme="minimal"] .input-shell,
+html[data-theme="minimal"] .modes button {
+  background: transparent;
+  border: 1px solid var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-surface);
+}
+html[data-theme="minimal"] .portrait {
+  color: var(--md-sys-color-primary);
+}
+html[data-theme="minimal"] .modes button[aria-pressed="true"] {
+  color: var(--md-sys-color-primary);
+}
+html[data-theme="minimal"] .panel-pin[aria-pressed="true"] {
+  color: var(--md-sys-color-primary);
+  border-color: var(--md-sys-color-primary);
+}
+html[data-theme="minimal"] .colon {
+  animation: none !important;
+  opacity: 1 !important;
+}
+html[data-theme] .panel[data-tone="primary"] {
+  background: var(--md-sys-color-primary-container);
+  --ink: var(--md-sys-color-on-primary-container);
+  --muted: var(--md-sys-color-on-primary-container);
+  color: var(--ink);
+}
+html[data-theme] .panel[data-tone="secondary"] {
+  background: var(--md-sys-color-secondary-container);
+  --ink: var(--md-sys-color-on-secondary-container);
+  --muted: var(--md-sys-color-on-secondary-container);
+  color: var(--ink);
+}
+html[data-theme] .panel[data-tone="tertiary"] {
+  background: var(--md-sys-color-tertiary-container);
+  --ink: var(--md-sys-color-on-tertiary-container);
+  --muted: var(--md-sys-color-on-tertiary-container);
+  color: var(--ink);
+}
+html[data-theme] .panel[data-tone="surface"] {
+  background: var(--md-sys-color-surface-container-high);
+  --ink: var(--md-sys-color-on-surface);
+  --muted: var(--md-sys-color-on-surface-variant);
+  color: var(--ink);
+}
+html[data-theme="minimal"] .panel[data-tone] {
+  background: var(--md-sys-color-surface-container-low);
+  --ink: var(--md-sys-color-on-surface);
+  --muted: var(--md-sys-color-on-surface-variant);
+  color: var(--ink);
+}
+html[data-theme="minimal"] .location-button {
+  border: 1px solid var(--md-sys-color-primary);
+  border-radius: 10px;
+  padding: 3px 6px;
+}
+html[data-theme="minimal"] #refresh-weather {
+  border: 1px solid var(--md-sys-color-primary) !important;
+}
+html[data-theme="minimal"] .weather-art {
+  color: var(--md-sys-color-on-surface-variant);
+}
+/* MATERIAL-YOU-TOKENS:START */
+/* MATERIAL-YOU-TOKENS:END */

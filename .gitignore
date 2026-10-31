@@ -1,0 +1,13 @@
+dist/
+node_modules/
+.local/
+config.local.json
+config.*.local.json
+.env
+.env.*
+*.keystore
+*.jks
+*.log
+__pycache__/
+*.pyc
+.DS_Store

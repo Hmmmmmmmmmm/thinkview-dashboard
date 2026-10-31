@@ -1,0 +1,116 @@
+.panel[data-panel="focus"] {
+  padding: 22px;
+  container-name: focus;
+  container-type: size;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.focus-heading {
+  font-size: 14px;
+  letter-spacing: 0.03em;
+  align-self: flex-start;
+}
+.focus-time {
+  font-size: clamp(36px, min(30cqw, 36cqh), 110px);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
+}
+.focus-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.focus-toggle {
+  border: 0;
+  background: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+  border-radius: 24px;
+  padding: 9px 25px;
+  min-height: 38px;
+  font-size: 13px;
+}
+.focus-reset {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: transparent;
+  color: inherit;
+  padding: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.focus-reset svg {
+  width: 19px;
+  height: 19px;
+}
+.focus-presets {
+  display: flex;
+  gap: 8px;
+}
+.focus-presets button {
+  padding: 4px 9px;
+  min-height: 25px;
+  border: 0;
+  border-radius: 20px;
+  font-size: 10px;
+  background: transparent;
+  color: inherit;
+  opacity: 0.7;
+}
+.focus-presets button[aria-pressed="true"] {
+  background: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+  opacity: 1;
+}
+html[data-theme="minimal"] .focus-controls button,
+html[data-theme="minimal"] .focus-presets button {
+  background: transparent;
+  color: var(--md-sys-color-on-surface);
+  border: 1px solid var(--md-sys-color-primary);
+}
+@container focus (max-height:160px) {
+  .focus-time {
+    font-size: clamp(32px, 28cqh, 55px);
+  }
+  .focus-heading {
+    font-size: 12px;
+  }
+  .focus-toggle {
+    min-height: 30px;
+    padding: 6px 17px;
+  }
+  .focus-reset {
+    height: 30px;
+    width: 30px;
+  }
+  .focus-presets button {
+    min-height: 20px;
+    padding: 2px 7px;
+    font-size: 9px;
+  }
+  .focus-controls {
+    gap: 6px;
+  }
+}
+
+@container focus (max-height:130px) {
+  .focus-presets {
+    display: none;
+  }
+}
+
+@container focus (max-height:110px) {
+  .focus-heading,
+  .focus-presets {
+    display: none;
+  }
+  .focus-time {
+    font-size: clamp(28px, 35cqh, 40px);
+  }
+}

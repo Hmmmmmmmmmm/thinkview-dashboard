@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "id": "dot",
+  "title": "Dot",
+  "version": "1.0.0",
+  "rootClass": "dot-panel",
+  "colorRole": "tertiary",
+  "entries": {
+    "html": "panel.html",
+    "css": "panel.css",
+    "js": "panel.js"
+  },
+  "capabilities": ["microphone", "external-navigation"],
+  "assets": [],
+  "defaultEnabled": true
+}
