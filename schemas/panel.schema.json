@@ -46,7 +46,8 @@
           "network",
           "location",
           "microphone",
-          "external-navigation"
+          "external-navigation",
+          "device-service"
         ]
       }
     },

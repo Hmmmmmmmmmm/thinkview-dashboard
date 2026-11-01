@@ -1,6 +1,6 @@
 # ThinkView Dashboard
 
-A modular, local-first dashboard for always-on touchscreen displays. It builds to one self-contained HTML file and runs in a modern Chromium browser without a backend.
+A modular, local-first dashboard for always-on touchscreen displays. It builds to one self-contained bootstrap HTML file. Core dashboard features run in a modern browser; optional device panels connect to the ThinkView app’s same-origin local service.
 
 Included panels: 24-hour local clock, weather, companion shortcuts, local calendar, Google Calendar agenda/today/next-event views, focus timer and saved notes. The interface supports portrait and landscape, long-press drag and pin, Big/Medium size presets, full-screen mode, and bright/dark/minimal Material You colors. Minimal mode starts after 30 seconds idle, keeps the clock colon steady, and uses neutral surfaces with outlined controls.
 
@@ -13,7 +13,7 @@ python3 tools/build.py
 python3 -m http.server 8767 --bind 127.0.0.1 --directory dist
 ```
 
-Open [the local dashboard](http://127.0.0.1:8767/). `dist/index.html` embeds the styles, scripts, manifests and image assets; it can also be copied into a device-local static server. Weather and city search require network access. Full-screen and wake-lock behavior depend on the browser.
+Open [the local dashboard](http://127.0.0.1:8767/). `dist/index.html` embeds the dashboard and its local configuration; it can also be copied into a device-local static server. It loads the dashboard in a same-origin frame so verified updates can be stored in browser storage without a server-side update API. Weather and city search require network access. Device panels require the compatible ThinkView app and report when its local service or a capability is unavailable. Full-screen and wake-lock behavior depend on the browser.
 
 ## Source structure
 
@@ -42,6 +42,10 @@ tests/               Layout, storage and build regression tests
 Page markup belongs in `web/`; shared behavior belongs in `logic/`; a widget's markup, styles and lifecycle belong in its package. The controller coordinates settings, dialogs and the original clock/weather/companion host adapters. Layout migration, pinned reordering and grid calculations are independent of the DOM. Widget scripts mount when enabled and clean up when disabled or the page leaves.
 
 Do not edit generated files in `dist/`.
+
+## Optional device panels
+
+The Audio, Connectivity, Display and Device Status panels are disabled by default. Enable them in Settings when running in a compatible ThinkView app. They use its same-origin `/api/device/v1/` service through ordinary browser requests and show unavailable controls where the service, permission or device capability is absent. Commands are issued only after a user action; displayed state comes from subsequent device status. An ordinary static web server does not provide this service. Imported panel packages run as trusted page code and can access the same service; install only packages you trust.
 
 ## Personal configuration
 
@@ -101,3 +105,11 @@ Weather and city search use [Open-Meteo](https://open-meteo.com/). Data are mode
 ## License
 
 [MIT](LICENSE). Contributions should keep the module boundaries and panel package contract intact.
+
+## Updates and moving browser data
+
+The bootstrap checks the latest stable release of `Hmmmmmmmmmm/thinkview-dashboard` on startup at most once per six hours and periodically while open. A newer release is downloaded through GitHub’s Contents API and checked against the exact size and SHA-256 digest of its published `thinkview-dashboard-bundle.html` release asset. It is staged locally, then applied at the next safe startup. Settings also offers Check and Apply controls. A running focus timer or unsent chat draft delays application. After startup succeeds the new version becomes the last known good version; failed initialization restores the prior version and its dashboard storage snapshot. Offline or unavailable GitHub leaves the existing dashboard available. Rate-limited responses pause checks until the reported reset or a minimum backoff; no GitHub login or token is used. Browser storage and an HTTPS or localhost secure context are needed for updating.
+
+The bootstrap retains its own build configuration and avatar independently of generic releases. Release code does not contain private configuration. Settings → Move dashboard data provides a copy/paste JSON export and import for moving layout, preferences, drafts, notes and panel data to a separate browser profile. Import replaces the target profile’s dashboard namespace after confirmation; it does not change the source browser or transfer account sessions. Exported data can include private notes and trusted imported panel code: share it carefully and only import exports you trust.
+
+For a release, set `VERSION`, build the generic public bundle, copy the generated bundle under `releases/<version>/thinkview-dashboard-bundle.html` and commit it (the generated bundle is updated by the release procedure, not edited manually), tag that commit, and attach the identical bundle as a release asset. GitHub release metadata must include its SHA-256 digest. Also attach the generic standalone bootstrap and checksum file. Do not use `--config` for public artifacts. Generate assets with `python3 tools/build.py --release-dir ../.work/dashboard-release-v0.1`; compare the tracked bundle and release asset before publication. The public bootstrap starts with generic settings.

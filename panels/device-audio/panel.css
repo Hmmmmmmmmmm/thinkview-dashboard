@@ -1,0 +1,9 @@
+ .panel[data-panel="device-audio"] { padding: 18px; container-type: size; display: flex; flex-direction: column; gap: 8px; overflow: auto; background: var(--md-sys-color-primary-container); color: var(--md-sys-color-on-primary-container); }
+.device-audio-title { font-size: 14px; font-weight: 600; }
+.device-audio-body { display: grid; gap: 8px; font-size: 13px; }
+.device-audio-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.device-audio-row label { min-width: 0; }
+.device-audio-row input[type=range] { min-width: 40px; width: 35%; accent-color: var(--md-sys-color-primary); }
+.device-audio-row button, .device-audio-row select { border: 1px solid var(--line); border-radius: 16px; padding: 5px 9px; background: transparent; color: inherit; }
+.device-audio-message { font-size: 12px; opacity: .8; }
+@container (max-height: 160px) { .device-audio-title { font-size: 12px; } .device-audio-body { gap: 4px; font-size: 11px; } }

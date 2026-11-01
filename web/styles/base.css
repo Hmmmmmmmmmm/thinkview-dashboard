@@ -1105,7 +1105,6 @@ html[data-fullscreen="true"] .footer {
 html[data-fullscreen="true"] * { scrollbar-width: none; }
 html[data-fullscreen="true"] *::-webkit-scrollbar { display: none; }
 
-.global-actions { display:flex; gap:8px; justify-content:flex-end; }
 .notification-list { position:absolute; z-index:30; right:16px; top:90px; max-width:420px; max-height:60vh; overflow:auto; padding:12px; background:var(--bg); color:var(--ink); border:1px solid var(--line); border-radius:16px; }
 .notification-item { display:flex; align-items:center; gap:12px; padding:8px; border-bottom:1px solid var(--line); }
 .notification-item button { min-height:44px; }

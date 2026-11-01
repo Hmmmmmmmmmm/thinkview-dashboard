@@ -1,4 +1,18 @@
 {
   "schemaVersion": 1,
-  "panels": ["clock", "weather", "dot", "calendar", "calendar-agenda", "calendar-today", "calendar-next", "focus", "notes"]
+  "panels": [
+    "clock",
+    "weather",
+    "dot",
+    "calendar",
+    "calendar-agenda",
+    "calendar-today",
+    "calendar-next",
+    "focus",
+    "notes",
+    "device-audio",
+    "device-connectivity",
+    "device-display",
+    "device-status"
+  ]
 }

@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "id": "device-connectivity",
+  "title": "Connectivity",
+  "version": "1.0.0",
+  "rootClass": "device-connectivity-panel",
+  "colorRole": "secondary",
+  "entries": {
+    "html": "panel.html",
+    "css": "panel.css",
+    "js": "panel.js"
+  },
+  "capabilities": [
+    "device-service"
+  ],
+  "assets": [],
+  "defaultEnabled": false,
+  "type": "Device",
+  "grid": {
+    "columns": 1,
+    "rows": 1
+  }
+}

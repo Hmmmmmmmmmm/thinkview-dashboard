@@ -341,12 +341,14 @@
   function openSettings() {
     closePanelMenu();
     panelReturn = document.activeElement;
+    $("settings").appendChild($("notification-list"));
     $("settings").hidden = false;
     syncPanels();
     $("settings-close").focus();
   }
   function closeSettings() {
     $("settings").hidden = true;
+    $("display").appendChild($("notification-list"));
     syncPanels();
     if (panelReturn) panelReturn.focus();
   }
@@ -566,7 +568,7 @@
     recognition.onresult = function (e) {
       var text = e.results[0][0].transcript;
       $("message-input").value += ($("message-input").value ? " " : "") + text;
-      inputChanged();
+      $("message-input").dispatchEvent(new Event("input", { bubbles: true }));
       $("composer-status").textContent =
         "Review your draft before copying it to ChatGPT.";
     };
@@ -683,7 +685,7 @@
   function validImported(pkg) {
     var m = pkg && pkg.manifest, e = pkg && pkg.entries;
     var idPattern = /^[a-z][a-z0-9-]{0,39}$/;
-    var capabilities = ["local-time", "storage", "network", "location", "microphone", "external-navigation"];
+    var capabilities = ["local-time", "storage", "network", "location", "microphone", "external-navigation", "device-service"];
     var required = ["schemaVersion", "id", "title", "version", "rootClass", "colorRole", "entries", "capabilities", "assets", "defaultEnabled"];
     var optional = ["networkOrigins", "description", "type", "grid"];
     function object(value) { return value && typeof value === "object" && !Array.isArray(value); }

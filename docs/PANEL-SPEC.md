@@ -47,7 +47,7 @@ Every package must have a stable lowercase ID, matching its folder name, and a s
 
 `colorRole` is `primary`, `secondary`, `tertiary` or `surface`. The shell supplies paired Material You container/on-container colors. Minimal mode replaces panel fills with neutral tones and uses the yellow primary role for control outlines. Do not hard-code an independent panel palette.
 
-The `type` field groups panels in Settings; `grid` supplies default `columns` and `rows` in grid units. Both fields are optional for older packages (Other and 1 × 1). Optional `description` is package documentation, not display text. Optional `networkOrigins` is required for the `network` capability and contains exact HTTPS origins, without paths, credentials or tokens. Supported capability labels are `local-time`, `storage`, `network`, `location`, `microphone` and `external-navigation`.
+The `type` field groups panels in Settings; `grid` supplies default `columns` and `rows` in grid units. Both fields are optional for older packages (Other and 1 × 1). Optional `description` is package documentation, not display text. Optional `networkOrigins` is required for the `network` capability and contains exact HTTPS origins, without paths, credentials or tokens. Supported capability labels are `local-time`, `storage`, `network`, `location`, `microphone`, `external-navigation` and `device-service`. The `device-service` label declares use of the optional same-origin ThinkView app service; it does not grant access by itself.
 
 ## Markup and styling
 

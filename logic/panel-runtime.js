@@ -3,7 +3,8 @@
   "use strict";
   var definitions = new Map(),
     running = new Map(),
-    host = null;
+    host = null,
+    startupErrors = [];
   function storageFor(id) {
     return DashboardStorage.local(
       DashboardConfig.storagePrefix + "panel." + id + ".",
@@ -17,7 +18,8 @@
     }
   }
   function sync() {
-    if (!host) return;
+    if (!host) return [];
+    var failures = [];
     definitions.forEach(function (def, id) {
       var root = document.querySelector('.board>[data-panel="' + id + '"]');
       if (!root || root.hidden) {
@@ -48,9 +50,11 @@
           });
         });
       } catch (e) {
+        failures.push(id);
         console.error("Panel could not mount:", id, e.message);
       }
     });
+    return failures;
   }
   window.DisplayPanels = {
     register: function (manifest, mount) {
@@ -60,8 +64,9 @@
     },
     start: function (services) {
       host = services;
-      sync();
+      startupErrors = sync();
     },
+    startupErrors: function () { return startupErrors.slice(); },
     sync: sync,
     refresh: function () { Array.from(running.keys()).forEach(stop); sync(); },
     stop: stop,

@@ -1,0 +1,9 @@
+ .panel[data-panel="device-display"] { padding: 18px; container-type: size; display: flex; flex-direction: column; gap: 8px; overflow: auto; background: var(--md-sys-color-tertiary-container); color: var(--md-sys-color-on-tertiary-container); }
+.device-display-title { font-size: 14px; font-weight: 600; }
+.device-display-body { display: grid; gap: 8px; font-size: 13px; }
+.device-display-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.device-display-row label { min-width: 0; }
+.device-display-row input[type=range] { min-width: 40px; width: 35%; accent-color: var(--md-sys-color-primary); }
+.device-display-row button, .device-display-row select { border: 1px solid var(--line); border-radius: 16px; padding: 5px 9px; background: transparent; color: inherit; }
+.device-display-message { font-size: 12px; opacity: .8; }
+@container (max-height: 160px) { .device-display-title { font-size: 12px; } .device-display-body { gap: 4px; font-size: 11px; } }

@@ -17,7 +17,7 @@ from zipfile import ZipFile, ZipInfo, ZIP_DEFLATED
 ROOT = Path(__file__).resolve().parent.parent
 PROJECT = ROOT
 ID = re.compile(r'^[a-z][a-z0-9-]{0,39}$')
-CAPABILITIES = {'local-time', 'storage', 'network', 'location', 'microphone', 'external-navigation'}
+CAPABILITIES = {'local-time', 'storage', 'network', 'location', 'microphone', 'external-navigation', 'device-service'}
 
 
 def member(directory, name):
@@ -149,8 +149,11 @@ def build(config_path=None):
     html = (ROOT / 'web/template.html').read_text()
     shared_css = (ROOT / 'web/styles/base.css').read_text() + '\n/* PANEL_STYLES */\n' + (ROOT / 'web/styles/theme.css').read_text()
     html = html.replace('/* DASHBOARD_STYLES */', shared_css)
-    core_modules = '\n'.join((ROOT / 'logic' / name).read_text() for name in ['storage.js', 'layout.js', 'calendar-service.js', 'companion-service.js'])
+    core_modules = '\n'.join((ROOT / 'logic' / name).read_text() for name in ['storage.js', 'layout.js', 'calendar-service.js', 'companion-service.js', 'device-provider.js'])
     html = html.replace('/* CORE_MODULES */', core_modules)
+    html = html.replace('/* DASHBOARD_VERSION */', (ROOT / 'VERSION').read_text().strip())
+    html = html.replace('/* PERSONALIZATION */', (ROOT / 'logic/personalization.js').read_text())
+    html = html.replace('/* UPDATE_SCRIPT */', (ROOT / 'logic/update-ui.js').read_text())
     markup, styles, modules = [], [], []
     for manifest, entries, _ in packages:
         manifest = dict(manifest)
@@ -182,6 +185,18 @@ def build(config_path=None):
     return html, packages
 
 
+def bootstrap(html, config_path=None):
+    config = load_config(config_path)
+    avatar = member(ROOT, config['companion']['avatar'])
+    avatar_url = 'data:' + (mimetypes.guess_type(avatar.name)[0] or 'application/octet-stream') + ';base64,' + b64encode(avatar.read_bytes()).decode()
+    inline_config = json.loads(json.dumps(config))
+    inline_config['companion'].pop('avatar')
+    data = {'config': inline_config, 'avatar': avatar_url, 'bundle': {'version': (ROOT / 'VERSION').read_text().strip(), 'html': html}}
+    encoded = b64encode(json.dumps(data, ensure_ascii=False).encode()).decode()
+    script = (ROOT / 'logic/bootstrap.js').read_text().replace('/* BUILTIN_BASE64 */', encoded)
+    return (ROOT / 'web/bootstrap.html').read_text().replace('/* BOOTSTRAP_SCRIPT */', script)
+
+
 def package(panel_id):
     manifest, _, directory = load_package(panel_id)
     target = ROOT / 'dist/packages' / f'{panel_id}-{manifest["version"]}.zip'
@@ -206,6 +221,7 @@ if __name__ == '__main__':
     parser.add_argument('--package', metavar='ID', help='export one portable panel ZIP')
     parser.add_argument('--output', metavar='PATH', default='dist/index.html', help='output path inside the ignored dist directory')
     parser.add_argument('--config', metavar='PATH', help='use an ignored local configuration override')
+    parser.add_argument('--release-dir', metavar='PATH', help='write public generic release assets inside project .work')
     args = parser.parse_args()
     html, packages = build(args.config)
     if not args.check:
@@ -213,7 +229,17 @@ if __name__ == '__main__':
         if not target.is_relative_to(ROOT / 'dist'):
             raise ValueError('Build output must remain inside dist/')
         target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_text(html)
+        target.write_text(bootstrap(html, args.config))
+        if args.release_dir:
+            if args.config: raise ValueError('Public release assets cannot use a private configuration')
+            release_dir = Path(args.release_dir).resolve()
+            if not release_dir.is_relative_to(ROOT.parent / '.work'): raise ValueError('Release output must remain in the project .work directory')
+            release_dir.mkdir(parents=True, exist_ok=True)
+            payload = html.encode()
+            (release_dir / 'thinkview-dashboard-bundle.html').write_bytes(payload)
+            standalone = bootstrap(html).encode()
+            (release_dir / 'thinkview-dashboard.html').write_bytes(standalone)
+            (release_dir / 'SHA256SUMS').write_text(sha256(payload).hexdigest() + '  thinkview-dashboard-bundle.html\n' + sha256(standalone).hexdigest() + '  thinkview-dashboard.html\n')
     print(f'{"Validated" if args.check else "Built"} {len(packages)} panels; {len(html.encode()):,} bytes; JavaScript and IDs valid.')
     if args.package:
         package(args.package)

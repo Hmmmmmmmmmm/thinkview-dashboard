@@ -152,12 +152,11 @@
             </button>
           </div>
         </header>
-        <div class="global-actions"><button type="button" class="text-button" id="refresh-all">Refresh panels</button><button type="button" class="text-button" id="notifications-open" aria-expanded="false">Notifications <span id="notification-count">0</span></button></div>
-        <div class="notification-list" id="notification-list" hidden aria-live="polite"></div>
         <div class="board">
           <!-- PANEL_MARKUP -->
         </div>
       </div>
+      <div class="notification-list" id="notification-list" hidden aria-live="polite"></div>
       <section
         class="overlay"
         id="chat"
@@ -261,6 +260,16 @@
             <svg><use href="#close" /></svg>
           </button>
         </div>
+        <div class="setting-actions">
+          <button type="button" class="text-button" id="refresh-all">Refresh panels</button>
+          <button type="button" class="text-button" id="notifications-open" aria-expanded="false" aria-controls="notification-list">Notifications <span id="notification-count">0</span></button>
+        </div>
+        <h2>Dashboard updates</h2>
+        <p id="update-status" role="status">Checking updates…</p>
+        <div class="setting-actions"><button type="button" class="text-button" id="update-check">Check for updates</button><button type="button" class="text-button" id="update-apply" disabled>Apply update</button></div>
+        <h2>Move dashboard data</h2><p>Export and import your dashboard settings, notes and panel data between browsers. This does not transfer account sessions. Review exported data before sharing it.</p>
+        <div class="setting-actions"><button type="button" class="text-button" id="data-export">Prepare export</button><button type="button" class="text-button" id="data-copy">Copy</button><button type="button" class="text-button" id="data-import">Import pasted data</button></div>
+        <label for="data-transfer">Dashboard data</label><textarea id="data-transfer" rows="4" spellcheck="false"></textarea><p id="data-status" role="status"></p>
         <h2>Weather location</h2>
         <p>
           The first preview uses Hong Kong. Choose your city or use your current
@@ -389,10 +398,13 @@
       var DashboardConfig = JSON.parse(
         document.getElementById("dashboard-config").textContent,
       );
+      var DashboardVersion = "/* DASHBOARD_VERSION */";
+      /* PERSONALIZATION */
       /* CORE_MODULES */
       /* PANEL_RUNTIME */
       /* PANEL_MODULES */
       /* APP_SCRIPT */
+      /* UPDATE_SCRIPT */
     </script>
   </body>
 </html>

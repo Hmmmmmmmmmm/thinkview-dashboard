@@ -77,7 +77,8 @@
       var auth = ++authGeneration;
       generation++; if (request) request.abort(); clearAccount();
       if (!clientId) { setStatus("error", "Enter a Google OAuth web client ID first."); return; }
-      if (location.protocol !== "https:" && !(location.protocol === "http:" && (location.hostname === "localhost" || location.hostname === "127.0.0.1"))) { setStatus("error", "Google sign-in requires a registered HTTPS or localhost origin; file URLs are unsupported."); return; }
+      var origin = new URL(document.baseURI);
+      if (origin.protocol !== "https:" && !(origin.protocol === "http:" && (origin.hostname === "localhost" || origin.hostname === "127.0.0.1"))) { setStatus("error", "Google sign-in requires a registered HTTPS or localhost origin; file URLs are unsupported."); return; }
       if (!(window.google && google.accounts && google.accounts.oauth2)) {
         setStatus("loading", "Loading Google sign-in…");
         loadIdentity().then(function () { if (auth === authGeneration) setStatus("disconnected", "Google sign-in is ready. Select Connect to continue."); }).catch(function (error) { if (auth === authGeneration) setStatus("error", error.message); });
