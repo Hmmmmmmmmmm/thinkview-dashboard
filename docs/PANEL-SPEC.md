@@ -123,3 +123,37 @@ Before accepting a package:
 3. Enable, disable, remount, reload, drag, pin and resize preserve intended state without duplicate listeners or timers.
 4. Bright, dark and minimal use the shared roles; minimal has neutral surfaces and outlined controls.
 5. The exported ZIP contains exactly its declared files; the built HTML works without the source folders.
+
+## Temporary expansion contract
+
+An optional `expansion` object declares ordered `sizes` (one to six unique integer column/row pairs, each within 2 columns × 3 rows), `pinch` (boolean) and named `events`. The default `grid` must occur in `sizes`. Ordering is author-defined, including shape changes; it is not inferred by area. Existing packages without this object keep their prior behavior.
+
+```json
+{
+  "expansion": {
+    "sizes": [
+      { "columns": 1, "rows": 1 },
+      { "columns": 2, "rows": 1 },
+      { "columns": 2, "rows": 2 },
+      { "columns": 2, "rows": 3 }
+    ],
+    "pinch": true,
+    "events": {
+      "timerRun": { "action": "expand", "size": { "columns": 2, "rows": 2 } },
+      "timerPause": { "action": "retain" },
+      "timerStop": { "action": "restore" },
+      "timerComplete": { "action": "restore" }
+    }
+  }
+}
+```
+
+Packages emit only declared names using `ctx.layout.emit("timerRun")`. The bound source is their own mounted package; stale handles cannot issue events after cleanup or replacement. This is routing correctness, not a security sandbox for trusted JavaScript. Build validation, JSON schema and runtime import validation all enforce bounds and event shape; build/runtime additionally check default/event membership and ordered uniqueness.
+
+Temporary requests never write saved layout or move/remove other panels. The host maintains separate event/manual requests per panel; the latest changed request wins. Duplicate identical event requests are idempotent. A restore event removes only the event request and reveals the prior manual request or saved/default size. Menu Restore removes both requests. Manual saved-size selection clears temporary requests before saving. Disabled panels release temporary requests; event cleanup invalidates its emitter. Pinned panels refuse new size changes with an explicit toast; Stop/cleanup can still restore. Multiple panels may expand independently.
+
+The existing grid unit dimensions and orientation behavior remain: portrait two columns/three visible units, landscape three columns/two visible units. Each requested span remains bounded 2×3 in either orientation. CSS grid reflows later panels in stored order into additional scrollable rows; it is not a six-slot-only document. A 2×3 landscape panel extends beyond the two visible row units and remains reachable through scrolling. Restoration reuses unchanged saved spans/order, rather than overwriting a snapshot over subsequent intentional user edits.
+
+Two touch pointers on noninteractive panel background step through the ordered sizes. A distance ratio >=1.2 expands one step, <=0.8 reduces one step, and intermediate movement does nothing. Commit occurs on release, not continuously. Pointer cancellation, blur, resize and page exit discard the gesture. Inputs/buttons/selects/links are excluded. Browser gesture arbitration may cancel touches; the existing keyboard-accessible panel menu therefore also exposes Expand temporarily, Reduce temporarily and Restore saved size. Actual GeckoView multi-touch behavior still requires device/browser validation.
+
+Focus Start/Resume emits timerRun, Pause emits timerPause and retains the current request, and the visible Stop control resets the timer to its selected preset and emits timerStop. Completion emits timerComplete. A running timer remounted from its saved deadline requests expansion again; temporary layout requests themselves are session-only and are not added to durable storage. Stopping after an event expansion restores the pre-event manual size if one existed, otherwise the saved/default size.

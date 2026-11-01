@@ -1,12 +1,156 @@
-.panel.calendar-next-panel { container: events / size; display:flex; flex-direction:column; gap:.45rem; padding:1rem; overflow:auto; touch-action:pan-y; color:var(--md-sys-color-on-surface); background:var(--md-sys-color-surface); }
-.calendar-next-header { display:flex; align-items:center; justify-content:space-between; gap:.5rem; }
-.calendar-next-header strong { font-size:clamp(.9rem, 7cqw, 1.25rem); }
-.calendar-next-panel button, .calendar-next-panel input, .calendar-next-panel summary { font:inherit; }
-.calendar-next-panel button { color:var(--md-sys-color-on-secondary-container); background:var(--md-sys-color-secondary-container); border:0; border-radius:1rem; padding:.4rem .7rem; }
-.calendar-next-status, .calendar-next-settings { font-size:.8rem; line-height:1.35; margin:0; }
-.calendar-next-list { display:grid; gap:.4rem; min-height:0; overflow:auto; }
-.calendar-next-item { border-left:3px solid var(--md-sys-color-primary); padding:.15rem .5rem; overflow-wrap:anywhere; }
-.calendar-next-item time { display:block; font-size:.75rem; opacity:.8; }
-.calendar-next-settings { margin-top:auto; } .calendar-next-settings label { display:block; margin:.4rem 0; } .calendar-next-settings input { width:100%; }
-.calendar-next-settings [data-calendars] label { display:flex; gap:.4rem; align-items:center; } .calendar-next-settings input[type=checkbox] { width:auto; }
-@container events (max-height:180px) { .calendar-next-settings { margin-top:0; } .calendar-next-item { font-size:.85rem; } }
+.panel.calendar-next-panel {
+  container: events / size;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: var(--panel-padding);
+  overflow: auto;
+  touch-action: pan-y;
+}
+.calendar-next-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+.calendar-next-header strong {
+  font-size: 1.375rem;
+  font-weight: 650;
+}
+.calendar-next-panel button {
+  color: var(--md-sys-color-on-secondary-container);
+  background: var(--md-sys-color-secondary-container);
+  border: 0;
+  border-radius: 2rem;
+  padding: 0.75rem 1rem;
+}
+.calendar-next-status {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.calendar-next-list {
+  display: grid;
+  gap: 0.75rem;
+  flex: 1 0 auto;
+  align-content: start;
+}
+.calendar-next-item {
+  border-radius: 1rem;
+  background: var(--md-sys-color-surface-container-low);
+  color: var(--md-sys-color-on-surface);
+  padding: 1rem;
+  overflow-wrap: anywhere;
+  font-size: 1rem;
+  line-height: 1.45;
+}
+.calendar-next-item time {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--md-sys-color-on-surface-variant);
+}
+.calendar-next-settings {
+  border-top: 1px solid var(--md-sys-color-outline-variant);
+  padding-top: 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+.calendar-next-settings summary {
+  padding: 0.75rem 0.25rem;
+  cursor: pointer;
+}
+.calendar-next-settings label {
+  display: block;
+  margin-block: 0.75rem;
+}
+.calendar-next-settings input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--md-sys-color-outline);
+  border-radius: 0.75rem;
+  background: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
+}
+.calendar-next-settings [data-calendars] label {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 3rem;
+}
+.calendar-next-settings input[type="checkbox"] {
+  width: 1.5rem;
+  height: 1.5rem;
+  min-height: 0;
+  flex: none;
+  accent-color: var(--md-sys-color-primary);
+}
+@container events (min-width:440px) {
+  .calendar-next-item {
+    display: grid;
+    grid-template-columns: minmax(7rem, 1fr) minmax(0, 2fr);
+    gap: 1rem;
+  }
+}
+.calendar-next-item {
+  font-size: 1.5rem;
+  font-weight: 600;
+  padding: 1.5rem;
+}
+.calendar-next-item time {
+  font-weight: 500;
+}
+
+.calendar-next-header strong {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.calendar-next-settings > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+@container events (max-width:240px) {
+  .calendar-next-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .calendar-next-header button {
+    align-self: flex-start;
+  }
+  .calendar-next-item {
+    padding: 0.75rem;
+  }
+}
+@container events (min-height:480px) {
+  .calendar-next-list {
+    gap: 1rem;
+  }
+  .calendar-next-item {
+    padding: 1.25rem;
+  }
+  .calendar-next-header strong {
+    font-size: 1.75rem;
+  }
+}
+@container events (max-height:240px) and (min-width:480px) {
+  .calendar-next-header strong {
+    font-size: 1.25rem;
+  }
+  .calendar-next-item {
+    padding: 0.75rem 1rem;
+  }
+}
+@container events (min-width:480px) and (min-height:360px) {
+  .calendar-next-item {
+    display: flex;
+    flex-direction: column;
+    font-size: clamp(1.5rem, 5cqw, 2.5rem);
+  }
+  .calendar-next-item time {
+    font-size: 1.125rem;
+  }
+}

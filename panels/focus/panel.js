@@ -33,12 +33,19 @@ function render() {
     state.endAt = null;
     state.remaining = 0;
     save();
-    ctx.host.notifications.publish({ id: "focus-complete", source: ctx.manifest.id, title: "Focus complete", message: "Your focus timer has finished.", priority: "medium" });
+    ctx.layout.emit("timerComplete");
+    ctx.host.notifications.publish({
+      id: "focus-complete",
+      source: ctx.manifest.id,
+      title: "Focus complete",
+      message: "Your focus timer has finished.",
+      priority: "medium",
+    });
   }
   var seconds = Math.ceil(left / 1000);
   time.textContent =
     String(Math.floor(seconds / 60)).padStart(2, "0") +
-    ":" +
+    ":\u200B" +
     String(seconds % 60).padStart(2, "0");
   toggle.textContent = state.endAt === null ? "Start" : "Pause";
   root.querySelectorAll("[data-duration]").forEach(function (button) {
@@ -52,14 +59,17 @@ function switchTimer() {
   if (state.endAt !== null) {
     state.remaining = remaining();
     state.endAt = null;
+    ctx.layout.emit("timerPause");
   } else {
     if (state.remaining <= 0) state.remaining = state.duration * 60000;
     state.endAt = Date.now() + state.remaining;
+    ctx.layout.emit("timerRun");
   }
   save();
   render();
 }
 function reset() {
+  ctx.layout.emit("timerStop");
   state.remaining = state.duration * 60000;
   state.endAt = null;
   save();
@@ -75,6 +85,7 @@ root.querySelectorAll("[data-duration]").forEach(function (button) {
   button.addEventListener("click", preset);
 });
 render();
+if (state.endAt !== null) ctx.layout.emit("timerRun");
 var timer = setInterval(render, 1000);
 return function () {
   clearInterval(timer);

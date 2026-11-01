@@ -17,23 +17,66 @@
     "defaultEnabled"
   ],
   "properties": {
-    "schemaVersion": { "const": 1 },
-    "id": { "type": "string", "pattern": "^[a-z][a-z0-9-]{0,39}$" },
-    "title": { "type": "string", "minLength": 1 },
-    "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
-    "rootClass": { "type": "string", "pattern": "^[a-z][a-z0-9-]{0,39}$" },
-    "colorRole": { "enum": ["primary", "secondary", "tertiary", "surface"] },
-    "description": { "type": "string" },
-    "type": { "type": "string", "minLength": 1 },
-    "grid": { "type": "object", "additionalProperties": false, "required": ["columns", "rows"], "properties": { "columns": { "type": "integer", "minimum": 1, "maximum": 2 }, "rows": { "type": "integer", "minimum": 1, "maximum": 3 } } },
+    "schemaVersion": {
+      "const": 1
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]{0,39}$"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "rootClass": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]{0,39}$"
+    },
+    "colorRole": {
+      "enum": ["primary", "secondary", "tertiary", "surface"]
+    },
+    "description": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "minLength": 1
+    },
+    "grid": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["columns", "rows"],
+      "properties": {
+        "columns": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2
+        },
+        "rows": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 3
+        }
+      }
+    },
     "entries": {
       "type": "object",
       "additionalProperties": false,
       "required": ["html", "css", "js"],
       "properties": {
-        "html": { "type": "string" },
-        "css": { "type": "string" },
-        "js": { "type": "string" }
+        "html": {
+          "type": "string"
+        },
+        "css": {
+          "type": "string"
+        },
+        "js": {
+          "type": "string"
+        }
       }
     },
     "capabilities": {
@@ -62,18 +105,112 @@
     "assets": {
       "type": "array",
       "uniqueItems": true,
-      "items": { "type": "string" }
+      "items": {
+        "type": "string"
+      }
     },
-    "defaultEnabled": { "type": "boolean" }
+    "defaultEnabled": {
+      "type": "boolean"
+    },
+    "expansion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sizes", "pinch", "events"],
+      "properties": {
+        "sizes": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 6,
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["columns", "rows"],
+            "properties": {
+              "columns": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 2
+              },
+              "rows": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 3
+              }
+            }
+          }
+        },
+        "pinch": {
+          "type": "boolean"
+        },
+        "events": {
+          "type": "object",
+          "propertyNames": {
+            "pattern": "^[a-zA-Z][a-zA-Z0-9]{0,39}$"
+          },
+          "additionalProperties": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["action", "size"],
+                "properties": {
+                  "action": {
+                    "const": "expand"
+                  },
+                  "size": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": ["columns", "rows"],
+                    "properties": {
+                      "columns": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 2
+                      },
+                      "rows": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 3
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["action"],
+                "properties": {
+                  "action": {
+                    "enum": ["retain", "restore"]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
   },
   "allOf": [
     {
       "if": {
-        "properties": { "capabilities": { "contains": { "const": "network" } } }
+        "properties": {
+          "capabilities": {
+            "contains": {
+              "const": "network"
+            }
+          }
+        }
       },
       "then": {
         "required": ["networkOrigins"],
-        "properties": { "networkOrigins": { "minItems": 1 } }
+        "properties": {
+          "networkOrigins": {
+            "minItems": 1
+          }
+        }
       }
     }
   ]

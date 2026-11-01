@@ -10,15 +10,51 @@
     "css": "panel.css",
     "js": "panel.js"
   },
-  "capabilities": [
-    "local-time",
-    "storage"
-  ],
+  "capabilities": ["local-time", "storage"],
   "assets": [],
   "defaultEnabled": true,
   "type": "Productivity",
   "grid": {
     "columns": 1,
     "rows": 1
+  },
+  "expansion": {
+    "sizes": [
+      {
+        "columns": 1,
+        "rows": 1
+      },
+      {
+        "columns": 2,
+        "rows": 1
+      },
+      {
+        "columns": 2,
+        "rows": 2
+      },
+      {
+        "columns": 2,
+        "rows": 3
+      }
+    ],
+    "pinch": true,
+    "events": {
+      "timerRun": {
+        "action": "expand",
+        "size": {
+          "columns": 2,
+          "rows": 2
+        }
+      },
+      "timerPause": {
+        "action": "retain"
+      },
+      "timerStop": {
+        "action": "restore"
+      },
+      "timerComplete": {
+        "action": "restore"
+      }
+    }
   }
 }

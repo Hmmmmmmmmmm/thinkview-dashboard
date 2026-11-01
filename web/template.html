@@ -156,7 +156,12 @@
           <!-- PANEL_MARKUP -->
         </div>
       </div>
-      <div class="notification-list" id="notification-list" hidden aria-live="polite"></div>
+      <div
+        class="notification-list"
+        id="notification-list"
+        hidden
+        aria-live="polite"
+      ></div>
       <section
         class="overlay"
         id="chat"
@@ -193,7 +198,12 @@
             >Open ChatGPT <svg><use href="#external" /></svg
           ></a>
         </header>
-        <div class="chat-history" id="chat-history"><p>Your draft stays on this device. Copy it and open ChatGPT to send it.</p></div>
+        <div class="chat-history" id="chat-history">
+          <p>
+            Your draft stays on this device. Copy it and open ChatGPT to send
+            it.
+          </p>
+        </div>
         <div class="composer-wrap">
           <div id="composer-status" class="composer-status" role="status">
             Drafts are not sent from this dashboard.
@@ -261,15 +271,45 @@
           </button>
         </div>
         <div class="setting-actions">
-          <button type="button" class="text-button" id="refresh-all">Refresh panels</button>
-          <button type="button" class="text-button" id="notifications-open" aria-expanded="false" aria-controls="notification-list">Notifications <span id="notification-count">0</span></button>
+          <button type="button" class="text-button" id="refresh-all">
+            Refresh panels
+          </button>
+          <button
+            type="button"
+            class="text-button"
+            id="notifications-open"
+            aria-expanded="false"
+            aria-controls="notification-list"
+          >
+            Notifications <span id="notification-count">0</span>
+          </button>
         </div>
         <h2>Dashboard updates</h2>
         <p id="update-status" role="status">Checking updates…</p>
-        <div class="setting-actions"><button type="button" class="text-button" id="update-check">Check for updates</button><button type="button" class="text-button" id="update-apply" disabled>Apply update</button></div>
-        <h2>Move dashboard data</h2><p>Export and import your dashboard settings, notes and panel data between browsers. This does not transfer account sessions. Review exported data before sharing it.</p>
-        <div class="setting-actions"><button type="button" class="text-button" id="data-export">Prepare export</button><button type="button" class="text-button" id="data-copy">Copy</button><button type="button" class="text-button" id="data-import">Import pasted data</button></div>
-        <label for="data-transfer">Dashboard data</label><textarea id="data-transfer" rows="4" spellcheck="false"></textarea><p id="data-status" role="status"></p>
+        <div class="setting-actions">
+          <button type="button" class="text-button" id="update-check">
+            Check for updates</button
+          ><button type="button" class="text-button" id="update-apply" disabled>
+            Apply update
+          </button>
+        </div>
+        <h2>Move dashboard data</h2>
+        <p>
+          Export and import your dashboard settings, notes and panel data
+          between browsers. This does not transfer account sessions. Review
+          exported data before sharing it.
+        </p>
+        <div class="setting-actions">
+          <button type="button" class="text-button" id="data-export">
+            Prepare export</button
+          ><button type="button" class="text-button" id="data-copy">Copy</button
+          ><button type="button" class="text-button" id="data-import">
+            Import pasted data
+          </button>
+        </div>
+        <label for="data-transfer">Dashboard data</label
+        ><textarea id="data-transfer" rows="4" spellcheck="false"></textarea>
+        <p id="data-status" role="status"></p>
         <h2>Weather location</h2>
         <p>
           The first preview uses Hong Kong. Choose your city or use your current
@@ -351,22 +391,51 @@
           separate.
         </p>
         <h2>Panels</h2>
-        <label for="panel-search">Search panels</label><input id="panel-search" type="search" placeholder="Search by name or type" />
+        <label for="panel-search">Search panels</label
+        ><input
+          id="panel-search"
+          type="search"
+          placeholder="Search by name or type"
+        />
         <div id="panel-library" class="panel-library"></div>
-        <label for="panel-import">Load a trusted panel package</label><input id="panel-import" type="file" accept="application/json,.json" /><p>Imported panels run with full page access. Install only code you trust. Capabilities are declarations, not isolation.</p><div id="panel-import-status" role="status"></div>
-        <h2>Notification behavior</h2><p>Choose how each priority appears. Notifications are kept for this session until dismissed.</p><div id="notification-settings"></div>
+        <label for="panel-import">Load a trusted panel package</label
+        ><input id="panel-import" type="file" accept="application/json,.json" />
+        <p>
+          Imported panels run with full page access. Install only code you
+          trust. Capabilities are declarations, not isolation.
+        </p>
+        <div id="panel-import-status" role="status"></div>
+        <h2>Notification behavior</h2>
+        <p>
+          Choose how each priority appears. Notifications are kept for this
+          session until dismissed.
+        </p>
+        <div id="notification-settings"></div>
         <h2>Arrange your panels</h2>
         <p>
           Long-press a panel for half a second to reveal its corner menu and
-          enable dragging. Big spans two grid columns; Medium spans one. Auto uses the panel’s default grid size. Portrait has two columns and three visible rows; landscape has three columns and two visible rows. Pin locks the panel’s order. A
-          keyboard user can focus a panel and press Enter for its menu.
+          enable dragging. Big spans two grid columns; Medium spans one. Auto
+          uses the panel’s default grid size. Portrait has two columns and three
+          visible rows; landscape has three columns and two visible rows. Pin
+          locks the panel’s order. A keyboard user can focus a panel and press
+          Enter for its menu. Spread or pinch two fingers on panel background to
+          step through declared sizes. The menu also offers temporary Expand,
+          Reduce and Restore. Temporary sizes do not replace your saved layout;
+          displaced panels remain accessible by scrolling.
         </p>
         <button class="text-button" type="button" id="reset-panels">
           Reset panel arrangement
         </button>
         <h2>Your companion</h2>
-        <p>Create or dictate a local draft, then copy it into ChatGPT to send. Call controls open ChatGPT, where you can start a call. This dashboard cannot read your existing conversations or unread messages.</p>
-        <small id="storage-note">Display and location choices are stored on this browser when storage is available.</small>
+        <p>
+          Create or dictate a local draft, then copy it into ChatGPT to send.
+          Call controls open ChatGPT, where you can start a call. This dashboard
+          cannot read your existing conversations or unread messages.
+        </p>
+        <small id="storage-note"
+          >Display and location choices are stored on this browser when storage
+          is available.</small
+        >
       </section>
       <div
         id="panel-menu"
@@ -386,8 +455,20 @@
           Auto fit</button
         ><button type="button" id="panel-menu-pin">Pin panel</button
         ><button type="button" id="panel-exit-fullscreen" hidden>
-          Leave full screen</button
-        ><button type="button" class="menu-done" id="panel-menu-done">
+          Leave full screen
+        </button>
+        <div id="panel-expansion-controls" hidden>
+          <button type="button" id="panel-expansion-expand">
+            Expand temporarily
+          </button>
+          <button type="button" id="panel-expansion-reduce">
+            Reduce temporarily
+          </button>
+          <button type="button" id="panel-expansion-restore">
+            Restore saved size
+          </button>
+        </div>
+        <button type="button" class="menu-done" id="panel-menu-done">
           Done
         </button>
       </div>

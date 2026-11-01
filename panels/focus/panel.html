@@ -1,34 +1,39 @@
-<div class="focus-heading">Focus</div>
-<div class="focus-time" role="timer" aria-live="off">25:00</div>
-<div class="focus-controls">
-  <button type="button" data-action="toggle" class="focus-toggle">Start</button
-  ><button
-    type="button"
-    data-action="reset"
-    class="focus-reset"
-    aria-label="Reset focus timer"
-  >
-    <svg>
-      <path
-        d="M20 7v5h-5M4 17v-5h5M6 7a7 7 0 0 1 12-1l2 3M4 15l2 3a7 7 0 0 0 12-1"
-      />
-    </svg>
-  </button>
-</div>
-<div class="focus-presets">
-  <button
-    type="button"
-    data-duration="25"
-    aria-label="25 minutes"
-    aria-pressed="true"
-  >
-    25 min</button
-  ><button
-    type="button"
-    data-duration="50"
-    aria-label="50 minutes"
-    aria-pressed="false"
-  >
-    50 min
-  </button>
+<div class="focus-layout">
+  <div class="focus-heading">Focus</div>
+  <div class="focus-body">
+    <div class="focus-timer">
+      <div class="focus-time" role="timer" aria-live="off">25:00</div>
+    </div>
+    <div class="focus-actions">
+      <div class="focus-controls">
+        <button type="button" data-action="toggle" class="focus-toggle">
+          Start</button
+        ><button
+          type="button"
+          data-action="reset"
+          class="focus-reset"
+          aria-label="Stop focus timer and reset to preset"
+        >
+          Stop
+        </button>
+      </div>
+      <div class="focus-presets">
+        <button
+          type="button"
+          data-duration="25"
+          aria-label="25 minutes"
+          aria-pressed="true"
+        >
+          25 min</button
+        ><button
+          type="button"
+          data-duration="50"
+          aria-label="50 minutes"
+          aria-pressed="false"
+        >
+          50 min
+        </button>
+      </div>
+    </div>
+  </div>
 </div>

@@ -12,12 +12,23 @@ spec.loader.exec_module(builder)
 class BuildTests(unittest.TestCase):
     def test_default_build_is_portable_and_generic(self):
         html, packages = builder.build()
-        self.assertEqual(len(packages), 6)
+        expected = json.loads((ROOT / "panels/catalog.json").read_text())["panels"]
+        self.assertEqual(len(packages), 13)
+        self.assertEqual([manifest["id"] for manifest, _, _ in packages], expected)
         self.assertIn('id="dashboard-config"', html)
         self.assertIn('data:image/svg+xml;base64,', html)
         self.assertNotIn('chatgpt.com/dots/', html)
         self.assertNotIn('{{COMPANION_', html)
         self.assertNotIn('<footer', html)
+
+    def test_expansion_declaration_bounds_and_event_membership(self):
+        manifest = json.loads((ROOT / 'panels/focus/panel.json').read_text())
+        builder.validate_expansion(manifest)
+        manifest['expansion']['sizes'].append({'columns': 3, 'rows': 1})
+        with self.assertRaises(ValueError): builder.validate_expansion(manifest)
+        manifest['expansion']['sizes'].pop()
+        manifest['expansion']['events']['timerRun']['size'] = {'columns': 1, 'rows': 3}
+        with self.assertRaises(ValueError): builder.validate_expansion(manifest)
 
     def test_paths_cannot_escape_package(self):
         with self.assertRaises(ValueError): builder.member(ROOT / 'panels', '../tools/build.py')

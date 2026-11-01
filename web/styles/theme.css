@@ -249,3 +249,18 @@ html[data-theme="minimal"] .weather-art {
 }
 /* MATERIAL-YOU-TOKENS:START */
 /* MATERIAL-YOU-TOKENS:END */
+
+/* Neutral minimal surfaces and outlined functional controls in every package. */
+html[data-theme="minimal"] .panel :is(button, select, summary) {
+  background: transparent;
+  color: var(--md-sys-color-on-surface);
+  border: 1px solid var(--md-sys-color-primary);
+}
+html[data-theme="minimal"] .panel :is(input, textarea) {
+  background: var(--md-sys-color-surface-container-low);
+  color: var(--md-sys-color-on-surface);
+}
+html[data-theme="minimal"] .panel button[aria-pressed="true"] {
+  border-width: 3px;
+  font-weight: 700;
+}

@@ -1,1 +1,67 @@
-<div class="device-audio-title">Audio</div><div class="device-audio-body"><div class="device-audio-row"><label for="device-media">Media <span data-current="media">—</span></label><input id="device-media" type="range" min="0" value="0" disabled><button type="button" data-command="audio.media" disabled>Apply</button></div><div class="device-audio-row"><label for="device-notification">Notifications <span data-current="notification">—</span></label><input id="device-notification" type="range" min="0" value="0" disabled><button type="button" data-command="audio.notification" disabled>Apply</button></div></div><div class="device-audio-message" role="status">Connecting…</div>
+<div class="device-audio-title">Audio</div>
+<div class="device-audio-body">
+  <div class="device-audio-row">
+    <label for="device-media"
+      ><span>Media</span><span data-current="media">—</span></label
+    >
+    <div class="device-audio-slider">
+      <input
+        id="device-media"
+        type="range"
+        min="0"
+        value="0"
+        step="1"
+        aria-describedby="device-media-intent"
+        disabled
+      /><svg
+        class="device-audio-wave"
+        viewBox="0 0 400 20"
+        preserveAspectRatio="none"
+        aria-hidden="true"
+      >
+        <path
+          d="M0 10 Q5 3 10 10 Q15 17 20 10 Q25 3 30 10 Q35 17 40 10 Q45 3 50 10 Q55 17 60 10 Q65 3 70 10 Q75 17 80 10 Q85 3 90 10 Q95 17 100 10 Q105 3 110 10 Q115 17 120 10 Q125 3 130 10 Q135 17 140 10 Q145 3 150 10 Q155 17 160 10 Q165 3 170 10 Q175 17 180 10 Q185 3 190 10 Q195 17 200 10 Q205 3 210 10 Q215 17 220 10 Q225 3 230 10 Q235 17 240 10 Q245 3 250 10 Q255 17 260 10 Q265 3 270 10 Q275 17 280 10 Q285 3 290 10 Q295 17 300 10 Q305 3 310 10 Q315 17 320 10 Q325 3 330 10 Q335 17 340 10 Q345 3 350 10 Q355 17 360 10 Q365 3 370 10 Q375 17 380 10 Q385 3 390 10 Q395 17 400 10"
+        />
+      </svg>
+    </div>
+    <span
+      class="device-audio-intent"
+      id="device-media-intent"
+      data-intent="media"
+      aria-live="polite"
+    ></span>
+  </div>
+  <div class="device-audio-row">
+    <label for="device-notification"
+      ><span>Notifications</span
+      ><span data-current="notification">—</span></label
+    >
+    <div class="device-audio-slider">
+      <input
+        id="device-notification"
+        type="range"
+        min="0"
+        value="0"
+        step="1"
+        aria-describedby="device-notification-intent"
+        disabled
+      /><svg
+        class="device-audio-wave"
+        viewBox="0 0 400 20"
+        preserveAspectRatio="none"
+        aria-hidden="true"
+      >
+        <path
+          d="M0 10 Q5 3 10 10 Q15 17 20 10 Q25 3 30 10 Q35 17 40 10 Q45 3 50 10 Q55 17 60 10 Q65 3 70 10 Q75 17 80 10 Q85 3 90 10 Q95 17 100 10 Q105 3 110 10 Q115 17 120 10 Q125 3 130 10 Q135 17 140 10 Q145 3 150 10 Q155 17 160 10 Q165 3 170 10 Q175 17 180 10 Q185 3 190 10 Q195 17 200 10 Q205 3 210 10 Q215 17 220 10 Q225 3 230 10 Q235 17 240 10 Q245 3 250 10 Q255 17 260 10 Q265 3 270 10 Q275 17 280 10 Q285 3 290 10 Q295 17 300 10 Q305 3 310 10 Q315 17 320 10 Q325 3 330 10 Q335 17 340 10 Q345 3 350 10 Q355 17 360 10 Q365 3 370 10 Q375 17 380 10 Q385 3 390 10 Q395 17 400 10"
+        />
+      </svg>
+    </div>
+    <span
+      class="device-audio-intent"
+      id="device-notification-intent"
+      data-intent="notification"
+      aria-live="polite"
+    ></span>
+  </div>
+</div>
+<div class="device-audio-message" role="status">Connecting…</div>

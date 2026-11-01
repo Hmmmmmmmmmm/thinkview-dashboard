@@ -10,14 +10,34 @@
     "css": "panel.css",
     "js": "panel.js"
   },
-  "capabilities": [
-    "local-time"
-  ],
+  "capabilities": ["local-time"],
   "assets": [],
   "defaultEnabled": true,
   "type": "Time",
   "grid": {
     "columns": 1,
     "rows": 1
+  },
+  "expansion": {
+    "sizes": [
+      {
+        "columns": 1,
+        "rows": 1
+      },
+      {
+        "columns": 2,
+        "rows": 1
+      },
+      {
+        "columns": 2,
+        "rows": 2
+      },
+      {
+        "columns": 2,
+        "rows": 3
+      }
+    ],
+    "pinch": true,
+    "events": {}
   }
 }

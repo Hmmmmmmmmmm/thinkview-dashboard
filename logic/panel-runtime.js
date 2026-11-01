@@ -27,16 +27,60 @@
         return;
       }
       if (running.has(id)) return;
+      var layout =
+        host.layout && host.layout.bind ? host.layout.bind(id) : null;
+      var notificationIds = new Set(),
+        alive = true,
+        notificationSequence = 0;
       var cleanups = [],
         ctx = {
           root: root,
           host: host,
           manifest: def.manifest,
+          layout: layout
+            ? { emit: layout.emit }
+            : {
+                emit: function () {
+                  return false;
+                },
+              },
+          notifications: {
+            publish: function (item) {
+              if (!alive || !host.notifications) return false;
+              var notificationId = host.notifications.publish(
+                Object.assign({}, item, {
+                  id:
+                    "panel:" +
+                    id +
+                    ":" +
+                    String((item && item.id) || ++notificationSequence),
+                  panelId: id,
+                  source: id,
+                }),
+              );
+              notificationIds.add(notificationId);
+              return notificationId;
+            },
+            dismiss: function (notificationId) {
+              if (alive && notificationIds.has(notificationId)) {
+                host.notifications.dismiss(notificationId);
+                notificationIds.delete(notificationId);
+              }
+            },
+          },
           storage: storageFor(id),
           onCleanup: function (fn) {
             cleanups.push(fn);
           },
         };
+      cleanups.push(function () {
+        alive = false;
+        notificationIds.forEach(function (key) {
+          host.notifications.dismiss(key);
+        });
+        notificationIds.clear();
+      });
+      if (layout) cleanups.push(layout.dispose);
       try {
         var result = def.mount(ctx);
         if (typeof result === "function") cleanups.push(result);
@@ -50,6 +94,11 @@
           });
         });
       } catch (e) {
+        cleanups.reverse().forEach(function (fn) {
+          try {
+            fn();
+          } catch (_) {}
+        });
         failures.push(id);
         console.error("Panel could not mount:", id, e.message);
       }
@@ -66,9 +115,14 @@
       host = services;
       startupErrors = sync();
     },
-    startupErrors: function () { return startupErrors.slice(); },
+    startupErrors: function () {
+      return startupErrors.slice();
+    },
     sync: sync,
-    refresh: function () { Array.from(running.keys()).forEach(stop); sync(); },
+    refresh: function () {
+      Array.from(running.keys()).forEach(stop);
+      sync();
+    },
     stop: stop,
     manifest: function () {
       return Array.from(definitions.values()).map(function (def) {

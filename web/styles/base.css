@@ -1102,16 +1102,301 @@ html[data-fullscreen="true"] .footer {
 }
 
 /* Full-screen scrolling remains available without visible scrollbar chrome. */
-html[data-fullscreen="true"] * { scrollbar-width: none; }
-html[data-fullscreen="true"] *::-webkit-scrollbar { display: none; }
+html[data-fullscreen="true"] * {
+  scrollbar-width: none;
+}
+html[data-fullscreen="true"] *::-webkit-scrollbar {
+  display: none;
+}
 
-.notification-list { position:absolute; z-index:30; right:16px; top:90px; max-width:420px; max-height:60vh; overflow:auto; padding:12px; background:var(--bg); color:var(--ink); border:1px solid var(--line); border-radius:16px; }
-.notification-item { display:flex; align-items:center; gap:12px; padding:8px; border-bottom:1px solid var(--line); }
-.notification-item button { min-height:44px; }
-.panel-group { width:100%; }
-.panel-group h3 { margin:12px 0 4px; }
-.notification-setting { display:flex; align-items:center; justify-content:space-between; gap:12px; min-height:48px; }
-.notification-setting select { min-height:44px; }
+.notification-list {
+  position: absolute;
+  z-index: 30;
+  right: 16px;
+  top: 90px;
+  max-width: 420px;
+  max-height: 60vh;
+  overflow: auto;
+  padding: 12px;
+  background: var(--bg);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+}
+.notification-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px;
+  border-bottom: 1px solid var(--line);
+}
+.notification-item button {
+  min-height: 44px;
+}
+.panel-group {
+  width: 100%;
+}
+.panel-group h3 {
+  margin: 12px 0 4px;
+}
+.notification-setting {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 48px;
+}
+.notification-setting select {
+  min-height: 44px;
+}
 
 /* Fixed spacing keeps a multi-unit panel the same size after rotation. */
-.board { gap: 12px; }
+.board {
+  gap: 12px;
+}
+
+/* Expressive first pass: project spacing choices, not device-certified insets.
+   A shell that supplies remaining obstructions may override --safe-* in CSS px.
+   Do not add native and env insets for the same obstruction. */
+:root {
+  --dashboard-margin: 1rem;
+  --panel-padding: 1.25rem;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+}
+@media (min-width: 600px) {
+  :root {
+    --dashboard-margin: 1.5rem;
+  }
+}
+.shell,
+html:fullscreen .shell {
+  padding: calc(var(--dashboard-margin) + var(--safe-top))
+    calc(var(--dashboard-margin) + var(--safe-right))
+    calc(var(--dashboard-margin) + var(--safe-bottom))
+    calc(var(--dashboard-margin) + var(--safe-left));
+}
+html:fullscreen .display {
+  padding: 0;
+}
+.board {
+  gap: 16px;
+  padding: 8px 4px;
+  min-height: 0;
+  min-width: 0;
+}
+.panel {
+  border-radius: 28px;
+  font-size: 1rem;
+  line-height: 1.4;
+  scroll-padding: 8px;
+}
+.panel > * {
+  flex-shrink: 0;
+  min-width: 0;
+}
+.panel :is(button, input:not([type="checkbox"]), select, summary, a) {
+  min-height: 48px;
+}
+.panel button {
+  min-width: 48px;
+  font: inherit;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.panel :is(button, input, select, textarea, summary, a):focus-visible {
+  outline: 2px solid var(--md-sys-color-primary);
+  outline-offset: 2px;
+}
+.panel :is(input, textarea, select) {
+  max-width: 100%;
+}
+.panel .panel-tools {
+  position: static;
+  order: -1;
+  align-self: stretch;
+  justify-content: flex-end;
+  padding: 4px;
+  flex: 0 0 auto;
+}
+.panel .panel-tools button {
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  opacity: 1;
+}
+.panel .panel-tools svg {
+  width: 24px;
+  height: 24px;
+}
+.icon-button {
+  min-width: 48px;
+  min-height: 48px;
+}
+.toolbar-right {
+  flex-wrap: wrap;
+}
+@media (max-width: 599px) {
+  :root {
+    --panel-padding: 1rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  body,
+  .panel,
+  .panel * {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+/* Expansion controls share the existing keyboard-accessible panel menu. */
+.panel-context-menu {
+  max-height: calc(100vh - 24px);
+  overflow-y: auto;
+}
+.panel-context-menu button {
+  min-height: 48px;
+}
+#panel-expansion-controls {
+  border-top: 1px solid var(--line);
+  margin-top: 8px;
+  padding-top: 8px;
+}
+.panel[data-expanded="true"] {
+  outline: 2px solid var(--md-sys-color-primary);
+  outline-offset: -2px;
+}
+
+/* Renderer-owned attention presentation. Saved panel dimensions remain untouched. */
+.panel.has-attention {
+  display: block;
+  overflow: auto;
+}
+.panel.has-attention > :not(.attention-card):not(.panel-tools) {
+  display: none !important;
+}
+.attention-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+  height: 100%;
+}
+.attention-eyebrow {
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--md-sys-color-primary);
+}
+.attention-title {
+  margin: 0;
+  font-size: clamp(1.5rem, 5cqi, 2.25rem);
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+.attention-hero {
+  font-size: clamp(2rem, 10cqi, 4.5rem);
+  line-height: 1.1;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  color: var(--md-sys-color-primary);
+  overflow-wrap: anywhere;
+}
+.attention-message {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.5;
+  max-width: 55ch;
+}
+.attention-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+  gap: 12px;
+  margin: 0;
+}
+.attention-facts > div {
+  padding: 16px;
+  border-radius: 20px;
+  background: var(--md-sys-color-surface-container-high);
+  min-width: 0;
+}
+.attention-facts dt {
+  font-size: 0.875rem;
+  color: var(--md-sys-color-on-surface-variant);
+  margin-bottom: 8px;
+}
+.attention-facts dd {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.4;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.attention-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: auto;
+  padding-top: 8px;
+}
+.attention-actions button {
+  min-height: 56px;
+  flex: 1 1 10em;
+  border-radius: 28px;
+  padding: 12px 20px;
+  font: inherit;
+  font-weight: 600;
+  border: 1px solid var(--md-sys-color-outline);
+  background: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+}
+.attention-actions .attention-dismiss {
+  background: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+  border-color: transparent;
+}
+.attention-card[data-kind="alarm"] .attention-actions button {
+  min-height: 72px;
+  font-size: 1.25rem;
+}
+.attention-footnote {
+  margin: 0;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  color: var(--md-sys-color-on-surface-variant);
+}
+.attention-demo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px 16px;
+  background: var(--md-sys-color-surface-container-high);
+  color: var(--md-sys-color-on-surface);
+}
+.attention-demo strong {
+  flex: 1 0 100%;
+  font-size: 0.875rem;
+}
+.attention-demo button {
+  min-height: 48px;
+  padding: 8px 16px;
+  border-radius: 24px;
+  border: 1px solid var(--md-sys-color-outline);
+  background: var(--md-sys-color-surface);
+  color: inherit;
+}
+@container (max-width: 360px) {
+  .attention-card {
+    gap: 12px;
+  }
+  .attention-facts {
+    grid-template-columns: 1fr;
+  }
+  .attention-facts > div {
+    padding: 12px;
+  }
+}

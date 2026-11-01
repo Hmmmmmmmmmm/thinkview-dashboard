@@ -29,13 +29,35 @@ def member(directory, name):
     return path
 
 
+def validate_expansion(manifest):
+    e = manifest['expansion']
+    def span(value):
+        return isinstance(value, dict) and set(value) == {'columns', 'rows'} and type(value['columns']) is int and 1 <= value['columns'] <= 2 and type(value['rows']) is int and 1 <= value['rows'] <= 3
+    if not isinstance(e, dict) or set(e) != {'sizes', 'pinch', 'events'} or type(e['pinch']) is not bool or not isinstance(e['sizes'], list) or not 1 <= len(e['sizes']) <= 6 or not isinstance(e['events'], dict):
+        raise ValueError('Invalid expansion declaration')
+    seen = set()
+    for size in e['sizes']:
+        if not span(size) or (size['columns'], size['rows']) in seen:
+            raise ValueError('Invalid ordered expansion sizes')
+        seen.add((size['columns'], size['rows']))
+    if manifest.get('grid', {'columns': 1, 'rows': 1}) not in e['sizes']:
+        raise ValueError('Expansion sizes must include default grid')
+    for name, rule in e['events'].items():
+        if not re.fullmatch(r'[a-zA-Z][a-zA-Z0-9]{0,39}', name) or not isinstance(rule, dict) or rule.get('action') not in {'expand', 'retain', 'restore'}:
+            raise ValueError('Invalid expansion event')
+        if rule['action'] == 'expand':
+            if set(rule) != {'action', 'size'} or not span(rule['size']) or rule['size'] not in e['sizes']:
+                raise ValueError('Undeclared event expansion size')
+        elif set(rule) != {'action'}:
+            raise ValueError('Invalid expansion event properties')
+
 def load_package(panel_id):
     if not isinstance(panel_id, str) or not ID.fullmatch(panel_id):
         raise ValueError(f'Invalid panel ID: {panel_id!r}')
     directory = ROOT / 'panels' / panel_id
     manifest = json.loads((directory / 'panel.json').read_text())
     required = {'schemaVersion', 'id', 'title', 'version', 'rootClass', 'colorRole', 'entries', 'capabilities', 'assets', 'defaultEnabled'}
-    if not required <= manifest.keys() or set(manifest) - required - {'networkOrigins', 'description', 'type', 'grid'}:
+    if not required <= manifest.keys() or set(manifest) - required - {'networkOrigins', 'description', 'type', 'grid', 'expansion'}:
         raise ValueError(f'{panel_id}: missing or unknown manifest fields')
     if type(manifest['schemaVersion']) is not int or manifest['schemaVersion'] != 1 or manifest['id'] != panel_id:
         raise ValueError(f'{panel_id}: schema or identity mismatch')
@@ -51,6 +73,8 @@ def load_package(panel_id):
         raise ValueError(f'{panel_id}: type must be a non-empty string')
     if 'grid' in manifest and (not isinstance(manifest['grid'], dict) or set(manifest['grid']) != {'columns', 'rows'} or type(manifest['grid']['columns']) is not int or not 1 <= manifest['grid']['columns'] <= 2 or type(manifest['grid']['rows']) is not int or not 1 <= manifest['grid']['rows'] <= 3):
         raise ValueError(f'{panel_id}: invalid grid size')
+    if 'expansion' in manifest:
+        validate_expansion(manifest)
     if not isinstance(manifest['defaultEnabled'], bool):
         raise ValueError(f'{panel_id}: defaultEnabled must be boolean')
     if not isinstance(manifest['capabilities'], list) or not all(isinstance(value, str) for value in manifest['capabilities']) or len(manifest['capabilities']) != len(set(manifest['capabilities'])) or not set(manifest['capabilities']) <= CAPABILITIES:
@@ -149,7 +173,7 @@ def build(config_path=None):
     html = (ROOT / 'web/template.html').read_text()
     shared_css = (ROOT / 'web/styles/base.css').read_text() + '\n/* PANEL_STYLES */\n' + (ROOT / 'web/styles/theme.css').read_text()
     html = html.replace('/* DASHBOARD_STYLES */', shared_css)
-    core_modules = '\n'.join((ROOT / 'logic' / name).read_text() for name in ['storage.js', 'layout.js', 'calendar-service.js', 'companion-service.js', 'device-provider.js'])
+    core_modules = '\n'.join((ROOT / 'logic' / name).read_text() for name in ['storage.js', 'layout.js', 'panel-expansion.js', 'panel-attention.js', 'calendar-service.js', 'companion-service.js', 'device-provider.js'])
     html = html.replace('/* CORE_MODULES */', core_modules)
     html = html.replace('/* DASHBOARD_VERSION */', (ROOT / 'VERSION').read_text().strip())
     html = html.replace('/* PERSONALIZATION */', (ROOT / 'logic/personalization.js').read_text())
