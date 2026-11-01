@@ -7,3 +7,13 @@
 .device-display-row button, .device-display-row select { border: 1px solid var(--line); border-radius: 16px; padding: 5px 9px; background: transparent; color: inherit; }
 .device-display-message { font-size: 12px; opacity: .8; }
 @container (max-height: 160px) { .device-display-title { font-size: 12px; } .device-display-body { gap: 4px; font-size: 11px; } }
+/* Keep all three controls within narrow single-cell panels. */
+.device-display-body { min-width: 0; }
+.device-display-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(40px, .8fr) auto; }
+.device-display-row:last-child { grid-template-columns: minmax(0, 1fr) auto; }
+.device-display-row input[type=range], .device-display-row select { box-sizing: border-box; min-width: 0; width: 100%; }
+.device-display-row button { white-space: nowrap; }
+@container (max-width: 260px) {
+  .device-display-row:nth-child(2) { grid-template-columns: minmax(0, 1fr) auto; }
+  .device-display-row:nth-child(2) label { grid-column: 1 / -1; }
+}

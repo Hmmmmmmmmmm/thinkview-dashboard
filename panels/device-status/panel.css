@@ -7,3 +7,5 @@
 .device-status-row button, .device-status-row select { border: 1px solid var(--line); border-radius: 16px; padding: 5px 9px; background: transparent; color: inherit; }
 .device-status-message { font-size: 12px; opacity: .8; }
 @container (max-height: 160px) { .device-status-title { font-size: 12px; } .device-status-body { gap: 4px; font-size: 11px; } }
+.device-status-body, .device-status-row > span { min-width: 0; }
+.device-status-row > span:last-child { text-align: right; overflow-wrap: anywhere; }

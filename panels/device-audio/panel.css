@@ -7,3 +7,7 @@
 .device-audio-row button, .device-audio-row select { border: 1px solid var(--line); border-radius: 16px; padding: 5px 9px; background: transparent; color: inherit; }
 .device-audio-message { font-size: 12px; opacity: .8; }
 @container (max-height: 160px) { .device-audio-title { font-size: 12px; } .device-audio-body { gap: 4px; font-size: 11px; } }
+.device-audio-body { min-width: 0; }
+.device-audio-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(40px, .8fr) auto; }
+.device-audio-row input[type=range] { box-sizing: border-box; min-width: 0; width: 100%; }
+.device-audio-row button { white-space: nowrap; }

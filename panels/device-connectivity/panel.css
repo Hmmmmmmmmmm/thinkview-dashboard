@@ -7,3 +7,6 @@
 .device-connectivity-row button, .device-connectivity-row select { border: 1px solid var(--line); border-radius: 16px; padding: 5px 9px; background: transparent; color: inherit; }
 .device-connectivity-message { font-size: 12px; opacity: .8; }
 @container (max-height: 160px) { .device-connectivity-title { font-size: 12px; } .device-connectivity-body { gap: 4px; font-size: 11px; } }
+.device-connectivity-body, .device-connectivity-row > span { min-width: 0; }
+.device-connectivity-row > span { overflow-wrap: anywhere; }
+.device-connectivity-row button { flex: none; white-space: nowrap; }
