@@ -8,4 +8,5 @@
 - Keep widgets independent of device dimensions. Use their own container queries and shared Material color roles.
 - Clean up timers, requests and listeners on unmount. Require a user action for microphone and location requests.
 - Run `npm test`; visually check relevant orientations, size presets and modes after UI changes.
+- Update `CHANGELOG.md` for dashboard changes. Before publication, record the release version/date, user-visible changes, app/browser requirements and validation limits; use that entry for GitHub release notes. Build only generic public assets, commit the matching `releases/<version>/thinkview-dashboard-bundle.html`, and attach identical bundle/standalone/checksum assets before publishing a stable latest release.
 - Do not add decorative annotations or simulated account data to the dashboard.

@@ -13,7 +13,7 @@ class BuildTests(unittest.TestCase):
     def test_default_build_is_portable_and_generic(self):
         html, packages = builder.build()
         expected = json.loads((ROOT / "panels/catalog.json").read_text())["panels"]
-        self.assertEqual(len(packages), 13)
+        self.assertEqual(len(packages), 14)
         self.assertEqual([manifest["id"] for manifest, _, _ in packages], expected)
         self.assertIn('id="dashboard-config"', html)
         self.assertIn('data:image/svg+xml;base64,', html)

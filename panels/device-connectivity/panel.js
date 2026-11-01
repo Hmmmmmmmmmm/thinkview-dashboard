@@ -3,7 +3,7 @@ var provider = window.ThinkViewDevice;
 function text(key, value) { var el = root.querySelector('[data-current="' + key + '"]'); if (el) el.textContent = value == null ? "Unavailable" : String(value); }
 function supports(name) { return current && current.available && current.commands.indexOf(name) >= 0; }
 function button(name, enabled, label) { var el = root.querySelector('[data-command="' + name + '"]'); if (el) { el.disabled = busy || !enabled || !supports(name); if (label) el.textContent = label; } }
-function render(snapshot) { current = snapshot; if (!snapshot.available) { message.textContent = "Device controls unavailable in this browser."; root.querySelectorAll('button, input, select').forEach(function(el) { el.disabled = true; }); return; } message.textContent = busy ? "Requesting…" : ""; var s = snapshot.status;
+function render(snapshot) { current = snapshot; root.dataset.online=String(snapshot.available); if (!snapshot.available) { message.textContent = "Device controls unavailable in this browser."; root.querySelectorAll('button, input, select').forEach(function(el) { el.disabled = true; }); return; } message.textContent = busy ? "Requesting…" : ""; var s = snapshot.status;
 ["wifi", "bluetooth"].forEach(function (key) { var x = s.connectivity[key], name = key + ".enabled"; text(key, x ? x.state : null); button(name, !!x && typeof x.enabled === "boolean" && (x.state === "on" || x.state === "off"), x && x.enabled ? "Turn off" : "Turn on"); });
 }
 function click(e) { var name = e.target.dataset.command; if (!name || !current || !current.available || busy) return; var s = current.status, v;

@@ -1,7 +1,4 @@
-<div class="notes-heading">Notes</div>
-<textarea
-  class="notes-input"
-  aria-label="Saved notes"
-  maxlength="4000"
-  spellcheck="true"
-></textarea>
+<div class="notes-header"><span class="notes-heading">Notes</span><button type="button" data-notes-edit>Edit</button></div>
+<div class="notes-copy" aria-label="Saved notes"></div>
+<textarea class="notes-input" aria-label="Edit saved notes" maxlength="4000" spellcheck="true" hidden></textarea>
+<div class="notes-pagination"><button type="button" data-notes-prev aria-label="Previous notes page">‹</button><span data-notes-page aria-live="polite"></span><button type="button" data-notes-next aria-label="Next notes page">›</button></div>

@@ -1,7 +1,7 @@
 // Optional same-origin device provider. No command is sent without a panel action.
 (function () {
   "use strict";
-  var listeners = new Set(), timer = null, controller = null, generation = 0;
+  var listeners = new Set(), intervals = new Map(), timer = null, controller = null, generation = 0;
   var token = null, commands = [], snapshot = { available: false, status: null, commands: [] };
   var allowed = {
     "audio.media": function (v) { return Number.isInteger(v) && v >= 0; },
@@ -10,6 +10,7 @@
     "bluetooth.enabled": function (v) { return typeof v === "boolean"; },
     "display.brightness": function (v) { return Number.isInteger(v) && v >= 0 && v <= 100; },
     "display.orientation": function (v) { return ["auto", "portrait", "landscape"].indexOf(v) >= 0; },
+    "music.access": function (v) { return v === true; },
     "display.keepAwake": function (v) { return typeof v === "boolean"; }
   };
   function notify() { listeners.forEach(function (fn) { try { fn(snapshot); } catch (e) { console.error("Device panel update failed", e); } }); }
@@ -21,10 +22,18 @@
     var states = ["on", "off", "turning-on", "turning-off", "unavailable"];
     return obj && states.indexOf(obj.state) >= 0 ? { state: obj.state, enabled: value(obj, "enabled", "boolean") } : null;
   }
+  function music(data) {
+    if (!data || data.supported !== true) return null;
+    var states = ['idle','playing','paused','buffering'];
+    function text(key) { return typeof data[key] === 'string' ? data[key].slice(0,240) : ''; }
+    function time(key) { return typeof data[key] === 'number' && Number.isFinite(data[key]) && data[key] >= 0 ? data[key] : null; }
+    return { supported:true, access:data.access === true, state:states.includes(data.state) ? data.state : 'idle', title:text('title'), artist:text('artist'), album:text('album'), source:text('source'), artwork:typeof data.artwork === 'string' && data.artwork.length < 65000 && /^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(data.artwork) ? data.artwork : null, positionMs:time('positionMs'), durationMs:time('durationMs'), observedAt:time('observedAt') };
+  }
   function parseStatus(data) {
     if (!data || data.version !== 1) throw Error("Unsupported device status");
     var audio = data.audio || {}, conn = data.connectivity || {}, display = data.display || {}, battery = data.battery || {};
     return {
+      music: music(data.music),
       audio: { media: level(audio.media), notification: level(audio.notification) },
       connectivity: { wifi: radio(conn.wifi), bluetooth: radio(conn.bluetooth) },
       display: {
@@ -62,14 +71,15 @@
     }
     if (myGeneration !== generation) return;
     controller = null; notify();
-    if (listeners.size) timer = setTimeout(function () { poll(myGeneration); }, 15000);
+    if (listeners.size) timer = setTimeout(function () { poll(myGeneration); }, Math.min.apply(Math, [15000].concat(Array.from(intervals.values()))));
   }
   window.ThinkViewDevice = {
-    subscribe: function (fn) {
+    subscribe: function (fn, options) {
+      intervals.set(fn, options && Number.isFinite(options.intervalMs) ? Math.max(2000, Math.min(15000, options.intervalMs)) : 15000);
       listeners.add(fn); fn(snapshot);
       if (listeners.size === 1) { generation++; poll(generation); }
       return function () {
-        listeners.delete(fn);
+        listeners.delete(fn); intervals.delete(fn);
         if (!listeners.size) {
           generation++; clearTimeout(timer); timer = null;
           if (controller) controller.abort(); controller = null;

@@ -219,14 +219,8 @@
     };
   }
   function scrollPlan(delta, innerStart, innerMax, outerStart) {
-    const inner = Math.max(
-      0,
-      Math.min(Math.max(0, innerMax), innerStart + delta),
-    );
-    return {
-      inner,
-      outer: Math.max(0, outerStart + delta - (inner - innerStart)),
-    };
+    // Cards are bounded, paginated views. Swipes move only the outer canvas.
+    return { inner: 0, outer: Math.max(0, outerStart + delta) };
   }
   return { valid, create, gesture, scrollPlan };
 });

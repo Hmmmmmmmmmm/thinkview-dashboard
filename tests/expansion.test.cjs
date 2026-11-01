@@ -151,7 +151,7 @@ test("maximum span retains original grid units in both orientations and does not
     );
     assert.deepEqual(Object.keys(p.spans), ["focus", "notes"]);
     assert.deepEqual(p.spans.focus, { columns: 2, rows: 3 });
-    assert.equal(p.columnWidth, 346);
+    assert.equal(p.columnWidth, landscape ? (1280 - 24) / 3 : (800 - 12) / 2);
   }
   assert.equal(JSON.stringify(sizes), copy);
 });
@@ -275,14 +275,14 @@ test("manual reduction refreshes older matching lease precedence over event expa
   assert.equal(model.step("focus", -1), true);
   assert.deepEqual(model.effective("focus"), { columns: 2, rows: 1 });
 });
-test("touch scrolling consumes inner overflow before chaining residual delta to canvas", () => {
+test("touch scrolling leaves cards fixed and moves only the outer canvas", () => {
   const { scrollPlan } = require("../logic/panel-expansion.js");
-  assert.deepEqual(scrollPlan(50, 20, 200, 100), { inner: 70, outer: 100 });
-  assert.deepEqual(scrollPlan(250, 20, 200, 100), { inner: 200, outer: 170 });
-  assert.deepEqual(scrollPlan(-50, 20, 200, 100), { inner: 0, outer: 70 });
+  assert.deepEqual(scrollPlan(50, 20, 200, 100), { inner: 0, outer: 150 });
+  assert.deepEqual(scrollPlan(250, 20, 200, 100), { inner: 0, outer: 350 });
+  assert.deepEqual(scrollPlan(-50, 20, 200, 100), { inner: 0, outer: 50 });
   assert.deepEqual(scrollPlan(50, 0, 0, 100), { inner: 0, outer: 150 });
 });
-test("actual pointer handlers scroll card overflow before canvas, including swipes starting on buttons", () => {
+test("actual pointer handlers move only the canvas, including swipes starting on buttons", () => {
   const source = fs.readFileSync("logic/app.js", "utf8");
   const start = source.indexOf(
     '  board.querySelectorAll("[data-panel]").forEach(function (panel) {\n    panel.addEventListener("pointerdown"',
@@ -370,16 +370,16 @@ test("actual pointer handlers scroll card overflow before canvas, including swip
     clientY: 50,
     preventDefault() {},
   });
-  assert.equal(panel.scrollTop, 70);
-  assert.equal(board.scrollTop, 100);
+  assert.equal(panel.scrollTop, 0);
+  assert.equal(board.scrollTop, 150);
   handlers.pointermove({
     pointerId: 1,
     clientX: 0,
     clientY: -300,
     preventDefault() {},
   });
-  assert.equal(panel.scrollTop, 300);
-  assert.equal(board.scrollTop, 220);
+  assert.equal(panel.scrollTop, 0);
+  assert.equal(board.scrollTop, 500);
   context.panelCandidate = null;
   panelHandlers.pointerdown({
     button: 0,

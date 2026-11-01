@@ -1,59 +1,38 @@
-# Visual design contract: responsive expressive panels
+# Visual design contract: bounded responsive panels
 
-Target: the user-reported GeckoView 159 shell on Android 8.1 / ARMv7. Standalone Chrome and Firefox are retired on the device. Cloud browser checks are regression aids, not device certification. The original v0.1 source and accepted first-round screenshots are preserved. Iterative visual checks now use genuine desktop Firefox 159 renders with fixed time, matching fixtures and independent screenshot review. Desktop Firefox is a cloud regression aid, not proof of native GeckoView shell behavior.
+Current local dashboard: 0.3.2. Target runtime: ThinkView GeckoView 159 on Android 8.1 / ARMv7. This contract supersedes the 0.2 preference for larger text and internally scrolling cards. Keep the Material Color Utilities palette and paired semantic foreground/background roles. Do not add decorative annotations or invent account, device or playback data.
 
-## Principles and chosen dimensions
+## Typography and containment
 
-Google's Material expressive research uses hierarchy, size, shape, color and containment to guide attention. Here each panel has one dominant value or action, not thirteen identical small forms. Keep the existing Material Color Utilities palette and paired semantic foreground/background roles; do not invent new status or account data. Proposed dimensions below are project starting values, not mandatory Google specifications.
+- Use 12px panel padding, 8px interior gaps and the shared rounded card shape. Typical headings are 13px, controls 12px, supporting text 10–11px. Clock, temperature and timer values scale with both available width and height. These are project choices, not Google requirements.
+- Every panel is a bounded view with `overflow:clip`; no nested scroll surface. Essential controls must fit. Reflow before reducing text, page long lists, and use a separate dialog for editing or connection settings. Only that outside-card dialog and the outer canvas may scroll.
+- Shared control height starts at 32 CSS px, with 26px pagination controls. Device screenshots demonstrate physical fit, not an Android accessibility target-size certification. Keyboard controls retain accessible names and focus paths.
+- Use compact summaries and title ellipsis for long track/event identifiers. Preserve full notes through measured text pagination and an outside-card editor. No text is removed from storage to make a card fit.
+- Paired colors do not by themselves prove contrast. The current fit pass did not repeat a complete contrast or 200% text audit.
 
-- 8px spacing rhythm; 16px group gaps; 28px card radius; 16px interior groups; pill-shaped primary actions.
-- 16px outer margin below 600 CSS px, 24px above. Panel padding currently 16px on compact viewports and 20px otherwise. Further per-container padding tuning requires rendered evidence.
-- Approximately 22px headings, 16px body, 13–14px metadata; large tabular hero numerals. Essential controls and text are not hidden merely because a card is short. Card scrolling is preferable to microscopic typography.
-- 48 CSS px minimum functional control height and button width are starting web targets. Google's 48dp effective Android target still requires shell scaling verification. Static calendar date cells are not interactive targets.
-- Paired semantic color roles do not prove contrast. Rendered contrast acceptance is text >=4.5:1 and nontext >=3:1 in bright/dark/minimal. Minimal mode uses neutral fills and outlined controls.
-- No constant decorative motion; clock colon is steady. Respect reduced motion. Do not call CSS easing a verified Material spring implementation.
+## Grid and rotation
 
-## Three safe-zone layers
+Measure the board after toolbar, padding and gaps rather than assuming viewport height or Android system bar dimensions. Preferred layout is two columns × three visible rows in portrait, three × two in landscape. The engine reduces columns/rows on small surfaces, using 190px width and 152px height as hints. Those hints must not force the grid beyond the usable board. Cells may be rectangular and change size on rotation; saved spans, order and pins remain intact.
 
-1. Native shell bounds may already exclude system bars; neither shell bounds nor IME behavior were inspected here. Never hardcode an assumed Android bar height.
-2. Browser `env(safe-area-inset-*, 0px)` is a fallback mechanism, not proof that native obstructions are covered. Zero may be correct or uninformative.
-3. Dashboard breathing room is added after a single authoritative per-edge obstruction source. CSS `--safe-*` defaults to `env`; a future verified shell contract could override it in CSS pixels. Do not sum overlapping native and browser insets. IME height is not automatically a safe-area inset.
+Medium is 1×1 and Big is 2×1. Stored or temporary spans can extend beyond the visible row count; navigate the outer canvas to reach them. Toolbar arrows move a page when extra rows exist. Full screen hides global buttons and keeps swipe/menu canvas navigation. Ordinary panel taps do not reveal editing controls; long-press retains the menu and drag behavior.
 
-Edit tools occupy their own content row instead of overlaying titles. Focus rings use 2px outline plus 2px offset; capture tests must verify clearance. There is no invisible new drag overlay. Existing gesture/menu behavior remains unchanged. Pin/move hitboxes are 48px. The existing context menu offers resize alternatives; two-finger temporary expansion is documented in PANEL-SPEC.md; the menu remains its accessible alternative.
+Use package-local size containers for width and height queries. At short heights, the calendar shows the current week; agenda, notes and display controls page their contents. Never solve fit by making a panel scroll. `logic/panel-fit.js` supplies lifecycle-managed pagination and outside-card editors, and `web/styles/panel-fit.css` is loaded last to apply shared fit rules.
 
-## Responsive strategy
+## Safe areas and editors
 
-Adapt panel interiors to container width and height rather than device branding. Use `min-width:0`, flexible rows, wrapped action labels and unbroken identifier wrapping. Tall content scrolls; do not silently hide functional controls. Proposed bands are <320 compact, 320–479 standard, >=480 roomy; short heights <240. Individual content may require different thresholds.
+Native shell bounds may already exclude system bars. CSS safe-area environment values are a fallback; do not add assumed Android bar heights or sum overlapping insets. The board's measured client space is authoritative for the grid. Keyboard/IME behavior is separate from safe-area insets. Notes and calendar connection editors open as modal dialogs outside the cards; the notes text and selection are retained by moving the existing editor element.
 
-The redesign preserves the saved grid engine and its cell units. Fixed canvas geometry can produce small cards at narrow logical viewports; package-local reflow and reachable scrolling retain content, while manifest-declared temporary expansion offers a larger view without rewriting saved order/spans. This is not a claim that every panel fits every small cell without scrolling. See PANEL-SPEC.md for gesture, event and restoration semantics.
+## Motion
 
-| Panel         | Preferred normal outer box (CSS px) | Priority / roomy behavior                                                           |
-| ------------- | ----------------------------------: | ----------------------------------------------------------------------------------- |
-| Clock         |                             224×160 | time/date; quiet timezone, no blinking                                              |
-| Weather       |                             280×240 | temperature/location/refresh/status; supporting metrics and source remain reachable |
-| Dot           |                             280×256 | chat entry dominant; Call/Dictate secondary, actions wrap                           |
-| Calendar      |                             280×336 | month/navigation and all six static date rows; no silently omitted weeks            |
-| Agenda        |                             280×320 | readable schedule/status; settings secondary; wider time/title columns              |
-| Today         |                             280×288 | today's rows, side emphasis and clear state                                         |
-| Next event    |                             280×248 | larger actual event title/time, never fabricated countdown                          |
-| Focus         |                             280×304 | timer, Start/Pause, Stop/reset, explicit selected preset                            |
-| Notes         |                             280×256 | >=160px baseline editable height, selection preserved                               |
-| Audio         |                             280×352 | native illustrated sliders; release/change commits, no Apply                        |
-| Connectivity  |                             280×288 | named status/action groups, no misleading switches                                  |
-| Display       |                             280×352 | brightness, orientation and keep-awake controls                                     |
-| Device status |                             280×288 | key/value hierarchy, unknowns remain unknown                                        |
+The clock colon flashes in bright/dark and remains steady in minimal mode. Now playing rotates the record and animates decorative bars only during reported playback. Paused/idle state stops those animations; minimal mode and reduced-motion preferences stop decorative motion. The bars are a playback indicator, not an audio waveform or measured equalizer. Do not label CSS easing a verified Material spring implementation.
 
-These boxes are design targets, not enforced minimum widths that would create page overflow. Smaller saved cards need scroll/expand/reflow, not automatic destructive resizing. At 200% text, preferred box dimensions are not a guarantee: content must grow or scroll without loss.
+## Current verification
 
-## Validation matrix and remaining device checks
+All fourteen packages were exercised at 533×781, 805×509, 533×805, 853×533 and 320×640 CSS-pixel viewports using clearly labelled music/calendar/long-note fixtures outside shipped data. Across 70 panel cases, no card scroll overflow or essential controls outside a card were detected. Notes pagination and the outside-card editor were exercised, and playing versus minimal animation states were inspected. This is a finite layout matrix, not proof for arbitrary zoom, localization or every imported package.
 
-For all thirteen panels: bright/dark/minimal; preferred box, 320px, roomy 480px, short height and 200% text. Check essential content, focus-ring clipping, targets, contrast and horizontal overflow. Test long titles (80 characters), identifiers (64 unbroken characters), multiline errors and long localized dates using clearly labeled QA fixtures outside shipped account data.
+Physical ThinkView screenshots show the installed compact first page and device/music page in both orientations. Six normal cards fit inside the usable canvas. The native music-access explanation was opened and cancelled; permission remains off. The real idle music state is verified; real track metadata and artwork after user opt-in remain unverified. Rotation and app display preferences were restored. See the parent project's `device-validation/dashboard-fit-v09/DEPLOYMENT.md` for local evidence, exact hashes and limits; no private device evidence belongs in the public dashboard repository.
 
-Full dashboard synthetic viewports: 533×853, 853×533, 800×1280, 1280×800, 320×640. Physical 800×1280 at 240dpi nominally corresponds to about 533×853 Android dp, **not a measured CSS viewport**. Record actual inner/client/visual viewport, DPR, orientation and safe-area probe values when authorized evidence is available.
-
-Test keyboard focus, Tab/Shift-Tab/Enter/Escape; notes/settings with IME; scroll vs longpress; pin/move/resize menu; persistence through rotation. Preserve input/focus. No assumption that 100vh shrinks with the keyboard. No claim of on-device overnight, microphone or shell permission validation.
-
-Before/after screenshots must use identical time, data, service/account state, theme and viewport. Deliver thirteen readable pairs plus a contact sheet. Disconnected states are valid; fabricated real-looking account data is not.
+Earlier 0.2 desktop Firefox stress/contrast work remains historical evidence and does not certify the changed 0.3.2 typography. Microphone, accessibility scaling, full IME behavior, multitouch arbitration and overnight operation remain separate validation tasks.
 
 ## Official references
 
@@ -70,7 +49,7 @@ Before/after screenshots must use identical time, data, service/account state, t
 - https://www.w3.org/WAI/WCAG22/Understanding/dragging-movements.html
 - https://www.w3.org/WAI/WCAG22/Understanding/focus-not-obscured-minimum.html
 
-## Audio interaction and test-fixture honesty
+## Audio interaction and earlier fixture checks
 
 The wavy active track is a static Material-Expressive-inspired illustration on a native volume slider, not an official component named "Google Doodle" and not a progress indicator. It does not imply playback or microphone activity. The native input keeps keyboard, touch and accessibility semantics; decorative SVG is aria-hidden and pointer-events:none.
 

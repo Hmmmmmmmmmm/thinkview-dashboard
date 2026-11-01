@@ -1,0 +1,18 @@
+const test = require('node:test');
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const vm = require('node:vm');
+function panel() {
+ const nodes=new Map(), handlers=new Map(), commands=[], root={dataset:{},querySelector:node};
+ let receive,stopped=false,cleared=false;
+ function node(key){if(!nodes.has(key))nodes.set(key,{hidden:false,textContent:'',src:'',addEventListener:(name,fn)=>handlers.set(key+name,fn),removeEventListener:(name)=>handlers.delete(key+name),removeAttribute(name){if(name==='src')this.src='';},querySelector:node});return nodes.get(key);}
+ const provider={subscribe(fn){receive=fn;return()=>{stopped=true;};},command(name,value){commands.push([name,value]);return Promise.resolve();}};
+ const cleanup=vm.runInNewContext('(function(ctx){'+fs.readFileSync('panels/music/panel.js','utf8')+'})(ctx)',{ctx:{root},window:{ThinkViewDevice:provider},setInterval:()=>1,clearInterval:()=>{cleared=true;},Date,Math,String});
+ function update(music,available=true){receive({available,status:{music},commands:['music.access']});}
+ return {root,node,commands,update,cleanup,handlers,state:()=>({stopped,cleared})};
+}
+function music(override={}) {return {supported:true,access:true,state:'playing',title:'QA song',artist:'QA artist',album:'QA album',artwork:null,positionMs:30000,durationMs:120000,observedAt:Date.now(),...override};}
+test('real playback state controls animation state and bounded progress',()=>{const p=panel();p.update(music());assert.equal(p.root.dataset.playing,'true');assert.equal(p.node('[data-music-title]').textContent,'QA song');p.update(music({state:'paused',positionMs:180000}));assert.equal(p.root.dataset.playing,'false');assert.equal(p.node('progress').value,120000);assert.equal(p.node('[data-music-position]').textContent,'2:00');p.cleanup();});
+test('music setup remains opt-in; missing access does not invent track information',async()=>{const p=panel();p.update(music({access:false,state:'idle',title:'',artist:'',album:''}));assert.equal(p.node('.music-connect').hidden,false);assert.equal(p.node('[data-music-title]').textContent,'Nothing playing');assert.deepEqual(p.commands,[]);await p.handlers.get('.music-connectclick')();assert.deepEqual(p.commands,[['music.access',true]]);p.cleanup();assert.deepEqual(p.state(),{stopped:true,cleared:true});});
+test('unavailable sources remove artwork and do not expose a setup command',()=>{const p=panel();p.update(music({artwork:'data:image/jpeg;base64,AAAA'}));p.update(null,false);assert.equal(p.root.dataset.playing,'false');assert.equal(p.node('.music-art').src,'');assert.equal(p.node('.music-connect').hidden,true);assert.equal(p.node('.music-timeline').hidden,true);p.cleanup();});
+test('device provider rejects remote artwork and invalid progress, and releases faster polling',async()=>{const timers=[],calls=[];const scope={window:{},Set,Map,Array,Number,Object,Promise,AbortController,console,clearTimeout:()=>{},setTimeout:(fn,ms)=>{timers.push(ms);return 1;},fetch:async url=>{calls.push(url);return {ok:true,json:async()=>url.endsWith('capabilities')?{version:1,token:'qa',commands:['music.access']}:{version:1,music:music({artwork:'https://example.test/private.jpg',positionMs:-1,title:'x'.repeat(500)})}};}};vm.runInNewContext(fs.readFileSync('logic/device-provider.js','utf8'),scope);let result;const unsubscribe=scope.window.ThinkViewDevice.subscribe(s=>{result=s;},{intervalMs:2500});await new Promise(resolve=>setImmediate(resolve));assert.equal(result.status.music.artwork,null);assert.equal(result.status.music.positionMs,null);assert.equal(result.status.music.title.length,240);assert.equal(timers[0],2500);unsubscribe();assert.equal(calls.length,2);});

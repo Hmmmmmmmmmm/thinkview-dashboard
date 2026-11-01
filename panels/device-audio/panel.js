@@ -80,7 +80,7 @@ function paint(c) {
 }
 function render(snapshot) {
   if (disposed) return;
-  current = snapshot;
+  current = snapshot; root.dataset.online=String(snapshot.available);
   controls.forEach(function (c) {
     var actual = level(c);
     if (c.pending !== null && actual && actual.value === c.pending) {
@@ -98,7 +98,7 @@ function render(snapshot) {
     paint(c);
   });
   message.textContent = snapshot.available
-    ? "Levels shown are reported by the device."
+    ? ""
     : "Device controls unavailable in this browser.";
 }
 function flush() {

@@ -2,6 +2,9 @@ var root = ctx.root, service = window.DashboardCalendar, kind = ctx.manifest.id;
 var status = root.querySelector('.calendar-today-status'), list = root.querySelector('.calendar-today-list'), calendars = root.querySelector('[data-calendars]'), input = root.querySelector('[data-client-id]');
 root.querySelector('[data-title]').textContent = kind === 'calendar-today' ? 'Today' : kind === 'calendar-next' ? 'Next event' : 'Agenda';
 input.value = service.getClientId();
+var editor=DashboardPanelFit.editor(root,root.querySelector('.calendar-today-settings'),'Google Calendar');
+var cleanupPages=DashboardPanelFit.pages(root,list,43);
+root.querySelector('[data-settings]').onclick=function(){editor.open();};
 function dateKey(d) { return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
 function startMs(event) { return event.start.date ? new Date(event.start.date + 'T00:00:00').getTime() : Date.parse(event.start.dateTime); }
 function endMs(event) { return event.end.date ? new Date(event.end.date + 'T00:00:00').getTime() : Date.parse(event.end.dateTime); }
@@ -21,4 +24,4 @@ function refresh() { service.refresh(); }
 function select() { service.select(Array.from(calendars.querySelectorAll('input:checked')).map(function (box) { return box.value; })); }
 root.querySelector('[data-connect]').addEventListener('click',connect); root.querySelector('[data-disconnect]').addEventListener('click',disconnect); root.querySelector('[data-refresh]').addEventListener('click',refresh); calendars.addEventListener('change',select);
 var unsubscribe=service.subscribe(render);
-return function () { unsubscribe(); root.querySelector('[data-connect]').removeEventListener('click',connect); root.querySelector('[data-disconnect]').removeEventListener('click',disconnect); root.querySelector('[data-refresh]').removeEventListener('click',refresh); calendars.removeEventListener('change',select); };
+return function () { editor.destroy(); cleanupPages(); root.querySelector('[data-settings]').onclick=null; unsubscribe(); root.querySelector('[data-connect]').removeEventListener('click',connect); root.querySelector('[data-disconnect]').removeEventListener('click',disconnect); root.querySelector('[data-refresh]').removeEventListener('click',refresh); calendars.removeEventListener('change',select); };

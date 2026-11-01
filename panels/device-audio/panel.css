@@ -1,146 +1,16 @@
-.panel[data-panel="device-audio"] {
-  container: device-audio / size;
-  padding: var(--panel-padding);
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  overflow: auto;
-}
-.device-audio-title {
-  font-size: 1.375rem;
-  font-weight: 650;
-}
-.device-audio-body {
-  display: grid;
-  gap: 1rem;
-  min-width: 0;
-}
-.device-audio-row {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 0.25rem;
-  padding: 0.5rem 0.75rem;
-  border-radius: 1.25rem 0.875rem 1.125rem 1rem;
-  background: var(--md-sys-color-surface-container-low);
-  color: var(--md-sys-color-on-surface);
-}
-.device-audio-row label {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 0.5rem;
-  font-size: 1rem;
-  line-height: 1.4;
-}
-.device-audio-row [data-current] {
-  font-variant-numeric: tabular-nums;
-  font-weight: 650;
-}
-/* A playful illustrated native slider, not a read-only progress meter. */
-.device-audio-row input[type="range"] {
-  appearance: none;
-  width: 100%;
-  min-width: 0;
-  height: 48px;
-  margin: 0;
-  background: transparent;
-  touch-action: pan-x;
-  cursor: pointer;
-}
-.device-audio-row input[type="range"]::-moz-range-track {
-  height: 18px;
-  border: 2px solid var(--md-sys-color-outline);
-  border-radius: 12px 8px 11px 9px;
-  background: var(--md-sys-color-surface-container-highest);
-}
-.device-audio-row input[type="range"]::-moz-range-progress {
-  height: 18px;
-  border-radius: 12px 8px 11px 9px;
-  background: var(--md-sys-color-primary);
-}
-.device-audio-row input[type="range"]::-moz-range-thumb {
-  width: 30px;
-  height: 30px;
-  border: 3px solid var(--md-sys-color-primary);
-  border-radius: 45% 55% 48% 52%;
-  background: var(--md-sys-color-primary-container);
-}
-.device-audio-row input[type="range"]::-webkit-slider-runnable-track {
-  height: 22px;
-  border: 2px solid var(--md-sys-color-outline);
-  border-radius: 12px 8px 11px 9px;
-  background: linear-gradient(
-    to right,
-    var(--md-sys-color-primary) var(--audio-level, 0%),
-    var(--md-sys-color-surface-container-highest) var(--audio-level, 0%)
-  );
-}
-.device-audio-row input[type="range"]::-webkit-slider-thumb {
-  appearance: none;
-  width: 36px;
-  height: 36px;
-  margin-top: -9px;
-  border: 3px solid var(--md-sys-color-primary);
-  border-radius: 45% 55% 48% 52%;
-  background: var(--md-sys-color-primary-container);
-}
-.device-audio-row input:disabled {
-  cursor: default;
-  opacity: 0.6;
-}
-.device-audio-intent {
-  min-height: 1.25rem;
-  font-size: 0.8125rem;
-  line-height: 1.4;
-  overflow-wrap: anywhere;
-}
-.device-audio-message {
-  margin-top: auto;
-  font-size: 0.875rem;
-  line-height: 1.5;
-  overflow-wrap: anywhere;
-}
-@container device-audio (min-width:480px) {
-  .device-audio-body {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  .device-audio-row {
-    padding: 1rem;
-  }
-}
-@container device-audio (max-width:240px) {
-  .device-audio-row {
-    padding: 0.5rem;
-  }
-  .device-audio-row label {
-    flex-direction: column;
-    gap: 0;
-  }
-}
-.device-audio-slider {
-  position: relative;
-  min-width: 0;
-  height: 48px;
-}
-.device-audio-wave {
-  position: absolute;
-  top: 14px;
-  left: 0;
-  width: 100%;
-  height: 20px;
-  pointer-events: none;
-  color: var(--md-sys-color-on-primary);
-  clip-path: inset(0 max(0px, calc(100% - var(--audio-level, 0%) + 18px)) 0 0);
-}
-.device-audio-wave path {
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 3;
-}
-.device-audio-slider:has(input:disabled) .device-audio-wave {
-  opacity: 0.6;
-}
-
-.device-audio-intent:empty {
-  display: none;
-}
+.panel[data-panel=device-audio] { container:device-audio / size; display:flex; flex-direction:column; padding:12px; gap:7px; }
+.device-audio-title { font-size:13px; line-height:1.2; font-weight:600; flex:none; }
+.device-audio-body { min-height:0; flex:1; display:flex; flex-direction:column; justify-content:space-evenly; gap:5px; font-size:12px; }
+.device-audio-row { min-width:0; display:flex; align-items:center; justify-content:space-between; gap:6px; }
+.device-audio-row label,.device-audio-row span { min-width:0; }
+.device-audio-row button,.device-audio-row select { font-size:11px; min-height:30px; padding:3px 7px; border:1px solid var(--line); border-radius:16px; color:inherit; background:transparent; }
+.device-audio-message { flex:none; font-size:10px; line-height:1.2; max-height:2.4em; overflow:hidden; }
+.device-audio-message:empty { display:none; }
+[data-panel=device-audio][data-online=false] .device-audio-body { display:none; }
+.device-audio-row { display:flex; flex-direction:column; align-items:stretch; gap:2px; }
+.device-audio-row label { display:flex; justify-content:space-between; font-size:11px; }
+.device-audio-slider { position:relative; height:30px; }
+.device-audio-slider input { position:relative; width:100%; height:30px; min-width:0; margin:0; z-index:1; background:transparent; accent-color:var(--md-sys-color-primary); }
+.device-audio-wave { position:absolute; width:100%; height:12px; left:0; top:9px; opacity:.25; pointer-events:none; }
+.device-audio-intent { font-size:10px; line-height:1.1; }
+.device-audio-intent:empty { display:none; }

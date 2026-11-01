@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "id": "music",
+  "title": "Now playing",
+  "version": "1.0.0",
+  "rootClass": "music-panel",
+  "colorRole": "tertiary",
+  "entries": {
+    "html": "panel.html",
+    "css": "panel.css",
+    "js": "panel.js"
+  },
+  "capabilities": [
+    "device-service"
+  ],
+  "assets": [],
+  "defaultEnabled": true,
+  "type": "Device",
+  "grid": {
+    "columns": 1,
+    "rows": 1
+  }
+}

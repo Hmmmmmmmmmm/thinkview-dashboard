@@ -2,7 +2,11 @@
 
 A modular, local-first dashboard for always-on touchscreen displays. It builds to one self-contained bootstrap HTML file. Core dashboard features run in a modern browser; optional device panels connect to the ThinkView app’s same-origin local service.
 
-Included panels: 24-hour local clock, weather, companion shortcuts, local calendar, Google Calendar agenda/today/next-event views, focus timer and saved notes. The interface supports portrait and landscape, long-press drag and pin, Big/Medium size presets, full-screen mode, and bright/dark/minimal Material You colors. Minimal mode starts after 30 seconds idle, keeps the clock colon steady, and uses neutral surfaces with outlined controls.
+See [the update log](CHANGELOG.md) for version history and compatibility changes.
+
+Included panels: 24-hour local clock, weather, companion shortcuts, local calendar, Google Calendar agenda/today/next-event views, focus timer, saved notes, now playing, audio, connectivity, display and device status. The interface supports portrait and landscape, long-press drag and pin, Big/Medium size presets, full-screen mode, and bright/dark/minimal Material You colors. Minimal mode starts after 30 seconds idle, keeps the clock colon steady, and uses neutral surfaces with outlined controls.
+
+Panels use compact, container-responsive typography and do not scroll internally. Notes, event lists and short display controls use page buttons; editing and connection settings open outside the cards. The canvas can move between additional panel rows using swipes or the toolbar arrows. It measures the space below the toolbar and reduces grid columns/rows on small screens so the visible cards fit.
 
 ## Run locally
 
@@ -22,11 +26,13 @@ web/                 Page structure and shared presentation
   template.html
   styles/base.css
   styles/theme.css
+  styles/panel-fit.css
 logic/               Application controller, pure layout/storage logic, lifecycle
   app.js
   layout.js
   storage.js
   panel-runtime.js
+  panel-fit.js
 panels/              Independently packaged widgets and their catalog
   catalog.json
   <id>/panel.json
@@ -47,6 +53,8 @@ Do not edit generated files in `dist/`.
 
 The Audio, Connectivity, Display and Device Status panels are disabled by default. Enable them in Settings when running in a compatible ThinkView app. They use its same-origin `/api/device/v1/` service through ordinary browser requests and show unavailable controls where the service, permission or device capability is absent. Commands are issued only after a user action; displayed state comes from subsequent device status. An ordinary static web server does not provide this service. Imported panel packages run as trusted page code and can access the same service; install only packages you trust.
 
+Now playing is enabled by default. ThinkView app 0.9 supplies real active media-session title, artist, album, embedded artwork and progress when available. **Connect music** explains Android notification access and opens its system settings only after another explicit action. Android grants broad notification access; this app uses the component to query active media sessions and does not read or store notification contents. Without access, it can report audible audio without track details. Players that do not publish a media session (including some receivers) may provide no metadata. The rotating record and moving bars indicate playback, not measured audio levels; they pause in minimal mode and respect reduced motion.
+
 ## Personal configuration
 
 The public default uses a generic companion avatar, the generic ChatGPT Dots link, and Hong Kong as an explicitly marked preview weather location. It contains no account-specific companion URL, device identifiers or personal profile image.
@@ -63,7 +71,7 @@ The companion screen holds a local draft; copy it and open the configured servic
 
 Google Calendar views use read-only Google access. Configure a Google OAuth web client ID for the dashboard’s registered HTTPS or localhost origin; `file://` cannot sign in. The first connection loads Google Identity and requires a second Connect action to open sign-in. Access tokens stay in memory, expire, and require another user action to reconnect. Choose calendars in a calendar panel. The local month/week panel works without an account.
 
-Settings includes searchable panel groups and per-priority notification behavior. Focus completion creates a real notification. Refresh panels reloads their data and views. Full-screen hides scrollbars while preserving scrolling.
+Settings includes searchable panel groups and per-priority notification behavior. Focus completion creates a real notification. Refresh panels reloads their data and views. Full-screen hides global controls; canvas navigation remains available by swipe or a panel's long-press menu.
 
 ## Add a panel
 
@@ -112,7 +120,7 @@ The bootstrap checks the latest stable release of `Hmmmmmmmmmm/thinkview-dashboa
 
 The bootstrap retains its own build configuration and avatar independently of generic releases. Release code does not contain private configuration. Settings → Move dashboard data provides a copy/paste JSON export and import for moving layout, preferences, drafts, notes and panel data to a separate browser profile. Import replaces the target profile’s dashboard namespace after confirmation; it does not change the source browser or transfer account sessions. Exported data can include private notes and trusted imported panel code: share it carefully and only import exports you trust.
 
-For a release, set `VERSION`, build the generic public bundle, copy the generated bundle under `releases/<version>/thinkview-dashboard-bundle.html` and commit it (the generated bundle is updated by the release procedure, not edited manually), tag that commit, and attach the identical bundle as a release asset. GitHub release metadata must include its SHA-256 digest. Also attach the generic standalone bootstrap and checksum file. Do not use `--config` for public artifacts. Generate assets with `python3 tools/build.py --release-dir ../.work/dashboard-release-v0.2`; compare the tracked bundle and release asset before publication. The public bootstrap starts with generic settings.
+For a release, set `VERSION` and package versions, update `CHANGELOG.md`, build the generic public bundle, copy the generated bundle under `releases/<version>/thinkview-dashboard-bundle.html` and commit it (the generated bundle is updated by the release procedure, not edited manually). Tag that commit and create a draft GitHub release using the matching changelog entry. Attach the identical bundle, generic standalone bootstrap and `SHA256SUMS` before publishing it as the stable latest release. GitHub release asset metadata must include the bundle's SHA-256 digest. Do not use `--config` for public artifacts. Generate assets with `python3 tools/build.py --release-dir ../.work/dashboard-release-v0.3.2`; compare the tracked bundle and uploaded assets before publication. The public bootstrap starts with generic settings. The ThinkView app's native updater uses the public latest-release checksum link; its automatic checks run at most once per six hours while the foreground service runs, with a manual settings button available. This updates dashboard HTML, not the Android APK.
 
 ## Version 0.2 attention examples
 

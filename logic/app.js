@@ -979,8 +979,27 @@
     });
     return !!definition && definition.defaultEnabled !== false;
   }
+  function updateCanvasNavigation() {
+    var overflow = board.scrollHeight > board.clientHeight + 2;
+    ["canvas-previous", "canvas-next"].forEach(function (id) { $(id).hidden = !overflow; });
+    $("canvas-previous").disabled = board.scrollTop < 2;
+    $("canvas-next").disabled = board.scrollTop + board.clientHeight >= board.scrollHeight - 2;
+  }
+  function canvasPage(direction) {
+    board.scrollTop += direction * (board.clientHeight + (parseFloat(getComputedStyle(board).rowGap) || 0));
+    updateCanvasNavigation();
+  }
+  $("canvas-previous").onclick = function () { canvasPage(-1); };
+  $("canvas-next").onclick = function () { canvasPage(1); };
+  $("panel-canvas-previous").onclick = function () { closePanelMenu(); canvasPage(-1); };
+  $("panel-canvas-next").onclick = function () { closePanelMenu(); canvasPage(1); };
+  board.addEventListener("scroll", updateCanvasNavigation, { passive: true });
   function updatePanelGrid() {
-    var visible = panelLayout.order.filter(panelEnabled),
+    var style = window.getComputedStyle(board),
+      number = function (value) { return parseFloat(value) || 0; },
+      width = board.clientWidth - number(style.paddingLeft) - number(style.paddingRight),
+      height = board.clientHeight - number(style.paddingTop) - number(style.paddingBottom),
+      visible = panelLayout.order.filter(panelEnabled),
       plan = DashboardLayout.grid(
         visible,
         Object.fromEntries(
@@ -995,21 +1014,23 @@
           }),
         ),
         window.innerWidth > window.innerHeight,
-        window.innerWidth,
-        window.innerHeight,
-        parseFloat(getComputedStyle(board).columnGap) || 12,
-        Object.fromEntries(
-          panelCatalog.panels.map(function (p) {
-            return [p.id, p.grid || { columns: 1, rows: 1 }];
-          }),
-        ),
+
+        width,
+        height,
+        number(style.columnGap),
+        Object.fromEntries(panelCatalog.panels.map(function (p) { return [p.id, p.grid || { columns: 1, rows: 1 }]; })),
+        number(style.rowGap),
+
       );
+    // Hidden or not-yet-laid-out boards retain their last valid tracks.
+    if (!plan) return;
     board.setAttribute("data-resized", String(plan.resized));
     board.style.gridTemplateColumns =
       "repeat(" + plan.columns + "," + plan.columnWidth + "px)";
     board.style.gridTemplateRows =
       "repeat(" + plan.rows + "," + plan.rowHeight + "px)";
     board.style.gridAutoRows = plan.rowHeight + "px";
+    requestAnimationFrame(updateCanvasNavigation);
     visible.forEach(function (id) {
       panelElement(id).setAttribute(
         "data-expanded",
@@ -1025,6 +1046,9 @@
       panelElement(id).style.gridColumn = "span " + plan.spans[id].columns;
       panelElement(id).style.gridRow = "span " + plan.spans[id].rows;
     });
+  }
+  if (typeof ResizeObserver !== "undefined") {
+    new ResizeObserver(function () { requestAnimationFrame(updatePanelGrid); }).observe(board);
   }
   function panelElement(id) {
     return board.querySelector('[data-panel="' + id + '"]');

@@ -49,21 +49,23 @@
     let index = 0;
     return order.map((key) => (pinned.includes(key) ? key : free[index++]));
   }
-  function grid(ids, sizes, landscape, viewportWidth, viewportHeight, gap, defaults) {
-    const columns = landscape ? 3 : 2, rows = landscape ? 2 : 3;
-    const spacing = Number.isFinite(gap) ? Math.max(0, gap) : 0;
-    // Reserve equal chrome on both axes so swapping viewport dimensions preserves the unit.
-    const width = Number.isFinite(viewportWidth) ? Math.max(0, viewportWidth) : 0;
-    const height = Number.isFinite(viewportHeight) ? Math.max(0, viewportHeight) : 0;
-    const shortEdge = Math.max(0, Math.min(width, height) - 96);
-    const longEdge = Math.max(0, Math.max(width, height) - 96);
-    const unit = Math.max(1, Math.floor(Math.min((shortEdge - spacing) / 2, (longEdge - 2 * spacing) / 3)));
+  function grid(ids, sizes, landscape, availableWidth, availableHeight, gap, defaults, rowGap) {
+    const preferredColumns = landscape ? 3 : 2, preferredRows = landscape ? 2 : 3;
+    if (!Number.isFinite(availableWidth) || availableWidth <= 0 ||
+        !Number.isFinite(availableHeight) || availableHeight <= 0) return null;
+    const columnGap = Number.isFinite(gap) ? Math.max(0, gap) : 0;
+    const verticalGap = Number.isFinite(rowGap) ? Math.max(0, rowGap) : columnGap;
+    const columns = Math.max(1, Math.min(preferredColumns, Math.floor((availableWidth + columnGap) / (190 + columnGap))));
+    const rows = Math.max(1, Math.min(preferredRows, Math.floor((availableHeight + verticalGap) / (152 + verticalGap))));
+    const columnWidth = Math.max(0, (availableWidth - (columns - 1) * columnGap) / columns);
+    const rowHeight = Math.max(1, (availableHeight - (rows - 1) * verticalGap) / rows);
     const spans = {};
     ids.forEach((id) => {
       const size = sizes[id] || (defaults && defaults[id]) || { columns: 1, rows: 1 };
       spans[id] = { columns: Math.min(columns, size.columns || 1), rows: size.rows || 1 };
     });
-    return { columns, rows, rowHeight: unit, columnWidth: unit, resized: false, spans };
+    return { columns, rows, rowHeight, columnWidth, resized: false, spans };
   }
+
   return { migrate, move, grid };
 });

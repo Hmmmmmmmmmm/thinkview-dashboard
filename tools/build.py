@@ -171,9 +171,9 @@ def build(config_path=None):
         raise ValueError('The catalog must contain unique panel IDs under schemaVersion 1')
     packages = [load_package(panel_id) for panel_id in ids]
     html = (ROOT / 'web/template.html').read_text()
-    shared_css = (ROOT / 'web/styles/base.css').read_text() + '\n/* PANEL_STYLES */\n' + (ROOT / 'web/styles/theme.css').read_text()
+    shared_css = (ROOT / 'web/styles/base.css').read_text() + '\n/* PANEL_STYLES */\n' + (ROOT / 'web/styles/theme.css').read_text() + '\n' + (ROOT / 'web/styles/panel-fit.css').read_text()
     html = html.replace('/* DASHBOARD_STYLES */', shared_css)
-    core_modules = '\n'.join((ROOT / 'logic' / name).read_text() for name in ['storage.js', 'layout.js', 'panel-expansion.js', 'panel-attention.js', 'calendar-service.js', 'companion-service.js', 'device-provider.js'])
+    core_modules = '\n'.join((ROOT / 'logic' / name).read_text() for name in ['storage.js', 'layout.js', 'panel-expansion.js', 'panel-attention.js', 'calendar-service.js', 'companion-service.js', 'device-provider.js', 'panel-fit.js'])
     html = html.replace('/* CORE_MODULES */', core_modules)
     html = html.replace('/* DASHBOARD_VERSION */', (ROOT / 'VERSION').read_text().strip())
     html = html.replace('/* PERSONALIZATION */', (ROOT / 'logic/personalization.js').read_text())

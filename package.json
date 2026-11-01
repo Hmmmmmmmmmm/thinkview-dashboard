@@ -1,6 +1,6 @@
 {
   "name": "thinkview-dashboard",
-  "version": "0.2.0",
+  "version": "0.3.2",
   "private": true,
   "description": "A modular, local-first always-on dashboard for touchscreen displays",
   "license": "MIT",

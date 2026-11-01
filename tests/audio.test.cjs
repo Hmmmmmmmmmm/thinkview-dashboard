@@ -56,7 +56,7 @@ function setup(available = true) {
     },
   };
   const context = {
-    ctx: { root: { querySelector: element } },
+    ctx: { root: { dataset: {}, querySelector: element } },
     window: { ThinkViewDevice: provider },
     setTimeout(fn, delay) {
       timers.set(++next, { fn, at: now + delay });
