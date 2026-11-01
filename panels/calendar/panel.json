@@ -10,7 +10,14 @@
     "css": "panel.css",
     "js": "panel.js"
   },
-  "capabilities": ["local-time"],
+  "capabilities": [
+    "local-time"
+  ],
   "assets": [],
-  "defaultEnabled": true
+  "defaultEnabled": true,
+  "type": "Calendar",
+  "grid": {
+    "columns": 1,
+    "rows": 1
+  }
 }

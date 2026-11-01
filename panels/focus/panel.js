@@ -33,6 +33,7 @@ function render() {
     state.endAt = null;
     state.remaining = 0;
     save();
+    ctx.host.notifications.publish({ id: "focus-complete", source: ctx.manifest.id, title: "Focus complete", message: "Your focus timer has finished.", priority: "medium" });
   }
   var seconds = Math.ceil(left / 1000);
   time.textContent =

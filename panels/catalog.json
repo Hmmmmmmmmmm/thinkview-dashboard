@@ -1,4 +1,4 @@
 {
   "schemaVersion": 1,
-  "panels": ["clock", "weather", "dot", "calendar", "focus", "notes"]
+  "panels": ["clock", "weather", "dot", "calendar", "calendar-agenda", "calendar-today", "calendar-next", "focus", "notes"]
 }

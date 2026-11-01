@@ -63,6 +63,7 @@
       sync();
     },
     sync: sync,
+    refresh: function () { Array.from(running.keys()).forEach(stop); sync(); },
     stop: stop,
     manifest: function () {
       return Array.from(definitions.values()).map(function (def) {

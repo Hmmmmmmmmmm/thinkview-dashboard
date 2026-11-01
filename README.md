@@ -2,7 +2,7 @@
 
 A modular, local-first dashboard for always-on touchscreen displays. It builds to one self-contained HTML file and runs in a modern Chromium browser without a backend.
 
-Included panels: 24-hour local clock, weather, companion shortcuts, calendar, focus timer and saved notes. The interface supports portrait and landscape, long-press drag and pin, Big/Medium size presets, full-screen mode, and bright/dark/minimal Material You colors. Minimal mode starts after 30 seconds idle, keeps the clock colon steady, and uses neutral surfaces with outlined controls.
+Included panels: 24-hour local clock, weather, companion shortcuts, local calendar, Google Calendar agenda/today/next-event views, focus timer and saved notes. The interface supports portrait and landscape, long-press drag and pin, Big/Medium size presets, full-screen mode, and bright/dark/minimal Material You colors. Minimal mode starts after 30 seconds idle, keeps the clock colon steady, and uses neutral surfaces with outlined controls.
 
 ## Run locally
 
@@ -55,7 +55,11 @@ python3 tools/build.py --config config.local.json --output dist/private/index.ht
 
 Store private avatar files under the ignored `.local/` directory. Configuration may use an HTTPS companion link and a local avatar path within the checkout. Public and personalized builds remain separate under `dist/`.
 
-The chat screen is a **local layout preview**. It does not synchronize a real ChatGPT conversation. Companion and call controls open the configured service; a call still starts through that service's own controls. Browser dictation is optional and starts only after a deliberate action. Calendar is a local month/week view, not an account calendar. Notes and timer state stay in browser storage under a configurable namespace.
+The companion screen holds a local draft; copy it and open the configured service to send it. Call controls open that service, where a call starts through its own controls. Browser dictation starts only after a deliberate action. The dashboard cannot read the existing conversation or unread count through a supported bridge. Notes and timer state stay in browser storage under a configurable namespace.
+
+Google Calendar views use read-only Google access. Configure a Google OAuth web client ID for the dashboard’s registered HTTPS or localhost origin; `file://` cannot sign in. The first connection loads Google Identity and requires a second Connect action to open sign-in. Access tokens stay in memory, expire, and require another user action to reconnect. Choose calendars in a calendar panel. The local month/week panel works without an account.
+
+Settings includes searchable panel groups and per-priority notification behavior. Focus completion creates a real notification. Refresh panels reloads their data and views. Full-screen hides scrollbars while preserving scrolling.
 
 ## Add a panel
 
@@ -68,7 +72,7 @@ python3 tools/build.py --check
 python3 tools/build.py --package calendar
 ```
 
-The package exporter writes `dist/packages/calendar-1.0.0.zip`. The ZIP includes only the manifest, declared entries and declared assets. Package scripts are trusted page code; declared capabilities are review metadata, not security isolation.
+The exporter writes a ZIP and a self-contained JSON package in `dist/packages/`. Settings can load the JSON without a rebuild. The ZIP includes only the manifest, declared entries and declared assets. Package scripts run as trusted page code with full dashboard access; declared capabilities are review metadata, not security isolation. Install only packages you trust.
 
 ## Checks
 

@@ -10,7 +10,14 @@
     "css": "panel.css",
     "js": "panel.js"
   },
-  "capabilities": ["storage"],
+  "capabilities": [
+    "storage"
+  ],
   "assets": [],
-  "defaultEnabled": true
+  "defaultEnabled": true,
+  "type": "Productivity",
+  "grid": {
+    "columns": 1,
+    "rows": 1
+  }
 }

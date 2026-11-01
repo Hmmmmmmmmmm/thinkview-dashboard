@@ -10,7 +10,15 @@
     "css": "panel.css",
     "js": "panel.js"
   },
-  "capabilities": ["microphone", "external-navigation"],
+  "capabilities": [
+    "microphone",
+    "external-navigation"
+  ],
   "assets": [],
-  "defaultEnabled": true
+  "defaultEnabled": true,
+  "type": "Companion",
+  "grid": {
+    "columns": 1,
+    "rows": 1
+  }
 }

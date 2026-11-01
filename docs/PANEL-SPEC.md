@@ -47,7 +47,7 @@ Every package must have a stable lowercase ID, matching its folder name, and a s
 
 `colorRole` is `primary`, `secondary`, `tertiary` or `surface`. The shell supplies paired Material You container/on-container colors. Minimal mode replaces panel fills with neutral tones and uses the yellow primary role for control outlines. Do not hard-code an independent panel palette.
 
-Optional `description` is package documentation, not display text. Optional `networkOrigins` is required for the `network` capability and contains exact HTTPS origins, without paths, credentials or tokens. Supported capability labels are `local-time`, `storage`, `network`, `location`, `microphone` and `external-navigation`.
+The `type` field groups panels in Settings; `grid` supplies default `columns` and `rows` in grid units. Both fields are optional for older packages (Other and 1 × 1). Optional `description` is package documentation, not display text. Optional `networkOrigins` is required for the `network` capability and contains exact HTTPS origins, without paths, credentials or tokens. Supported capability labels are `local-time`, `storage`, `network`, `location`, `microphone` and `external-navigation`.
 
 ## Markup and styling
 
@@ -86,6 +86,8 @@ return function () {
 };
 ```
 
+The shared `ctx.host.notifications` API offers `publish({id, title, message, priority, source, onActivate})`, `dismiss(id)`, `list()`, and `subscribe(callback)`. Priorities are `emergency`, `high`, `medium` (default), and `low`. Publishing an existing ID replaces that item; subscriptions return an unsubscribe function. Use stable IDs for real events and clean up subscriptions. Users choose how each priority is presented in Settings; the list is session-only.
+
 Mount runs when a panel is enabled. Return a cleanup function, use `onCleanup`, or both. Cleanup runs when the panel is disabled or the page leaves. Stop timers, abort requests and remove listeners. Re-enabling remounts the package. Keep durable user state in namespaced storage; do not rely on the DOM surviving a remount. Use wall-clock deadlines for timers, not a repeatedly decremented interval counter.
 
 Do not request location or microphone access during mount. Require a deliberate user action. Fetch only declared destinations and handle timeouts, stale results, offline operation and missing storage. Do not render sample data as real account data. Do not include secrets in a package or its manifest.
@@ -94,9 +96,7 @@ Packages run in the page's JavaScript context. Capability declarations are revie
 
 ## Layout behavior
 
-Auto fit uses one portrait column for up to three panels, two portrait columns for more panels, and up to three landscape columns. Each panel adapts its internal content independently. With six default panels, portrait is two columns by three rows and landscape is three columns by two rows.
-
-A selected Big/Medium preset switches the canvas to two columns with three visible row units. Big spans both columns; Medium spans one. Each row occupies one-third of the usable panel area, excluding gaps and display controls. Additional rows scroll inside the canvas. Pinned panels retain their order while other panels are reordered; resizing and rotation may reflow their physical grid cells. Hide/show panels in Settings. At least one panel must remain enabled.
+The canvas has two columns and three visible row units in portrait, and three columns and two visible row units in landscape. Square grid units use the viewport short and long edges with equal fixed chrome allowance on both axes. A viewport whose dimensions swap on rotation therefore keeps the same unit size; smaller visible areas scroll. The same stored column and row spans apply in either orientation. Auto uses the manifest default; Medium is 1 × 1 and Big is 2 × 1. Additional rows scroll inside the canvas. Old Auto, Medium and Big choices migrate to these units. Pinned panels retain their order while other panels are reordered; rotation can reflow their physical grid cells. Hide/show panels in Settings. At least one panel must remain enabled.
 
 Long-press reveals the corner menu and starts drag preparation. Moving after the hold drags the panel; releasing without moving leaves its menu open. A normal tap does not show editing controls. Keyboard users can focus a panel and press Enter, then use the menu; the revealed grip also supports arrow-key reordering. Full screen hides global display controls; a panel menu offers Leave full screen.
 
@@ -112,7 +112,7 @@ python3 tools/build.py --package calendar
 
 The first command validates without writing the HTML. The second builds `dist/index.html`. The third builds the HTML and exports `dist/packages/calendar-1.0.0.zip`, reporting its SHA-256.
 
-A portable ZIP contains `panel.json`, its three entry files and only declared assets, relative to the package root. It contains no checkout paths, caches, credentials or catalog. Extract a reviewed ZIP into `panels/<id>/`, add its ID to the catalog, then build. Version updates must preserve IDs and state compatibility, or explicitly migrate old state.
+A portable ZIP contains `panel.json`, its three entry files and only declared assets, relative to the package root. It contains no checkout paths, caches, credentials or catalog. The exporter also writes a self-contained JSON package containing the manifest and embedded assets. In Settings, select this JSON to load a trusted panel without rebuilding; the dashboard displays declared capabilities and network origins before installing it. Installed packages persist in browser storage and can be removed there; panel-specific saved data remains. ZIP packages remain useful for source distribution and can be added to the catalog for a build. Import checks format and duplicate IDs, but executes trusted code in the dashboard page with full access; it is not a sandbox. Only load reviewed packages. Version updates must preserve IDs and state compatibility, or explicitly migrate old state.
 
 ## Acceptance checks
 

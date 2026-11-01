@@ -35,7 +35,7 @@ def load_package(panel_id):
     directory = ROOT / 'panels' / panel_id
     manifest = json.loads((directory / 'panel.json').read_text())
     required = {'schemaVersion', 'id', 'title', 'version', 'rootClass', 'colorRole', 'entries', 'capabilities', 'assets', 'defaultEnabled'}
-    if not required <= manifest.keys() or set(manifest) - required - {'networkOrigins', 'description'}:
+    if not required <= manifest.keys() or set(manifest) - required - {'networkOrigins', 'description', 'type', 'grid'}:
         raise ValueError(f'{panel_id}: missing or unknown manifest fields')
     if type(manifest['schemaVersion']) is not int or manifest['schemaVersion'] != 1 or manifest['id'] != panel_id:
         raise ValueError(f'{panel_id}: schema or identity mismatch')
@@ -45,12 +45,20 @@ def load_package(panel_id):
         raise ValueError(f'{panel_id}: version must be major.minor.patch')
     if not ID.fullmatch(manifest['rootClass']) or manifest['colorRole'] not in {'primary', 'secondary', 'tertiary', 'surface'}:
         raise ValueError(f'{panel_id}: invalid class or color role')
+    if 'description' in manifest and not isinstance(manifest['description'], str):
+        raise ValueError(f'{panel_id}: description must be a string')
+    if 'type' in manifest and (not isinstance(manifest['type'], str) or not manifest['type'].strip()):
+        raise ValueError(f'{panel_id}: type must be a non-empty string')
+    if 'grid' in manifest and (not isinstance(manifest['grid'], dict) or set(manifest['grid']) != {'columns', 'rows'} or type(manifest['grid']['columns']) is not int or not 1 <= manifest['grid']['columns'] <= 2 or type(manifest['grid']['rows']) is not int or not 1 <= manifest['grid']['rows'] <= 3):
+        raise ValueError(f'{panel_id}: invalid grid size')
     if not isinstance(manifest['defaultEnabled'], bool):
         raise ValueError(f'{panel_id}: defaultEnabled must be boolean')
     if not isinstance(manifest['capabilities'], list) or not all(isinstance(value, str) for value in manifest['capabilities']) or len(manifest['capabilities']) != len(set(manifest['capabilities'])) or not set(manifest['capabilities']) <= CAPABILITIES:
         raise ValueError(f'{panel_id}: invalid capabilities')
     if 'network' in manifest['capabilities'] and not manifest.get('networkOrigins'):
         raise ValueError(f'{panel_id}: network capability requires declared HTTPS origins')
+    if 'networkOrigins' in manifest and (not isinstance(manifest['networkOrigins'], list) or not all(isinstance(value, str) for value in manifest['networkOrigins']) or len(manifest['networkOrigins']) != len(set(manifest['networkOrigins']))):
+        raise ValueError(f'{panel_id}: invalid networkOrigins')
     for origin in manifest.get('networkOrigins', []):
         if not isinstance(origin, str) or not re.fullmatch(r'https://[a-zA-Z0-9.-]+(?::\d+)?', origin):
             raise ValueError(f'{panel_id}: networkOrigins must contain HTTPS origins, not paths or secrets')
@@ -141,7 +149,7 @@ def build(config_path=None):
     html = (ROOT / 'web/template.html').read_text()
     shared_css = (ROOT / 'web/styles/base.css').read_text() + '\n/* PANEL_STYLES */\n' + (ROOT / 'web/styles/theme.css').read_text()
     html = html.replace('/* DASHBOARD_STYLES */', shared_css)
-    core_modules = '\n'.join((ROOT / 'logic' / name).read_text() for name in ['storage.js', 'layout.js'])
+    core_modules = '\n'.join((ROOT / 'logic' / name).read_text() for name in ['storage.js', 'layout.js', 'calendar-service.js', 'companion-service.js'])
     html = html.replace('/* CORE_MODULES */', core_modules)
     markup, styles, modules = [], [], []
     for manifest, entries, _ in packages:
@@ -185,6 +193,11 @@ def package(panel_id):
             info.compress_type = ZIP_DEFLATED
             archive.writestr(info, member(directory, name).read_bytes())
     print(f'Package: {target.relative_to(PROJECT)}\nSHA-256: {sha256(target.read_bytes()).hexdigest()}')
+    # A single-file variant embeds declared assets and is importable by the running dashboard.
+    _, entries, _ = load_package(panel_id)
+    portable = target.with_suffix('.json')
+    portable.write_text(json.dumps({'format': 'thinkview-panel-1', 'manifest': manifest, 'entries': entries}, ensure_ascii=False))
+    print(f'Runtime package: {portable.relative_to(PROJECT)}\nSHA-256: {sha256(portable.read_bytes()).hexdigest()}')
 
 
 if __name__ == '__main__':

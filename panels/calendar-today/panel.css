@@ -1,0 +1,12 @@
+.panel.calendar-today-panel { container: events / size; display:flex; flex-direction:column; gap:.45rem; padding:1rem; overflow:auto; touch-action:pan-y; color:var(--md-sys-color-on-surface); background:var(--md-sys-color-surface); }
+.calendar-today-header { display:flex; align-items:center; justify-content:space-between; gap:.5rem; }
+.calendar-today-header strong { font-size:clamp(.9rem, 7cqw, 1.25rem); }
+.calendar-today-panel button, .calendar-today-panel input, .calendar-today-panel summary { font:inherit; }
+.calendar-today-panel button { color:var(--md-sys-color-on-secondary-container); background:var(--md-sys-color-secondary-container); border:0; border-radius:1rem; padding:.4rem .7rem; }
+.calendar-today-status, .calendar-today-settings { font-size:.8rem; line-height:1.35; margin:0; }
+.calendar-today-list { display:grid; gap:.4rem; min-height:0; overflow:auto; }
+.calendar-today-item { border-left:3px solid var(--md-sys-color-primary); padding:.15rem .5rem; overflow-wrap:anywhere; }
+.calendar-today-item time { display:block; font-size:.75rem; opacity:.8; }
+.calendar-today-settings { margin-top:auto; } .calendar-today-settings label { display:block; margin:.4rem 0; } .calendar-today-settings input { width:100%; }
+.calendar-today-settings [data-calendars] label { display:flex; gap:.4rem; align-items:center; } .calendar-today-settings input[type=checkbox] { width:auto; }
+@container events (max-height:180px) { .calendar-today-settings { margin-top:0; } .calendar-today-item { font-size:.85rem; } }

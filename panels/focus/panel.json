@@ -10,7 +10,15 @@
     "css": "panel.css",
     "js": "panel.js"
   },
-  "capabilities": ["local-time", "storage"],
+  "capabilities": [
+    "local-time",
+    "storage"
+  ],
   "assets": [],
-  "defaultEnabled": true
+  "defaultEnabled": true,
+  "type": "Productivity",
+  "grid": {
+    "columns": 1,
+    "rows": 1
+  }
 }

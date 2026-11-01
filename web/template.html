@@ -152,6 +152,8 @@
             </button>
           </div>
         </header>
+        <div class="global-actions"><button type="button" class="text-button" id="refresh-all">Refresh panels</button><button type="button" class="text-button" id="notifications-open" aria-expanded="false">Notifications <span id="notification-count">0</span></button></div>
+        <div class="notification-list" id="notification-list" hidden aria-live="polite"></div>
         <div class="board">
           <!-- PANEL_MARKUP -->
         </div>
@@ -181,7 +183,7 @@
           ></span>
           <div class="chat-title">
             <strong id="chat-heading">{{COMPANION_NAME}}</strong
-            ><small>Chat layout preview</small>
+            ><small>Local draft</small>
           </div>
           <a
             class="real-chat-link"
@@ -192,20 +194,10 @@
             >Open ChatGPT <svg><use href="#external" /></svg
           ></a>
         </header>
-        <div class="chat-history" id="chat-history">
-          <div class="chat-date">Design preview · larger type</div>
-          <div class="message">
-            <span class="message-author"
-              >{{COMPANION_NAME}} · SAMPLE MESSAGE</span
-            >What’s on your mind?<span class="preview-note"
-              >This is a local layout preview. Your real conversation stays in
-              ChatGPT. Open ChatGPT to message or call {{COMPANION_NAME}}.</span
-            >
-          </div>
-        </div>
+        <div class="chat-history" id="chat-history"><p>Your draft stays on this device. Copy it and open ChatGPT to send it.</p></div>
         <div class="composer-wrap">
           <div id="composer-status" class="composer-status" role="status">
-            Try the layout. Preview messages stay on this page.
+            Drafts are not sent from this dashboard.
           </div>
           <form class="composer" id="composer">
             <button
@@ -220,7 +212,7 @@
             <div class="input-shell">
               <textarea
                 id="message-input"
-                aria-label="Preview message"
+                aria-label="Local draft"
                 placeholder="Message {{COMPANION_NAME}}…"
                 rows="1"
               ></textarea
@@ -228,7 +220,7 @@
                 class="icon-button"
                 id="send-message"
                 type="submit"
-                aria-label="Add message to local preview"
+                aria-label="Copy draft"
                 disabled
               >
                 <svg><use href="#send" /></svg>
@@ -238,7 +230,7 @@
               type="button"
               class="icon-button"
               id="dictate"
-              aria-label="Dictate preview message"
+              aria-label="Dictate local draft"
               aria-pressed="false"
               title="Dictate"
             >
@@ -246,7 +238,7 @@
             </button>
           </form>
           <div class="composer-labels">
-            <span>CALL</span><span>LOCAL PREVIEW</span><span>DICTATE</span>
+            <span>OPEN CALL</span><span>COPY DRAFT</span><span>DICTATE</span>
           </div>
         </div>
       </section>
@@ -350,29 +342,22 @@
           separate.
         </p>
         <h2>Panels</h2>
+        <label for="panel-search">Search panels</label><input id="panel-search" type="search" placeholder="Search by name or type" />
         <div id="panel-library" class="panel-library"></div>
+        <label for="panel-import">Load a trusted panel package</label><input id="panel-import" type="file" accept="application/json,.json" /><p>Imported panels run with full page access. Install only code you trust. Capabilities are declarations, not isolation.</p><div id="panel-import-status" role="status"></div>
+        <h2>Notification behavior</h2><p>Choose how each priority appears. Notifications are kept for this session until dismissed.</p><div id="notification-settings"></div>
         <h2>Arrange your panels</h2>
         <p>
           Long-press a panel for half a second to reveal its corner menu and
-          enable dragging. Big fills the width and one-third of the height;
-          Medium fills half the width and one-third of the height. Auto fit
-          restores the responsive arrangement. Pin locks the panel’s order. A
+          enable dragging. Big spans two grid columns; Medium spans one. Auto uses the panel’s default grid size. Portrait has two columns and three visible rows; landscape has three columns and two visible rows. Pin locks the panel’s order. A
           keyboard user can focus a panel and press Enter for its menu.
         </p>
         <button class="text-button" type="button" id="reset-panels">
           Reset panel arrangement
         </button>
-        <h2>Your Dot</h2>
-        <p>
-          {{COMPANION_NAME}}’s portrait is included in this file. The chat view
-          previews larger text and a bottom row for call, message and dictation.
-          The panel also offers Call and Dictate shortcuts. Real messages and
-          calls open in ChatGPT.
-        </p>
-        <small id="storage-note"
-          >Display and location choices are stored on this browser when storage
-          is available. Preview messages are kept in memory only.</small
-        >
+        <h2>Your companion</h2>
+        <p>Create or dictate a local draft, then copy it into ChatGPT to send. Call controls open ChatGPT, where you can start a call. This dashboard cannot read your existing conversations or unread messages.</p>
+        <small id="storage-note">Display and location choices are stored on this browser when storage is available.</small>
       </section>
       <div
         id="panel-menu"

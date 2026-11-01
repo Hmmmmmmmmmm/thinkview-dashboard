@@ -1100,3 +1100,19 @@ html[data-fullscreen="true"] .footer {
 .board[data-resized="true"] > .panel {
   padding: 16px 18px;
 }
+
+/* Full-screen scrolling remains available without visible scrollbar chrome. */
+html[data-fullscreen="true"] * { scrollbar-width: none; }
+html[data-fullscreen="true"] *::-webkit-scrollbar { display: none; }
+
+.global-actions { display:flex; gap:8px; justify-content:flex-end; }
+.notification-list { position:absolute; z-index:30; right:16px; top:90px; max-width:420px; max-height:60vh; overflow:auto; padding:12px; background:var(--bg); color:var(--ink); border:1px solid var(--line); border-radius:16px; }
+.notification-item { display:flex; align-items:center; gap:12px; padding:8px; border-bottom:1px solid var(--line); }
+.notification-item button { min-height:44px; }
+.panel-group { width:100%; }
+.panel-group h3 { margin:12px 0 4px; }
+.notification-setting { display:flex; align-items:center; justify-content:space-between; gap:12px; min-height:48px; }
+.notification-setting select { min-height:44px; }
+
+/* Fixed spacing keeps a multi-unit panel the same size after rotation. */
+.board { gap: 12px; }

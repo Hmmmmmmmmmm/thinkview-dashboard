@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "id": "calendar-agenda",
+  "title": "Agenda",
+  "version": "1.0.0",
+  "rootClass": "calendar-agenda-panel",
+  "colorRole": "surface",
+  "entries": {
+    "html": "panel.html",
+    "css": "panel.css",
+    "js": "panel.js"
+  },
+  "capabilities": [
+    "network",
+    "storage",
+    "external-navigation"
+  ],
+  "assets": [],
+  "defaultEnabled": false,
+  "networkOrigins": [
+    "https://accounts.google.com",
+    "https://www.googleapis.com"
+  ],
+  "type": "Calendar",
+  "grid": {
+    "columns": 1,
+    "rows": 1
+  }
+}

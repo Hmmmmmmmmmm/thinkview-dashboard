@@ -509,31 +509,16 @@
   $("message-input").addEventListener("keydown", function (e) {
     if (e.key === "Enter" && !e.shiftKey && !e.isComposing) {
       e.preventDefault();
-      addPreview();
+      copyDraft();
     }
   });
-  function addPreview() {
+  async function copyDraft() {
     var value = $("message-input").value.trim();
     if (!value) return;
-    stopDictation();
-    var message = document.createElement("div");
-    message.className = "message user";
-    var author = document.createElement("span");
-    author.className = "message-author";
-    author.textContent = "You · local preview";
-    message.appendChild(author);
-    message.appendChild(document.createTextNode(value));
-    $("chat-history").appendChild(message);
-    $("message-input").value = "";
-    inputChanged();
-    $("composer-status").textContent =
-      "Preview only. Open ChatGPT to send this to your companion.";
-    $("chat-history").scrollTop = $("chat-history").scrollHeight;
+    try { await navigator.clipboard.writeText(value); $("composer-status").textContent = "Draft copied. Open ChatGPT to paste and send it."; }
+    catch (e) { $("message-input").select(); $("composer-status").textContent = "Select and copy the draft, then open ChatGPT to send it."; }
   }
-  $("composer").onsubmit = function (e) {
-    e.preventDefault();
-    addPreview();
-  };
+  $("composer").onsubmit = function (e) { e.preventDefault(); copyDraft(); };
   function callDot() {
     stopDictation();
     window.open(DOT_URL, "_blank", "noopener,noreferrer");
@@ -583,7 +568,7 @@
       $("message-input").value += ($("message-input").value ? " " : "") + text;
       inputChanged();
       $("composer-status").textContent =
-        "Review your words before adding them to the preview.";
+        "Review your draft before copying it to ChatGPT.";
     };
     recognition.onerror = function () {
       $("composer-status").textContent =
@@ -601,10 +586,7 @@
         "Dictation could not start. Try your keyboard’s microphone.";
     }
   };
-  $("quick-dictate").onclick = function () {
-    openChat();
-    $("dictate").click();
-  };
+  $("quick-dictate").onclick = function () { openChat(); $("dictate").click(); };
   var wakeLock = null,
     wakeWanted = false;
   async function keepAwake() {
@@ -695,6 +677,54 @@
         return [panel.id, panel.title];
       }),
     );
+  // Runtime imports are trusted code. Persist the single-file package, not a path to it.
+  var importedPackages = read("imported-panels") || [];
+  if (!Array.isArray(importedPackages)) importedPackages = [];
+  function validImported(pkg) {
+    var m = pkg && pkg.manifest, e = pkg && pkg.entries;
+    var idPattern = /^[a-z][a-z0-9-]{0,39}$/;
+    var capabilities = ["local-time", "storage", "network", "location", "microphone", "external-navigation"];
+    var required = ["schemaVersion", "id", "title", "version", "rootClass", "colorRole", "entries", "capabilities", "assets", "defaultEnabled"];
+    var optional = ["networkOrigins", "description", "type", "grid"];
+    function object(value) { return value && typeof value === "object" && !Array.isArray(value); }
+    function uniqueStrings(value) { return Array.isArray(value) && value.every(function (v) { return typeof v === "string"; }) && new Set(value).size === value.length; }
+    function relativePath(value) { return typeof value === "string" && value.length > 0 && !value.startsWith("/") && !value.includes("\\") && value.split("/").every(function (part) { return part && part !== "." && part !== ".."; }); }
+    if (!object(pkg) || pkg.format !== "thinkview-panel-1" || !object(m) || !object(e)) return false;
+    if (Object.keys(pkg).some(function (key) { return !["format", "manifest", "entries"].includes(key); }) || Object.keys(m).some(function (key) { return !required.includes(key) && !optional.includes(key); }) || required.some(function (key) { return !Object.prototype.hasOwnProperty.call(m, key); })) return false;
+    if (m.schemaVersion !== 1 || typeof m.id !== "string" || !idPattern.test(m.id) || typeof m.rootClass !== "string" || !idPattern.test(m.rootClass) || typeof m.title !== "string" || !m.title.trim() || typeof m.version !== "string" || !/^\d+\.\d+\.\d+$/.test(m.version) || !["primary", "secondary", "tertiary", "surface"].includes(m.colorRole) || typeof m.defaultEnabled !== "boolean") return false;
+    if (("type" in m && (typeof m.type !== "string" || !m.type.trim())) || ("description" in m && typeof m.description !== "string")) return false;
+    if ("grid" in m && (!object(m.grid) || Object.keys(m.grid).length !== 2 || !Number.isInteger(m.grid.columns) || m.grid.columns < 1 || m.grid.columns > 2 || !Number.isInteger(m.grid.rows) || m.grid.rows < 1 || m.grid.rows > 3)) return false;
+    if (!uniqueStrings(m.capabilities) || m.capabilities.some(function (capability) { return !capabilities.includes(capability); }) || !uniqueStrings(m.assets) || !m.assets.every(relativePath)) return false;
+    if ("networkOrigins" in m && (!uniqueStrings(m.networkOrigins) || !m.networkOrigins.every(function (origin) { return /^https:\/\/[a-zA-Z0-9.-]+(?::\d+)?$/.test(origin); }))) return false;
+    if (m.capabilities.includes("network") && (!Array.isArray(m.networkOrigins) || !m.networkOrigins.length)) return false;
+    if (!object(m.entries) || Object.keys(m.entries).length !== 3 || !["html", "css", "js"].every(function (key) { return relativePath(m.entries[key]); })) return false;
+    if (Object.keys(e).length !== 3 || !["html", "css", "js"].every(function (key) { return typeof e[key] === "string"; })) return false;
+    return !/<\s*script\b|\son[a-z]+\s*=/i.test(e.html) && !/@import|<\/style/i.test(e.css) && !/<\/script/i.test(e.js);
+  }
+  var loadedPackageIds = new Set();
+  importedPackages.forEach(function (pkg) {
+    if (!validImported(pkg) || panelCatalog.panels.some(function (m) { return m.id === pkg.manifest.id; })) return;
+    var m = pkg.manifest, section = document.createElement("section"), tools = document.createElement("div"), move = document.createElement("button"), pin = document.createElement("button"), style = document.createElement("style");
+    section.className = "panel " + m.rootClass; section.dataset.panel = m.id; section.dataset.tone = m.colorRole; section.setAttribute("aria-label", m.title); tools.className = "panel-tools";
+    move.type = pin.type = "button"; move.className = "panel-handle"; pin.className = "panel-pin"; move.dataset.move = pin.dataset.pin = m.id; move.setAttribute("aria-label", "Move " + m.title + " panel"); pin.setAttribute("aria-label", "Pin " + m.title + " panel"); move.textContent = "Move"; pin.textContent = "Pin";
+    tools.append(move, pin); section.innerHTML = pkg.entries.html; section.prepend(tools); board.appendChild(section); style.textContent = pkg.entries.css; document.head.appendChild(style);
+    try { DisplayPanels.register(m, new Function("ctx", pkg.entries.js)); panelCatalog.panels.push(m); panelNames[m.id] = m.title; loadedPackageIds.add(m.id); } catch (e) { section.remove(); style.remove(); console.error("Imported panel registration failed", m.id); }
+  });
+  $("panel-import").onchange = async function () {
+    var file = this.files[0]; if (!file) return;
+    try {
+      if (file.size > 2 * 1024 * 1024) throw Error("Package exceeds 2 MB.");
+      var pkg = JSON.parse(await file.text()); if (!validImported(pkg)) throw Error("Invalid package format.");
+      if (panelCatalog.panels.some(function (m) { return m.id === pkg.manifest.id; }) || importedPackages.some(function (p) { return p && p.manifest && p.manifest.id === pkg.manifest.id; })) throw Error("A panel with this ID is already stored. Remove it before importing again.");
+      // Compile before persistence; this is trusted code and executes only when mounted.
+      new Function("ctx", pkg.entries.js);
+      var fragment = document.createElement("template"), seen = new Set(); fragment.innerHTML = pkg.entries.html;
+      fragment.content.querySelectorAll("[id]").forEach(function (el) { if (seen.has(el.id) || document.getElementById(el.id)) throw Error("Duplicate HTML ID: " + el.id); seen.add(el.id); });
+      var disclosure = "Install trusted code: " + pkg.manifest.title + "?\nCapabilities: " + (pkg.manifest.capabilities.join(", ") || "none declared") + "\nOrigins: " + ((pkg.manifest.networkOrigins || []).join(", ") || "none declared") + "\nThis code has full access to the dashboard and is not isolated.";
+      if (!window.confirm(disclosure)) return;
+      importedPackages.push(pkg); if (!preferences.set("imported-panels", importedPackages)) throw Error("Browser storage is unavailable or full."); window.location.reload();
+    } catch (e) { $("panel-import-status").textContent = "Could not load panel: " + e.message; } finally { this.value = ""; }
+  };
   var panelDefault = panelCatalog.panels.map(function (panel) {
       return panel.id;
     }),
@@ -715,27 +745,24 @@
   }
   function updatePanelGrid() {
     var visible = panelLayout.order.filter(panelEnabled),
-      styles = getComputedStyle(board),
-      available =
-        board.clientHeight -
-        parseFloat(styles.paddingTop) -
-        parseFloat(styles.paddingBottom),
       plan = DashboardLayout.grid(
         visible,
         panelLayout.sizes,
-        matchMedia("(min-aspect-ratio:11/10)").matches,
-        available,
-        parseFloat(styles.rowGap) || 0,
+        window.innerWidth > window.innerHeight,
+        window.innerWidth,
+        window.innerHeight,
+        12,
+        Object.fromEntries(panelCatalog.panels.map(function (p) { return [p.id, p.grid || { columns: 1, rows: 1 }]; })),
       );
     board.setAttribute("data-resized", String(plan.resized));
     board.style.gridTemplateColumns =
-      "repeat(" + plan.columns + ",minmax(0,1fr))";
+      "repeat(" + plan.columns + "," + plan.columnWidth + "px)";
     board.style.gridTemplateRows =
       "repeat(" + plan.rows + "," + plan.rowHeight + "px)";
     board.style.gridAutoRows = plan.rowHeight + "px";
     visible.forEach(function (id) {
-      panelElement(id).style.gridColumn = "span " + plan.spans[id];
-      panelElement(id).style.gridRow = "auto";
+      panelElement(id).style.gridColumn = "span " + plan.spans[id].columns;
+      panelElement(id).style.gridRow = "span " + plan.spans[id].rows;
     });
   }
   function panelElement(id) {
@@ -1043,7 +1070,7 @@
     var panel = panelElement(id);
     panel.setAttribute("data-editing", "true");
     $("panel-menu-heading").textContent = panelNames[id] + " panel";
-    var size = panelLayout.sizes[id] || "auto";
+    var size = panelLayout.sizes[id] ? (panelLayout.sizes[id].columns === 2 ? "big" : "medium") : "auto";
     ["big", "medium", "auto"].forEach(function (key) {
       $("panel-size-" + key).setAttribute("aria-pressed", String(size === key));
     });
@@ -1065,7 +1092,8 @@
       showToast("Unpin this panel before resizing it.");
       return;
     }
-    panelLayout.sizes[editingPanel] = size;
+    if (size === "auto") delete panelLayout.sizes[editingPanel];
+    else panelLayout.sizes[editingPanel] = { columns: size === "big" ? 2 : 1, rows: 1 };
     saveLayout();
     openPanelMenu(editingPanel);
     showToast(
@@ -1124,25 +1152,74 @@
     requestAnimationFrame(updatePanelGrid);
   });
 
-  panelCatalog.panels.forEach(function (manifest) {
-    var label = document.createElement("label"),
-      toggle = document.createElement("input");
-    label.className = "panel-library-item";
-    toggle.type = "checkbox";
-    toggle.checked = panelEnabled(manifest.id);
-    toggle.setAttribute("aria-label", "Show " + manifest.title + " panel");
-    toggle.onchange = function () {
-      if (!toggle.checked && panelDefault.filter(panelEnabled).length === 1) {
-        toggle.checked = true;
-        return;
-      }
-      panelLayout.enabled[manifest.id] = toggle.checked;
-      saveLayout();
-    };
-    label.appendChild(toggle);
-    label.appendChild(document.createTextNode(manifest.title));
-    $("panel-library").appendChild(label);
+  var notificationPreferences = read("notification-behavior") || {};
+  var notifications = new Map(), notificationListeners = new Set(), notificationCounter = 0;
+  var priorities = ["emergency", "high", "medium", "low"];
+  var notificationHost = {
+    publish: function (item) {
+      if (!item || typeof item.title !== "string") throw Error("A notification title is required");
+      var id = String(item.id || "notification-" + (++notificationCounter));
+      var priority = priorities.includes(item.priority) ? item.priority : "medium";
+      var entry = { id: id, title: item.title, message: String(item.message || ""), priority: priority, source: String(item.source || "panel"), onActivate: item.onActivate };
+      notifications.set(id, entry); notifyChanged();
+      var behavior = notificationPreferences[priority] || (priority === "emergency" ? "alert" : priority === "high" ? "toast" : "list");
+      if (behavior === "alert") { wake(); $("notification-list").hidden = false; $("notifications-open").setAttribute("aria-expanded", "true"); }
+      if (behavior === "toast") showToast(entry.title + (entry.message ? ": " + entry.message : ""));
+      return id;
+    },
+    dismiss: function (id) { notifications.delete(String(id)); notifyChanged(); },
+    list: function () { return Array.from(notifications.values()); },
+    subscribe: function (callback) { notificationListeners.add(callback); callback(notificationHost.list()); return function () { notificationListeners.delete(callback); }; }
+  };
+  function notifyChanged() {
+    var entries = notificationHost.list();
+    $("notification-count").textContent = String(entries.length);
+    var list = $("notification-list"); list.textContent = "";
+    if (!entries.length) list.textContent = "No notifications.";
+    entries.sort(function (a,b) { return priorities.indexOf(a.priority) - priorities.indexOf(b.priority); }).forEach(function (entry) {
+      var row = document.createElement("div"), content = document.createElement("div"), title = document.createElement("strong"), detail = document.createElement("div"), dismiss = document.createElement("button");
+      row.className = "notification-item"; title.textContent = entry.title + " · " + entry.priority; detail.textContent = entry.message;
+      content.append(title, detail); row.appendChild(content);
+      if (typeof entry.onActivate === "function") { var open = document.createElement("button"); open.textContent = "Open"; open.onclick = entry.onActivate; row.appendChild(open); }
+      dismiss.textContent = "Dismiss"; dismiss.setAttribute("aria-label", "Dismiss " + entry.title); dismiss.onclick = function () { notificationHost.dismiss(entry.id); }; row.appendChild(dismiss); list.appendChild(row);
+    });
+    notificationListeners.forEach(function (listener) { listener(entries.slice()); });
+  }
+  $("notifications-open").onclick = function () { var list = $("notification-list"); list.hidden = !list.hidden; this.setAttribute("aria-expanded", String(!list.hidden)); };
+  priorities.forEach(function (priority) {
+    var row = document.createElement("label"), select = document.createElement("select"); row.className = "notification-setting"; row.appendChild(document.createTextNode(priority)); select.setAttribute("aria-label", priority + " notification behavior");
+    [["list", "Notification list"], ["toast", "Toast and list"], ["alert", "Open list and wake display"]].forEach(function (option) { var el = document.createElement("option"); el.value = option[0]; el.textContent = option[1]; select.appendChild(el); });
+    select.value = notificationPreferences[priority] || (priority === "emergency" ? "alert" : priority === "high" ? "toast" : "list");
+    select.onchange = function () { notificationPreferences[priority] = select.value; write("notification-behavior", notificationPreferences); }; row.appendChild(select); $("notification-settings").appendChild(row);
   });
+  notifyChanged();
+  function renderPanelLibrary() {
+    var library = $("panel-library"), query = $("panel-search").value.trim().toLowerCase(), groups = {};
+    library.textContent = "";
+    panelCatalog.panels.forEach(function (manifest) {
+      var type = manifest.type || "Other";
+      if (!(manifest.title + " " + type + " " + (manifest.description || "")).toLowerCase().includes(query)) return;
+      if (!groups[type]) { var group = document.createElement("div"), heading = document.createElement("h3"); group.className = "panel-group"; heading.textContent = type; group.appendChild(heading); library.appendChild(group); groups[type] = group; }
+      var label = document.createElement("label"), toggle = document.createElement("input"); label.className = "panel-library-item"; toggle.type = "checkbox"; toggle.checked = panelEnabled(manifest.id); toggle.setAttribute("aria-label", "Show " + manifest.title + " panel");
+      toggle.onchange = function () { if (!toggle.checked && panelDefault.filter(panelEnabled).length === 1) { toggle.checked = true; showToast("Keep at least one panel visible."); return; } panelLayout.enabled[manifest.id] = toggle.checked; saveLayout(); };
+      label.appendChild(toggle); label.appendChild(document.createTextNode(manifest.title)); groups[type].appendChild(label);
+      if (loadedPackageIds.has(manifest.id)) { var remove = document.createElement("button"); remove.type = "button"; remove.className = "text-button"; remove.textContent = "Remove " + manifest.title; remove.onclick = function () { if (!window.confirm("Remove " + manifest.title + "? Its saved panel data remains in this browser.")) return; importedPackages = importedPackages.filter(function (p) { return !p || !p.manifest || p.manifest.id !== manifest.id; }); if (preferences.set("imported-panels", importedPackages)) window.location.reload(); else $("panel-import-status").textContent = "Could not save removal."; }; groups[type].appendChild(remove); }
+    });
+    importedPackages.forEach(function (pkg, index) {
+      var id = pkg && pkg.manifest && pkg.manifest.id;
+      if (validImported(pkg) && loadedPackageIds.has(id)) return;
+      var label = typeof id === "string" ? id : "invalid package " + (index + 1);
+      if (query && !label.toLowerCase().includes(query)) return;
+      var row = document.createElement("div"), remove = document.createElement("button");
+      row.className = "panel-group"; row.appendChild(document.createTextNode("Unavailable stored panel: " + label + " "));
+      remove.type = "button"; remove.className = "text-button"; remove.textContent = "Remove"; remove.setAttribute("aria-label", "Remove " + label);
+      remove.onclick = function () { var next = importedPackages.filter(function (_, i) { return i !== index; }); if (preferences.set("imported-panels", next)) window.location.reload(); else $("panel-import-status").textContent = "Could not save removal."; };
+      row.appendChild(remove); library.appendChild(row);
+    });
+    if (!library.children.length) library.textContent = "No matching panels.";
+  }
+  $("panel-search").addEventListener("input", renderPanelLibrary); renderPanelLibrary();
+  $("refresh-all").onclick = function () { DisplayPanels.refresh(); DashboardCalendar.refresh(); showToast("Panels refreshed."); };
   applyLayout();
 
   setTheme(activeMode);
@@ -1150,6 +1227,7 @@
   viewport();
   activity();
   DisplayPanels.start({
+    notifications: notificationHost,
     core: {
       clock: function () {
         clock();

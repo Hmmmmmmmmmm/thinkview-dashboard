@@ -10,11 +10,20 @@
     "css": "panel.css",
     "js": "panel.js"
   },
-  "capabilities": ["network", "location", "storage"],
+  "capabilities": [
+    "network",
+    "location",
+    "storage"
+  ],
   "assets": [],
   "defaultEnabled": true,
   "networkOrigins": [
     "https://api.open-meteo.com",
     "https://geocoding-api.open-meteo.com"
-  ]
+  ],
+  "type": "Weather",
+  "grid": {
+    "columns": 1,
+    "rows": 1
+  }
 }

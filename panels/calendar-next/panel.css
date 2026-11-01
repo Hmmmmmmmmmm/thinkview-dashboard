@@ -1,0 +1,12 @@
+.panel.calendar-next-panel { container: events / size; display:flex; flex-direction:column; gap:.45rem; padding:1rem; overflow:auto; touch-action:pan-y; color:var(--md-sys-color-on-surface); background:var(--md-sys-color-surface); }
+.calendar-next-header { display:flex; align-items:center; justify-content:space-between; gap:.5rem; }
+.calendar-next-header strong { font-size:clamp(.9rem, 7cqw, 1.25rem); }
+.calendar-next-panel button, .calendar-next-panel input, .calendar-next-panel summary { font:inherit; }
+.calendar-next-panel button { color:var(--md-sys-color-on-secondary-container); background:var(--md-sys-color-secondary-container); border:0; border-radius:1rem; padding:.4rem .7rem; }
+.calendar-next-status, .calendar-next-settings { font-size:.8rem; line-height:1.35; margin:0; }
+.calendar-next-list { display:grid; gap:.4rem; min-height:0; overflow:auto; }
+.calendar-next-item { border-left:3px solid var(--md-sys-color-primary); padding:.15rem .5rem; overflow-wrap:anywhere; }
+.calendar-next-item time { display:block; font-size:.75rem; opacity:.8; }
+.calendar-next-settings { margin-top:auto; } .calendar-next-settings label { display:block; margin:.4rem 0; } .calendar-next-settings input { width:100%; }
+.calendar-next-settings [data-calendars] label { display:flex; gap:.4rem; align-items:center; } .calendar-next-settings input[type=checkbox] { width:auto; }
+@container events (max-height:180px) { .calendar-next-settings { margin-top:0; } .calendar-next-item { font-size:.85rem; } }

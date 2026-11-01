@@ -49,3 +49,5 @@
     line-height: 1.45;
   }
 }
+
+.panel[data-panel="notes"] { background:var(--md-sys-color-surface); color:var(--md-sys-color-on-surface); }

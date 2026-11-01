@@ -21,8 +21,13 @@
     const sizes = {},
       enabled = {};
     ids.forEach((id) => {
-      if (saved.sizes && ["auto", "big", "medium"].includes(saved.sizes[id]))
-        sizes[id] = saved.sizes[id];
+      if (saved.sizes) {
+        const size = saved.sizes[id];
+        if (size === "big") sizes[id] = { columns: 2, rows: 1 };
+        else if (size === "medium") sizes[id] = { columns: 1, rows: 1 };
+        else if (size && Number.isInteger(size.columns) && Number.isInteger(size.rows) && size.columns >= 1 && size.columns <= 2 && size.rows >= 1 && size.rows <= 3)
+          sizes[id] = { columns: size.columns, rows: size.rows };
+      }
       if (saved.enabled && typeof saved.enabled[id] === "boolean")
         enabled[id] = saved.enabled[id];
     });
@@ -44,36 +49,21 @@
     let index = 0;
     return order.map((key) => (pinned.includes(key) ? key : free[index++]));
   }
-  function grid(ids, sizes, landscape, available, gap) {
-    const count = ids.length || 1,
-      resized = ids.some((id) => ["big", "medium"].includes(sizes[id]));
-    const columns = resized
-      ? 2
-      : landscape
-        ? Math.min(3, count)
-        : count > 3
-          ? 2
-          : 1;
-    const rows = resized ? 3 : Math.ceil(count / columns);
-    const height = Number.isFinite(available) ? available : 0,
-      spacing = Number.isFinite(gap) ? gap : 0;
-    const rowHeight = Math.max(
-      resized ? 1 : 120,
-      (height - spacing * (rows - 1)) / rows,
-    );
+  function grid(ids, sizes, landscape, viewportWidth, viewportHeight, gap, defaults) {
+    const columns = landscape ? 3 : 2, rows = landscape ? 2 : 3;
+    const spacing = Number.isFinite(gap) ? Math.max(0, gap) : 0;
+    // Reserve equal chrome on both axes so swapping viewport dimensions preserves the unit.
+    const width = Number.isFinite(viewportWidth) ? Math.max(0, viewportWidth) : 0;
+    const height = Number.isFinite(viewportHeight) ? Math.max(0, viewportHeight) : 0;
+    const shortEdge = Math.max(0, Math.min(width, height) - 96);
+    const longEdge = Math.max(0, Math.max(width, height) - 96);
+    const unit = Math.max(1, Math.floor(Math.min((shortEdge - spacing) / 2, (longEdge - 2 * spacing) / 3)));
     const spans = {};
     ids.forEach((id) => {
-      spans[id] = !resized
-        ? 1
-        : sizes[id] === "big"
-          ? 2
-          : sizes[id] === "medium"
-            ? 1
-            : count <= 3 && !landscape
-              ? 2
-              : 1;
+      const size = sizes[id] || (defaults && defaults[id]) || { columns: 1, rows: 1 };
+      spans[id] = { columns: Math.min(columns, size.columns || 1), rows: size.rows || 1 };
     });
-    return { columns, rows, rowHeight, resized, spans };
+    return { columns, rows, rowHeight: unit, columnWidth: unit, resized: false, spans };
   }
   return { migrate, move, grid };
 });

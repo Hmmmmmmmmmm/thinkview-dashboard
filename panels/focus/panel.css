@@ -114,3 +114,5 @@ html[data-theme="minimal"] .focus-presets button {
     font-size: clamp(28px, 35cqh, 40px);
   }
 }
+
+.panel[data-panel="focus"] { background:var(--md-sys-color-primary-container); color:var(--md-sys-color-on-primary-container); }

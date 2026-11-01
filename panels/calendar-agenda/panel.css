@@ -1,0 +1,12 @@
+.panel.calendar-agenda-panel { container: events / size; display:flex; flex-direction:column; gap:.45rem; padding:1rem; overflow:auto; touch-action:pan-y; color:var(--md-sys-color-on-surface); background:var(--md-sys-color-surface); }
+.calendar-agenda-header { display:flex; align-items:center; justify-content:space-between; gap:.5rem; }
+.calendar-agenda-header strong { font-size:clamp(.9rem, 7cqw, 1.25rem); }
+.calendar-agenda-panel button, .calendar-agenda-panel input, .calendar-agenda-panel summary { font:inherit; }
+.calendar-agenda-panel button { color:var(--md-sys-color-on-secondary-container); background:var(--md-sys-color-secondary-container); border:0; border-radius:1rem; padding:.4rem .7rem; }
+.calendar-agenda-status, .calendar-agenda-settings { font-size:.8rem; line-height:1.35; margin:0; }
+.calendar-agenda-list { display:grid; gap:.4rem; min-height:0; overflow:auto; }
+.calendar-agenda-item { border-left:3px solid var(--md-sys-color-primary); padding:.15rem .5rem; overflow-wrap:anywhere; }
+.calendar-agenda-item time { display:block; font-size:.75rem; opacity:.8; }
+.calendar-agenda-settings { margin-top:auto; } .calendar-agenda-settings label { display:block; margin:.4rem 0; } .calendar-agenda-settings input { width:100%; }
+.calendar-agenda-settings [data-calendars] label { display:flex; gap:.4rem; align-items:center; } .calendar-agenda-settings input[type=checkbox] { width:auto; }
+@container events (max-height:180px) { .calendar-agenda-settings { margin-top:0; } .calendar-agenda-item { font-size:.85rem; } }

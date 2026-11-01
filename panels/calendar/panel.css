@@ -120,3 +120,5 @@ html[data-theme="minimal"] .calendar-day[data-today="true"] {
     min-width: 20px;
   }
 }
+
+.panel[data-panel="calendar"] { background:var(--md-sys-color-surface); color:var(--md-sys-color-on-surface); }
