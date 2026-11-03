@@ -6,14 +6,20 @@ Newest release first. Record user-visible changes, compatibility requirements an
 
 ### Changes
 
+- Added an optional portable companion backend adapter for an explicit Open Dots handoff; drafts remain local and opening does not sign in, send a message or start a call.
+
 - Now playing shows an optional measured system-output peak intensity meter in place of decorative playback bars. Track metadata remains available for music or video sources when published by the native service; video is not embedded.
 - Output intensity requires a separate explicit Android permission action and can be disabled independently of track information. Stale or unavailable readings are hidden, and minimal/reduced-motion modes keep the current static reading.
 
 ### Compatibility
 
+- Native opening requires a compatible companion backend; standalone dashboards retain their external link and local draft.
+
 - The intensity meter requires a ThinkView app exposing music level API version 1 and Android output-mix Visualizer support. Older apps retain track information but cannot provide intensity. The Android permission is separate from notification access; the dashboard does not record microphone audio.
 
 ### Validation
+
+- Companion adapter automated tests cover capability validation, unavailable backends, explicit open, cancellation and transport boundaries. Device-native sign-in and opening require separate verification.
 
 - Automated checks and package validation are recorded with the implementation. The local development dashboard was installed with the updated shell and receiver; its Now playing controls were visible. The user subsequently reported that live playback works. Sender coverage, individual metadata fields, output intensity behavior, permission revocation and overnight use remain unverified. This was not a public dashboard release.
 

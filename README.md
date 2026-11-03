@@ -55,6 +55,14 @@ The Audio, Connectivity, Display and Device Status panels are disabled by defaul
 
 Now playing is enabled by default. ThinkView app 0.9 supplies real active media-session title, artist, album, embedded artwork and progress when available. **Connect music** explains Android notification access and opens its system settings only after another explicit action. Android grants broad notification access; this app uses the component to query active media sessions and does not read or store notification contents. Without access, it can report audible audio without track details. Players that do not publish a media session (including some receivers) may provide no metadata. The optional output intensity meter displays a single normalized peak measured from the Android system output mix, not frequency bands. It requires a compatible app and a separate, explicit Android audio permission; the browser does not capture microphone audio. Use Disable output intensity to stop measurement independently of track information. When data are stale or unavailable the meter is hidden. Minimal mode and reduced-motion settings retain the latest valid static meter; the record animation pauses.
 
+## Companion backend interface
+
+`DashboardCompanion.create(transport)` accepts an optional platform-neutral adapter with asynchronous `capabilities(signal)`, `status(signal)` and `open(signal)` methods and an optional `dispose()` method. Capabilities return `{version:1, provider, capabilities:{open, authStatus, read, send, call}}`; status returns `{version:1, availability, view, auth:"unknown"}`; `open` resolves `{ok:true}` when the request is accepted. Only `open` is implemented; the other capability flags are reserved and are not acted on. The default adapter uses the optional same-origin `/api/companion/v1/` service and keeps its transport token private. Calls time out and are cancelled on disposal. A platform adapter owns account sessions and service integration; the dashboard neither holds credentials nor infers sign-in from an open view. No read, send, call or authentication-status behavior is implied by this interface.
+
+See [the companion backend contract](docs/COMPANION-BACKEND.md) for response states, injection and current validation limits.
+
+Open Dots requests the compatible backend to open its configured companion; without one, the standalone external link remains available. The editor stores a local draft, which must be copied and sent in the service. Opening the service does not send the draft or start a call.
+
 ## Personal configuration
 
 The public default uses a generic companion avatar, the generic ChatGPT Dots link, and Hong Kong as an explicitly marked preview weather location. It contains no account-specific companion URL, device identifiers or personal profile image.

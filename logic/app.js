@@ -8,7 +8,7 @@
     WEATHER_MS = DashboardConfig.display.weatherRefreshMs,
     STALE_MS = 30 * 60 * 1000;
   var DOT_URL = $("real-chat").href,
-    storageAvailable = true;
+    companionLifecycle = DashboardCompanion.lifecycle(window), storageAvailable = true;
   var preferences = DashboardStorage.local(DashboardConfig.storagePrefix);
   function read(key) {
     var value = preferences.get(key, null);
@@ -358,6 +358,7 @@
   function openChat() {
     closePanelMenu();
     $("chat").hidden = false;
+    if (companionLifecycle.current()) companionLifecycle.current().refresh();
     syncPanels();
     $("close-chat").focus();
   }
@@ -531,17 +532,27 @@
     e.preventDefault();
     copyDraft();
   };
-  function callDot() {
+  function openCompanion(event) {
     stopDictation();
-    window.open(DOT_URL, "_blank", "noopener,noreferrer");
-    $("composer-status").textContent =
-      "ChatGPT opened. Use its phone button to start your real call.";
-    showToast(
-      "Open your companion’s phone button in ChatGPT to start the call.",
-    );
+    var companion = companionLifecycle.current();
+    if (!companion || !companion.state().open) {
+      if (!event || event.currentTarget !== $("real-chat")) window.open(DOT_URL, "_blank", "noopener,noreferrer");
+      $("composer-status").textContent = "Open the service to continue. Your draft has not been sent.";
+      return;
+    }
+    if (event) event.preventDefault();
+    companion.open().then(function () {
+      $("composer-status").textContent = "Open requested. Your draft has not been sent.";
+      showToast("Open requested.");
+    }).catch(function () {
+      $("composer-status").textContent = "Could not open the companion. Try again.";
+      showToast("Could not open the companion.");
+      companion.refresh();
+    });
   }
-  $("call").onclick = callDot;
-  $("quick-call").onclick = callDot;
+  $("real-chat").addEventListener("click", openCompanion);
+  $("call").onclick = openCompanion;
+  $("quick-call").onclick = openCompanion;
   var recognition = null,
     listening = false;
   function stopDictation() {

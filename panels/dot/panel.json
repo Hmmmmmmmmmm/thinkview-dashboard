@@ -10,7 +10,7 @@
     "css": "panel.css",
     "js": "panel.js"
   },
-  "capabilities": ["microphone", "external-navigation"],
+  "capabilities": ["microphone", "external-navigation", "device-service"],
   "assets": [],
   "defaultEnabled": true,
   "type": "Companion",

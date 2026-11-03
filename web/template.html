@@ -80,6 +80,9 @@
             d="m7 3 3 5-2.5 2a16 16 0 0 0 6.5 6.5l2-2.5 5 3c0 3-2 4-4 4C10 20 4 14 3 7c0-2 1-4 4-4Z"
           />
         </symbol>
+        <symbol id="conversation" viewBox="0 0 24 24">
+          <path d="M4 4h16v12H9l-5 4V4Z" />
+        </symbol>
         <symbol id="mic" viewBox="0 0 24 24">
           <rect x="9" y="3" width="6" height="12" rx="3" />
           <path d="M5 10v2a7 7 0 0 0 14 0v-2m-7 9v3m-4 0h8" />
@@ -197,7 +200,7 @@
             href="{{COMPANION_URL}}"
             target="_blank"
             rel="noopener noreferrer"
-            >Open ChatGPT <svg><use href="#external" /></svg
+            >Open Dots <svg><use href="#external" /></svg
           ></a>
         </header>
         <div class="chat-history" id="chat-history">
@@ -215,10 +218,10 @@
               type="button"
               class="icon-button call-button"
               id="call"
-              aria-label="Open {{COMPANION_NAME}} in ChatGPT to call"
-              title="Call in ChatGPT"
+              aria-label="Open {{COMPANION_NAME}}"
+              title="Open companion"
             >
-              <svg><use href="#phone" /></svg>
+              <svg><use href="#conversation" /></svg>
             </button>
             <div class="input-shell">
               <textarea
@@ -249,7 +252,7 @@
             </button>
           </form>
           <div class="composer-labels">
-            <span>OPEN CALL</span><span>COPY DRAFT</span><span>DICTATE</span>
+            <span>OPEN DOTS</span><span>COPY DRAFT</span><span>DICTATE</span>
           </div>
         </div>
       </section>
