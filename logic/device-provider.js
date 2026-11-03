@@ -2,6 +2,7 @@
 (function () {
   "use strict";
   var listeners = new Set(), intervals = new Map(), timer = null, controller = null, generation = 0;
+  var capsMusicLevelVersion = 0;
   var token = null, commands = [], snapshot = { available: false, status: null, commands: [] };
   var allowed = {
     "audio.media": function (v) { return Number.isInteger(v) && v >= 0; },
@@ -11,6 +12,7 @@
     "display.brightness": function (v) { return Number.isInteger(v) && v >= 0 && v <= 100; },
     "display.orientation": function (v) { return ["auto", "portrait", "landscape"].indexOf(v) >= 0; },
     "music.access": function (v) { return v === true; },
+    "music.levelAccess": function (v) { return typeof v === "boolean"; },
     "display.keepAwake": function (v) { return typeof v === "boolean"; }
   };
   function notify() { listeners.forEach(function (fn) { try { fn(snapshot); } catch (e) { console.error("Device panel update failed", e); } }); }
@@ -22,12 +24,22 @@
     var states = ["on", "off", "turning-on", "turning-off", "unavailable"];
     return obj && states.indexOf(obj.state) >= 0 ? { state: obj.state, enabled: value(obj, "enabled", "boolean") } : null;
   }
+  function audioLevel(data) {
+    var states = ["disabled", "permission_required", "permission_denied", "waiting", "active", "stale", "unsupported", "error"];
+    if (!data || states.indexOf(data.state) < 0) return null;
+    var result = { enabled: typeof data.enabled === "boolean" ? data.enabled : null, state: data.state, available: false, value: null, measuredAt: null, staleAfterMs: null };
+    if (data.state !== "active" || data.available !== true) return result;
+    var now = Date.now();
+    if (typeof data.value !== "number" || !Number.isFinite(data.value) || data.value < 0 || data.value > 1 || data.unit !== "normalized_peak" || data.source !== "android_output_mix_visualizer" || !Number.isFinite(data.measuredAt) || !Number.isFinite(data.staleAfterMs) || data.staleAfterMs <= 0 || data.staleAfterMs > 1000 || data.measuredAt > now || now - data.measuredAt > data.staleAfterMs) { result.state = "stale"; return result; }
+    result.available = true; result.value = data.value; result.measuredAt = data.measuredAt; result.staleAfterMs = data.staleAfterMs;
+    return result;
+  }
   function music(data) {
     if (!data || data.supported !== true) return null;
     var states = ['idle','playing','paused','buffering'];
     function text(key) { return typeof data[key] === 'string' ? data[key].slice(0,240) : ''; }
     function time(key) { return typeof data[key] === 'number' && Number.isFinite(data[key]) && data[key] >= 0 ? data[key] : null; }
-    return { supported:true, access:data.access === true, state:states.includes(data.state) ? data.state : 'idle', title:text('title'), artist:text('artist'), album:text('album'), source:text('source'), artwork:typeof data.artwork === 'string' && data.artwork.length < 65000 && /^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(data.artwork) ? data.artwork : null, positionMs:time('positionMs'), durationMs:time('durationMs'), observedAt:time('observedAt') };
+    return { audioLevel:audioLevel(data.audioLevel), supported:true, access:data.access === true, state:states.includes(data.state) ? data.state : 'idle', title:text('title'), artist:text('artist'), album:text('album'), source:text('source'), artwork:typeof data.artwork === 'string' && data.artwork.length < 65000 && /^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(data.artwork) ? data.artwork : null, positionMs:time('positionMs'), durationMs:time('durationMs'), observedAt:time('observedAt') };
   }
   function parseStatus(data) {
     if (!data || data.version !== 1) throw Error("Unsupported device status");
@@ -48,7 +60,7 @@
   }
   async function json(url, options) {
     var response = await fetch(url, options);
-    if (!response.ok) throw Error("Device provider unavailable");
+    if (!response.ok) { var error = Error("Device provider unavailable"); error.status = response.status; throw error; }
     return response.json();
   }
   async function poll(myGeneration) {
@@ -59,11 +71,12 @@
         var caps = await json("/api/device/v1/capabilities", { signal: controller.signal, cache: "no-store", credentials: "same-origin" });
         if (!caps || caps.version !== 1 || typeof caps.token !== "string" || !caps.token || !Array.isArray(caps.commands) || !caps.commands.every(function (c) { return typeof c === "string"; })) throw Error("Unsupported device provider");
         token = caps.token;
+        capsMusicLevelVersion = caps.musicLevelVersion === 1 ? 1 : 0;
         commands = caps.commands.filter(function (c) { return Object.prototype.hasOwnProperty.call(allowed, c); });
       }
       var data = await json("/api/device/v1/status", { signal: controller.signal, cache: "no-store", credentials: "same-origin" });
       if (myGeneration !== generation) return;
-      snapshot = { available: true, status: parseStatus(data), commands: commands.slice() };
+      snapshot = { available: true, status: parseStatus(data), commands: commands.slice(), musicLevelVersion: capsMusicLevelVersion };
     } catch (e) {
       if (myGeneration !== generation) return;
       token = null; commands = [];
@@ -86,6 +99,13 @@
           token = null; commands = []; snapshot = { available: false, status: null, commands: [] };
         }
       };
+    },
+    musicLevel: async function (signal) {
+      if (!token || capsMusicLevelVersion !== 1) throw Error("Audio intensity unavailable");
+      var data = await json("/api/device/v1/music/level", { signal: signal, cache: "no-store", credentials: "same-origin" });
+      var parsed = audioLevel(data);
+      if (!parsed) throw Error("Invalid audio intensity response");
+      return parsed;
     },
     command: async function (name, value) {
       if (!token || commands.indexOf(name) < 0 || !allowed[name] || !allowed[name](value)) throw Error("This control is unavailable");

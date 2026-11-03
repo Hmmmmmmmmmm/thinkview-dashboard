@@ -24,7 +24,7 @@ Native shell bounds may already exclude system bars. CSS safe-area environment v
 
 ## Motion
 
-The clock colon flashes in bright/dark and remains steady in minimal mode. Now playing rotates the record and animates decorative bars only during reported playback. Paused/idle state stops those animations; minimal mode and reduced-motion preferences stop decorative motion. The bars are a playback indicator, not an audio waveform or measured equalizer. Do not label CSS easing a verified Material spring implementation.
+The clock colon flashes in bright/dark and remains steady in minimal mode. Now playing rotates the record during reported playback; minimal mode and reduced-motion preferences stop that animation. A single static meter reports the latest valid normalized system-output peak when the compatible app and separate permission are available. It is not a frequency spectrum. Stale or unavailable measurements hide the meter. Do not label CSS easing a verified Material spring implementation.
 
 ## Current verification
 

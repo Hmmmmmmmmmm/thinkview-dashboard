@@ -4,7 +4,18 @@ Newest release first. Record user-visible changes, compatibility requirements an
 
 ## Unreleased
 
-No entries.
+### Changes
+
+- Now playing shows an optional measured system-output peak intensity meter in place of decorative playback bars. Track metadata remains available for music or video sources when published by the native service; video is not embedded.
+- Output intensity requires a separate explicit Android permission action and can be disabled independently of track information. Stale or unavailable readings are hidden, and minimal/reduced-motion modes keep the current static reading.
+
+### Compatibility
+
+- The intensity meter requires a ThinkView app exposing music level API version 1 and Android output-mix Visualizer support. Older apps retain track information but cannot provide intensity. The Android permission is separate from notification access; the dashboard does not record microphone audio.
+
+### Validation
+
+- Automated checks and package validation are recorded with the implementation. Actual Android permission, capture behavior and device layout require device validation; this dashboard change alone does not update the Android app.
 
 ## 0.3.2 — 2026-11-02
 
