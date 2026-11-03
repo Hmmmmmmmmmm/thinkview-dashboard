@@ -15,7 +15,7 @@ Newest release first. Record user-visible changes, compatibility requirements an
 
 ### Validation
 
-- Automated checks and package validation are recorded with the implementation. Actual Android permission, capture behavior and device layout require device validation; this dashboard change alone does not update the Android app.
+- Automated checks and package validation are recorded with the implementation. The local development dashboard was installed with the updated shell and receiver; its Now playing controls were visible. The user subsequently reported that live playback works. Sender coverage, individual metadata fields, output intensity behavior, permission revocation and overnight use remain unverified. This was not a public dashboard release.
 
 ## 0.3.2 — 2026-11-02
 
