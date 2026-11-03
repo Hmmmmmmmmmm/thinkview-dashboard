@@ -106,6 +106,8 @@ Long-press reveals the corner menu and starts drag preparation. Moving after the
 
 ## Build and package
 
+For browser-local ZIP inspection, creation, editing, responsive preview and notification debugging, use [Panel Studio](PANEL-STUDIO.md). It follows this contract and embeds the current runtime without changing device installation.
+
 From the repository root:
 
 ```sh

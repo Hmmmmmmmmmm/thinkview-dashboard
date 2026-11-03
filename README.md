@@ -49,6 +49,16 @@ Page markup belongs in `web/`; shared behavior belongs in `logic/`; a widget's m
 
 Do not edit generated files in `dist/`.
 
+## Panel Studio
+
+Build the browser-local package editor with `npm run studio`, then open `dist/studio/index.html` directly in a current Chrome or Firefox. Alternatively, run `npm run serve` and visit `http://127.0.0.1:8767/studio/`. Studio is a separate developer website; it is not bundled into the always-on dashboard or installed on the device.
+
+Open or drop a panel ZIP to inspect its manifest, source, and assets, including packages in wrapper folders; choose a package when multiple roots are present. Directory asset declarations include nested files; create a panel from the starter or open any current catalog package as an example. Edit HTML/CSS/JavaScript or common manifest fields, validate, then choose **Run preview**. Preview sizes are columns × rows: 1×1, 1×2, 2×1, and 2×2, with configurable cell dimensions and bright/dark/minimal themes. The notification console tests priorities, ID replacement, attention, pinning, presentation, activation and dismissal. Layout event controls, disable/remount, preview storage, errors and downloadable logs support debugging.
+
+The **Data API** tab supplies editable backend fixtures: Android capabilities/status, music/intensity, command confirmation or rejection, calendar state, and custom JSON responses for `fetch()` routes. Choose a preset, edit its JSON, then **Apply & rerun**. The actual device provider handles simulated HTTP responses. Inspect request bodies, response bodies, status and timing; set latency, HTTP/network failures or stale timestamps for negative tests. Fixtures persist with the local draft and export separately from panel packages. They send no device commands or account requests; unmatched requests return 404 while fixtures are enabled.
+
+ZIP export preserves declared editable source/assets; dashboard JSON embeds assets for Settings → Load a trusted panel package (2 MiB import limit). Drafts and panel preview state stay in a separate browser storage namespace. Imports and restored drafts never execute automatically. Preview runs the current dashboard runtime/expansion/attention/fit helpers in an opaque sandbox, with network blocked by default and an opt-in for declared HTTPS origins. Native services, account access, built-in host adapters and Android behavior still require dashboard/device verification. See [the Studio guide](docs/PANEL-STUDIO.md).
+
 ## Optional device panels
 
 The Audio, Connectivity, Display and Device Status panels are disabled by default. Enable them in Settings when running in a compatible ThinkView app. They use its same-origin `/api/device/v1/` service through ordinary browser requests and show unavailable controls where the service, permission or device capability is absent. Commands are issued only after a user action; displayed state comes from subsequent device status. An ordinary static web server does not provide this service. Imported panel packages run as trusted page code and can access the same service; install only packages you trust.

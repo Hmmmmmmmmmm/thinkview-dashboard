@@ -9,6 +9,7 @@
   },
   "scripts": {
     "build": "python3 tools/build.py",
+    "studio": "python3 tools/build_studio.py",
     "check": "node --test tests/*.test.cjs && python3 -m unittest discover -s tests -p 'test_*.py' && python3 tools/build.py --check",
     "test": "npm run check",
     "serve": "python3 -m http.server 8767 --bind 127.0.0.1 --directory dist",

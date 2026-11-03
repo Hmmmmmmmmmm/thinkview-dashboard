@@ -6,8 +6,13 @@ Newest release first. Record user-visible changes, compatibility requirements an
 
 ### Changes
 
+- Added a collapsible Material 3 color design reference below the Studio editor (2026-11-03), showing current theme swatches, role names, CSS token names, hex values and supported manifest colorRole tags. Search and click-to-copy support CSS authoring; the reference follows the preview theme and uses the checked-in token data.
 - Added an optional portable companion backend adapter for an explicit Open Dots handoff; drafts remain local and opening does not sign in, send a message or start a call.
 
+- Studio ZIP import now supports wrapped package roots, selection among multiple manifests, and directory asset declarations; nested ZIP collections must first be extracted (2026-11-03).
+- Added the separate browser-local Panel Studio developer website (2026-11-03): ZIP inspection/import/export, source and manifest editing, declared assets, draft recovery and dashboard JSON export.
+- Added 1×1, 1×2, 2×1 and 2×2 panel previews, configurable cell dimensions, three dashboard themes, lifecycle/storage/layout-event debugging, and notification priority/replacement/presentation/activation/dismissal tools.
+- Added Studio Data API fixtures (2026-11-03): editable Android capabilities/status/music, command readback/rejection, calendar state, and custom fetch response routes with latency, HTTP/network failures and request/response inspection. All catalog packages are available as examples. Test data persists with drafts and imports/exports separately from installable panels.
 - Now playing shows an optional measured system-output peak intensity meter in place of decorative playback bars. Track metadata remains available for music or video sources when published by the native service; video is not embedded.
 - Output intensity requires a separate explicit Android permission action and can be disabled independently of track information. Stale or unavailable readings are hidden, and minimal/reduced-motion modes keep the current static reading.
 
@@ -15,12 +20,18 @@ Newest release first. Record user-visible changes, compatibility requirements an
 
 - Native opening requires a compatible companion backend; standalone dashboards retain their external link and local draft.
 
+- Studio is built with `npm run studio` and opens as a standalone HTML file in a current desktop browser. Compressed ZIP import requires `DecompressionStream('deflate-raw')`; no runtime dependencies or uploads are required. Preview is isolated with network blocked by default; device services, account connections and built-in host adapters require dashboard/device testing. Dashboard JSON export enforces the existing 2 MiB import limit. No Android permissions or APK changes are introduced by Studio.
+- Enabled Data API fixtures intercept preview fetch requests, use the unchanged device provider, and return 404 for unmatched requests. They do not call Android or connect accounts. Fixtures default to off; the existing network policy applies when disabled. Calendar state is a simulated service; real native permissions, OAuth, WebSockets and XMLHttpRequest are not simulated.
 - The intensity meter requires a ThinkView app exposing music level API version 1 and Android output-mix Visualizer support. Older apps retain track information but cannot provide intensity. The Android permission is separate from notification access; the dashboard does not record microphone audio.
 
 ### Validation
 
+- Color reference: 72 JavaScript tests and 6 Python tests passed. Chrome checked all 35 token names/values in each theme, manifest tags, search/copy fallback, theme synchronization, collapse, and 1440×1000, 1280×800, 800×1280 and 390×844 layouts. Token data is embedded from the checked-in theme file; no theme generation or Android change was required.
 - Companion adapter automated tests cover capability validation, unavailable backends, explicit open, cancellation and transport boundaries. Device-native sign-in and opening require separate verification.
 
+- Data API update: the combined dashboard suite passed 72 JavaScript tests and 6 Python tests, including unchanged-provider integration, response matching, command confirmation/acknowledgement/rejection, timestamp handling, aborts and simulated failures. Desktop Chrome exercised actual audio/connectivity/status/music/calendar panels, custom HTTPS fixtures with real network blocked, JSON validation, fixture draft recovery, data import/export and portrait/narrow layouts. Fixture tests do not verify real Android permissions or backend/account connectivity.
+- Folder ZIP import: independent browser verification passed nested SVG rendering, explicit Run behavior, exact ZIP bytes, embedded JSON assets, package selection and sibling exclusion. The combined suite passed 75 JavaScript tests, 6 Python tests and validation of 14 panels.
+- Studio: the combined dashboard suite passed 59 JavaScript tests and 6 Python tests, including ZIP integrity/limits, compressed source packages, all 14 current manifests, source embedding and generated script syntax. Local headless Chrome passed package round trips, actual dashboard JSON installation, real Focus/Notes/Calendar interactions, notifications, pinning, cleanup, draft recovery, themes and desktop/portrait/narrow layouts. Android and Firefox Studio behavior remain unverified.
 - Automated checks and package validation are recorded with the implementation. The local development dashboard was installed with the updated shell and receiver; its Now playing controls were visible. The user subsequently reported that live playback works. Sender coverage, individual metadata fields, output intensity behavior, permission revocation and overnight use remain unverified. This was not a public dashboard release.
 
 ## 0.3.2 — 2026-11-02

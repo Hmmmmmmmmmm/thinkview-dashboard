@@ -45,4 +45,22 @@ class BuildTests(unittest.TestCase):
             path.write_text(json.dumps({'companion':{'chatUrl':'javascript:alert(1)'}}))
             with self.assertRaises(ValueError): builder.load_config(path)
 
+    def test_studio_embeds_current_contract_runtime_and_source_examples(self):
+        studio_spec = importlib.util.spec_from_file_location('studio_build', ROOT / 'tools/build_studio.py')
+        studio = importlib.util.module_from_spec(studio_spec)
+        studio_spec.loader.exec_module(studio)
+        html = studio.build_studio()
+        self.assertNotIn('/* STUDIO_', html)
+        self.assertIn('sandbox="allow-scripts"', html)
+        self.assertNotIn('allow-same-origin', html)
+        import re
+        data = json.loads(re.search(r'<script id="studio-data" type="application/json">([\s\S]*?)</script>', html)[1])
+        self.assertEqual(data['schema'], json.loads((ROOT / 'schemas/panel.schema.json').read_text()))
+        self.assertEqual(data['runtime'], (ROOT / 'logic/panel-runtime.js').read_text())
+        self.assertEqual([example['id'] for example in data['examples']], json.loads((ROOT / 'panels/catalog.json').read_text())['panels'])
+        self.assertEqual(data['provider'], (ROOT / 'logic/device-provider.js').read_text())
+        self.assertEqual(data['dataAPI'], (ROOT / 'studio/data-api.js').read_text())
+        self.assertEqual(data['themes'], json.loads((ROOT / 'themes/material-tokens.json').read_text())['themes'])
+        self.assertNotIn('chatgpt.com/dots/', html)
+
 if __name__ == '__main__': unittest.main()

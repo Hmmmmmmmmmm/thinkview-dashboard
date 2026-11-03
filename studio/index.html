@@ -1,0 +1,533 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <title>ThinkView · Panel Studio</title>
+    <style>
+      /* STUDIO_STYLES */
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="#"
+        ><span class="brand-icon" aria-hidden="true">▦</span
+        ><span>ThinkView <strong>Panel Studio</strong></span></a
+      >
+      <span class="local-badge"><i></i> Local workspace</span>
+      <div class="top-actions">
+        <button id="new-package">New panel</button
+        ><button id="open-package">Open ZIP</button
+        ><button id="export-zip" class="primary">
+          Export ZIP <span aria-hidden="true">↗</span>
+        </button>
+      </div>
+      <input id="zip-input" type="file" accept=".zip,application/zip" hidden />
+    </header>
+    <main>
+      <aside class="explorer">
+        <div class="section-label">PACKAGE EXPLORER</div>
+        <h1 id="package-title">New panel</h1>
+        <div id="package-meta" class="muted"></div>
+        <label class="example-label"
+          >Open an example<select id="examples">
+            <option value="">Choose a package…</option>
+          </select></label
+        >
+        <div class="file-header">
+          <h2>Files</h2>
+          <button id="add-file" class="icon" aria-label="Add file or asset">
+            +
+          </button>
+        </div>
+        <nav id="file-list" aria-label="Package files"></nav>
+        <input id="asset-input" type="file" multiple hidden />
+        <div class="explorer-bottom">
+          <button id="export-json">Export dashboard JSON</button
+          ><button id="save-draft">Save draft</button>
+          <p id="draft-status" role="status">Draft stays in this browser.</p>
+        </div>
+      </aside>
+      <section class="editor-pane" aria-label="Package editor">
+        <div class="pane-heading">
+          <div class="tabs" role="tablist" aria-label="Editor view">
+            <button id="source-tab" role="tab" aria-selected="true">
+              Source</button
+            ><button id="manifest-tab" role="tab" aria-selected="false">
+              Manifest</button
+            ><button id="guide-tab" role="tab" aria-selected="false">
+              API guide
+            </button>
+          </div>
+          <span id="edit-status" class="muted">Saved</span>
+        </div>
+        <div id="source-view" class="editor-view">
+          <div class="file-toolbar">
+            <span id="file-name">panel.json</span>
+            <div>
+              <button id="format-file">Format JSON</button
+              ><button id="remove-file" aria-label="Remove selected file">
+                Remove
+              </button>
+            </div>
+          </div>
+          <label for="source" class="sr-only">File source</label
+          ><textarea
+            id="source"
+            spellcheck="false"
+            autocapitalize="off"
+            autocomplete="off"
+            autocorrect="off"
+            wrap="off"
+          ></textarea>
+          <div id="binary-view" hidden></div>
+          <div class="source-footer">
+            <span id="line-info">Line 1</span><span id="file-size"></span
+            ><span>Ctrl / ⌘ + Enter to run</span>
+          </div>
+        </div>
+        <form id="manifest-view" class="editor-view settings-form" hidden>
+          <h2>Panel manifest</h2>
+          <p class="muted">
+            Package contract v1. Advanced fields remain editable in panel.json.
+          </p>
+          <label
+            >Panel ID<input
+              name="id"
+              pattern="[a-z][a-z0-9-]{0,39}"
+              required
+            /><small
+              >Stable identity. After changing it, update CSS selectors and
+              classes.</small
+            ></label
+          >
+          <label>Title<input name="title" required /></label
+          ><label
+            >Version<input
+              name="version"
+              pattern="[0-9]+\.[0-9]+\.[0-9]+"
+              required
+          /></label>
+          <label>Root class<input name="rootClass" required /></label
+          ><label
+            >Color role<select name="colorRole">
+              <option>primary</option>
+              <option>secondary</option>
+              <option>tertiary</option>
+              <option>surface</option>
+            </select></label
+          >
+          <label
+            >Description<textarea name="description" rows="3"></textarea></label
+          ><label class="check"
+            ><input type="checkbox" name="defaultEnabled" /> Enabled by
+            default</label
+          ><button type="submit" class="primary">Apply manifest fields</button>
+          <p id="manifest-status" role="status"></p>
+          <details open>
+            <summary>Declared access</summary>
+            <pre id="capabilities"></pre>
+            <p class="muted">
+              Declarations describe intent; the dashboard executes imported
+              panels as trusted code.
+            </p>
+          </details>
+        </form>
+        <article id="guide-view" class="editor-view guide" hidden>
+          <h2>Build a panel</h2>
+          <p>
+            Edit a file, validate, then press <strong>Run preview</strong>.
+            Opening a ZIP never runs its scripts. Export ZIP for source
+            distribution, or dashboard JSON for Settings → Load panel.
+          </p>
+          <h3>Mount function</h3>
+          <p>
+            The JavaScript entry is a function body. Query within
+            <code>ctx.root</code>; return cleanup or register it with
+            <code>ctx.onCleanup(fn)</code>.
+          </p>
+          <pre>
+const button = ctx.root.querySelector('[data-notify]');
+function notify() {
+  ctx.notifications.publish({
+    id: 'test', title: 'Hello', priority: 'high'
+  });
+}
+button.addEventListener('click', notify);
+return () => button.removeEventListener('click', notify);</pre
+          >
+          <h3>Host API</h3>
+          <p>
+            <code>ctx.storage.get(key, fallback)</code> /
+            <code>set(key, value)</code> save panel-scoped preview state.
+            <code>ctx.layout.emit(name)</code> emits declared expansion events.
+            <code>ctx.host.notifications</code> offers publish, dismiss, list,
+            and subscribe. <code>ctx.notifications</code> owns and cleans up
+            panel-bound items.
+          </p>
+          <h3>Preview contract</h3>
+          <p>
+            Sizes are <strong>columns × rows</strong>. Cell dimensions are CSS
+            pixels, with a 14px gap. Each preview is the selected panel spanning
+            those grid units. Bright, dark and minimal use actual dashboard CSS
+            and tokens. Pinned panels reject new expansion requests.
+            Disable/remount tests lifecycle cleanup.
+          </p>
+          <p>
+            The sandbox uses the dashboard runtime, expansion controller,
+            attention selection, and fit helpers. Studio notification
+            presentation is a test harness. The Data API tab supplies Android,
+            calendar and custom fetch response fixtures. Native services,
+            account connections, built-in clock/weather/Dot adapters, gestures,
+            full screen and Android permissions require dashboard/device
+            testing.
+          </p>
+          <h3>Assets and scope</h3>
+          <p>
+            Declare assets in the manifest and use
+            <code>asset:assets/icon.svg</code> in HTML/CSS. Prefix CSS with your
+            panel ID. Panels should adapt to their container and avoid internal
+            scrolling.
+          </p>
+          <h3>Isolation</h3>
+          <p>
+            Preview scripts run in an opaque-origin sandbox without workspace
+            DOM or browser credentials. Network is blocked unless you enable
+            declared HTTPS origins. This is a development aid; only install
+            trusted code in the real dashboard.
+          </p>
+        </article>
+        <section class="validation">
+          <div class="file-header">
+            <h2>Validation</h2>
+            <button id="validate">Check package</button>
+          </div>
+          <div id="validation-results" role="status"></div>
+        </section>
+        <details id="color-design" class="color-design" open>
+          <summary>
+            <strong>Material 3 colors</strong><span id="color-count"></span>
+          </summary>
+          <div class="color-design-body">
+            <div class="color-controls">
+              <label class="sr-only" for="color-search"
+                >Search color roles or CSS names</label
+              >
+              <input
+                id="color-search"
+                type="search"
+                placeholder="Find role or CSS token…"
+              />
+              <label class="sr-only" for="color-theme"
+                >Color reference theme</label
+              >
+              <select id="color-theme">
+                <option value="bright">Bright</option>
+                <option value="dark">Dark</option>
+                <option value="minimal">Minimal (custom)</option>
+              </select>
+            </div>
+            <div
+              class="color-role-tags"
+              id="color-role-tags"
+              aria-label="Supported manifest colorRole tags"
+            ></div>
+            <div
+              id="color-swatches"
+              class="color-swatches"
+              aria-label="Supported Material 3 color tokens"
+              tabindex="0"
+            ></div>
+            <div class="color-copy-row">
+              <label class="sr-only" for="color-copy"
+                >Selected CSS color variable</label
+              ><input
+                id="color-copy"
+                readonly
+                value="var(--md-sys-color-primary)"
+              /><span id="color-status" role="status"
+                >Click a color to copy its CSS variable.</span
+              >
+            </div>
+          </div>
+        </details>
+      </section>
+      <section class="preview-pane" aria-label="Preview and debugging">
+        <div class="pane-heading">
+          <h2><span class="live-dot"></span> Live preview</h2>
+          <button id="run" class="primary">▶ Run preview</button>
+        </div>
+        <div class="preview-controls">
+          <div class="segmented" id="sizes" aria-label="Panel grid size">
+            <button data-columns="1" data-rows="1" aria-pressed="true">
+              1 × 1</button
+            ><button data-columns="1" data-rows="2" aria-pressed="false">
+              1 × 2</button
+            ><button data-columns="2" data-rows="1" aria-pressed="false">
+              2 × 1</button
+            ><button data-columns="2" data-rows="2" aria-pressed="false">
+              2 × 2
+            </button>
+          </div>
+          <label
+            >Theme<select id="theme">
+              <option value="bright">Bright</option>
+              <option value="dark">Dark</option>
+              <option value="minimal">Minimal</option>
+            </select></label
+          ><label
+            >Cell W<input
+              id="cell-width"
+              type="number"
+              min="190"
+              max="600"
+              value="260" /></label
+          ><label
+            >Cell H<input
+              id="cell-height"
+              type="number"
+              min="152"
+              max="600"
+              value="220"
+          /></label>
+        </div>
+        <div class="preview-stage" id="drop-zone">
+          <div class="stage-meta">
+            <span id="dimensions">260 × 220 px</span
+            ><span id="runtime-status">Ready to run</span>
+          </div>
+          <div id="frame-wrap">
+            <iframe
+              id="preview"
+              title="Sandboxed panel preview"
+              sandbox="allow-scripts"
+            ></iframe>
+            <div id="preview-placeholder">
+              <span aria-hidden="true">▦</span
+              ><strong>Your panel, in context.</strong>
+              <p>
+                Run to mount the package.<br />Drop a ZIP anywhere to open it.
+              </p>
+            </div>
+          </div>
+          <div id="stage-toast" role="status" hidden></div>
+        </div>
+        <div class="runtime-controls">
+          <button id="mount" disabled>Disable panel</button
+          ><button id="remount" disabled>Remount</button
+          ><label class="check"
+            ><input id="pinned" type="checkbox" /> Pinned</label
+          ><label class="check"
+            ><input id="allow-network" type="checkbox" /> Allow declared
+            network</label
+          ><button id="clear-storage">Reset preview storage</button>
+        </div>
+        <section class="debug-pane">
+          <div class="tabs" role="tablist" aria-label="Debug view">
+            <button id="notifications-tab" role="tab" aria-selected="true">
+              Notifications <span id="notification-count">0</span></button
+            ><button id="console-tab" role="tab" aria-selected="false">
+              Console <span id="log-count">0</span></button
+            ><button id="events-tab" role="tab" aria-selected="false">
+              Layout & state</button
+            ><button id="data-tab" role="tab" aria-selected="false">
+              Data API <span id="api-count">0</span>
+            </button>
+          </div>
+          <div id="notifications-view" class="debug-view">
+            <form id="notification-form">
+              <div class="two-col">
+                <label
+                  >Notification ID<input
+                    name="id"
+                    value="studio-test"
+                    required /></label
+                ><label
+                  >Priority<select name="priority">
+                    <option>low</option>
+                    <option selected>medium</option>
+                    <option>high</option>
+                    <option>emergency</option>
+                  </select></label
+                >
+              </div>
+              <label
+                >Title<input
+                  name="title"
+                  value="Panel notification test"
+                  required /></label
+              ><label
+                >Message<input
+                  name="message"
+                  value="Inspect priority, expansion, replacement, and dismissal."
+              /></label>
+              <div class="two-col">
+                <label
+                  >Presentation<select id="presentation">
+                    <option value="list">List</option>
+                    <option value="toast">Toast + list</option>
+                    <option value="alert">Alert + list</option>
+                  </select></label
+                ><label class="check"
+                  ><input name="bound" type="checkbox" checked /> Bind to this
+                  panel</label
+                >
+              </div>
+              <div class="button-row">
+                <button type="submit" class="primary">Publish test</button
+                ><button type="button" id="priority-test">
+                  Priority sequence</button
+                ><button type="button" id="clear-notifications">
+                  Dismiss all
+                </button>
+              </div>
+              <p class="muted">
+                Harness events only. Same ID replaces. Low stays in the list;
+                eligible higher priorities request attention. Presentation is
+                saved per priority for this preview run.
+              </p>
+            </form>
+            <div id="notification-list" aria-live="polite">
+              <p class="empty">Run preview to test notifications.</p>
+            </div>
+          </div>
+          <div id="console-view" class="debug-view" hidden>
+            <div class="button-row">
+              <button id="clear-console">Clear console</button
+              ><button id="download-log">Export log</button>
+            </div>
+            <div id="console-output" role="log" aria-live="polite"></div>
+          </div>
+          <div id="events-view" class="debug-view" hidden>
+            <h3>Declared layout events</h3>
+            <div id="event-buttons"></div>
+            <button id="restore-size">Restore base size</button>
+            <h3>Runtime state</h3>
+            <pre id="runtime-state">Not mounted</pre>
+            <h3>Preview storage</h3>
+            <pre id="storage-state">{}</pre>
+          </div>
+          <div id="data-view" class="debug-view" hidden>
+            <h3>Backend test data</h3>
+            <p class="muted">
+              Fixture responses stay in this preview. Android controls use the
+              real device provider. No commands are sent to a device. Apply
+              reruns the panel with the edited data.
+            </p>
+            <div class="two-col">
+              <label
+                >Preset<select id="api-preset">
+                  <option value="">Load a preset…</option>
+                  <option value="disabled">Fixtures off</option>
+                  <option value="android">Android ready</option>
+                  <option value="permission">
+                    Android permission required
+                  </option>
+                  <option value="unavailable">Backend unavailable (503)</option>
+                  <option value="rejected">Commands rejected</option>
+                  <option value="backend">Custom HTTP backend</option>
+                </select></label
+              >
+              <label class="check"
+                ><input type="checkbox" id="api-enabled" /> Use fixture
+                responses</label
+              >
+            </div>
+            <label for="api-source">Fixture JSON</label>
+            <textarea
+              id="api-source"
+              spellcheck="false"
+              autocapitalize="off"
+              rows="20"
+              aria-describedby="api-help"
+            ></textarea>
+            <p id="api-help" class="muted">
+              Edit device.status or add method/URL response routes. commandMode:
+              confirm changes readback, acknowledge leaves it unchanged, reject
+              returns an error. Custom routes take precedence.
+              refreshTimestamps: false tests stale readings. Unmatched fixture
+              requests return 404.
+            </p>
+            <div class="button-row">
+              <button id="api-apply" class="primary">Apply & rerun</button
+              ><button id="api-validate">Validate data</button
+              ><button id="api-import">Import data</button
+              ><button id="api-export">Export data</button>
+            </div>
+            <input
+              type="file"
+              id="api-file"
+              accept="application/json,.json"
+              hidden
+            />
+            <p id="api-status" role="status">Fixtures are off.</p>
+            <div class="file-header">
+              <h3>Requests & responses</h3>
+              <button id="api-clear">Clear</button>
+            </div>
+            <p class="muted">
+              Select a request to inspect its body, response, status and timing.
+              Headers are omitted from diagnostics. Most recent 80 requests are
+              retained.
+            </p>
+            <div id="api-requests" aria-label="API requests">
+              <p class="empty">Run with fixtures to record requests.</p>
+            </div>
+            <pre id="api-detail" tabindex="0">No request selected.</pre>
+          </div>
+        </section>
+      </section>
+    </main>
+    <footer>
+      <span id="workspace-status" role="status"
+        >Browser-local editing · no upload</span
+      ><span
+        >Panel contract v1 <span class="footer-dot">·</span> ThinkView developer
+        tools</span
+      >
+    </footer>
+    <dialog id="package-dialog" aria-labelledby="package-dialog-title">
+      <form method="dialog">
+        <h2 id="package-dialog-title">Choose a panel package</h2>
+        <label for="package-choice">Package and manifest path</label>
+        <select id="package-choice" required></select>
+        <div class="button-row">
+          <button value="cancel" formnovalidate>Cancel</button>
+          <button value="choose">Open package</button>
+        </div>
+      </form>
+    </dialog>
+    <dialog id="new-dialog">
+      <form id="new-form">
+        <h2>Create a panel</h2>
+        <label
+          >Panel ID<input
+            name="id"
+            value="my-panel"
+            pattern="[a-z][a-z0-9-]{0,39}"
+            required /></label
+        ><label>Title<input name="title" value="My panel" required /></label>
+        <div class="button-row">
+          <button type="button" id="cancel-new">Cancel</button
+          ><button type="submit" class="primary">Create panel</button>
+        </div>
+      </form>
+    </dialog>
+    <script id="studio-data" type="application/json">
+      /* STUDIO_DATA */
+    </script>
+    <script>
+      /* STUDIO_PACKAGE */
+    </script>
+    <script>
+      /* STUDIO_EXPANSION */
+    </script>
+    <script>
+      /* STUDIO_DATA_API */
+    </script>
+    <script>
+      /* STUDIO_APP */
+    </script>
+  </body>
+</html>
