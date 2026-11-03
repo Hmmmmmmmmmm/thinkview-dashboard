@@ -102,7 +102,7 @@ python3 tools/build.py --check
 python3 tools/build.py --package calendar
 ```
 
-The exporter writes a ZIP and a self-contained JSON package in `dist/packages/`. Settings can load the JSON without a rebuild. The ZIP includes only the manifest, declared entries and declared assets. Package scripts run as trusted page code with full dashboard access; declared capabilities are review metadata, not security isolation. Install only packages you trust.
+The exporter writes a ZIP and a self-contained JSON package in `dist/packages/`. Settings can load the JSON or a single-package ZIP without a rebuild. The ZIP includes only the manifest, declared entries and declared assets. Package scripts run as trusted page code with full dashboard access; declared capabilities are review metadata, not security isolation. Install only packages you trust.
 
 ## Checks
 

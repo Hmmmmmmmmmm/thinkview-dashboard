@@ -404,9 +404,9 @@
         />
         <div id="panel-library" class="panel-library"></div>
         <label for="panel-import">Load a trusted panel package</label
-        ><input id="panel-import" type="file" accept="application/json,.json" />
+        ><input id="panel-import" type="file" accept="application/json,.json,application/zip,.zip" />
         <p>
-          Imported panels run with full page access. Install only code you
+          Choose a panel JSON or ZIP. ZIPs must contain one package; deflate requires DecompressionStream support. Imported panels run with full page access. Install only code you
           trust. Capabilities are declarations, not isolation.
         </p>
         <div id="panel-import-status" role="status"></div>
@@ -488,7 +488,8 @@
       );
       var DashboardVersion = "/* DASHBOARD_VERSION */";
       /* PERSONALIZATION */
-      /* CORE_MODULES */
+      const PANEL_SCHEMA = /* PANEL_SCHEMA */;
+/* CORE_MODULES */
       /* PANEL_RUNTIME */
       /* PANEL_MODULES */
       /* APP_SCRIPT */

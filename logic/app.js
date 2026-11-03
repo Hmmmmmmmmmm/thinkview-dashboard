@@ -770,7 +770,7 @@
       return false;
     if (
       Object.keys(pkg).some(function (key) {
-        return !["format", "manifest", "entries"].includes(key);
+        return !["format", "manifest", "entries", "assetData"].includes(key);
       }) ||
       Object.keys(m).some(function (key) {
         return !required.includes(key) && !optional.includes(key);
@@ -818,7 +818,7 @@
         return !capabilities.includes(capability);
       }) ||
       !uniqueStrings(m.assets) ||
-      !m.assets.every(relativePath)
+      !m.assets.every(function (v) { return relativePath(v.endsWith("/") ? v.slice(0, -1) : v); })
     )
       return false;
     if (
@@ -842,6 +842,16 @@
       })
     )
       return false;
+    if ("assetData" in pkg) {
+      if (!object(pkg.assetData)) return false;
+      var names = Object.keys(pkg.assetData), reserved = ["panel.json", ...Object.values(m.entries)];
+      if (names.some(function (name) {
+        var value = pkg.assetData[name];
+        return !relativePath(name) || name.length > 240 || /[\\\x00-\x1f:]/.test(name) || reserved.includes(name) ||
+          !m.assets.some(function (a) { return name === a || name.startsWith(a.endsWith("/") ? a : a + "/"); }) ||
+          typeof value !== "string" || !/^data:[a-zA-Z0-9.+-]+\/[a-zA-Z0-9.+-]+;base64,(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(value);
+      }) || m.assets.some(function (a) { return !names.some(function (n) { return n === a || n.startsWith(a.endsWith("/") ? a : a + "/"); }); })) return false;
+    }
     if (
       Object.keys(e).length !== 3 ||
       !["html", "css", "js"].every(function (key) {
@@ -900,12 +910,27 @@
       console.error("Imported panel registration failed", m.id);
     }
   });
+  var importGeneration = 0;
   $("panel-import").onchange = async function () {
+    var generation = ++importGeneration;
     var file = this.files[0];
     if (!file) return;
     try {
-      if (file.size > 2 * 1024 * 1024) throw Error("Package exceeds 2 MB.");
-      var pkg = JSON.parse(await file.text());
+      var pkg;
+      if (/\.zip$/i.test(file.name)) {
+        var files = await PanelPackage.unzip(await file.arrayBuffer());
+        var roots = PanelPackage.packageRoots(files);
+        if (roots.length !== 1) throw Error("Choose or export one package in Studio; ZIP must contain exactly one package.");
+        var selected = PanelPackage.packageAt(files, roots[0].manifestPath);
+        var result = PanelPackage.validate(selected, PANEL_SCHEMA, DashboardExpansion);
+        if (result.errors.length) throw Error(result.errors.join("; "));
+        pkg = PanelPackage.toRuntimePackage(selected, result.manifest, result.entries);
+      } else {
+        if (file.size > 2 * 1024 * 1024) throw Error("Package exceeds 2 MiB.");
+        pkg = JSON.parse(await file.text());
+      }
+      if (generation !== importGeneration) return;
+      if (new TextEncoder().encode(JSON.stringify(pkg)).length > 2 * 1024 * 1024) throw Error("Embedded package exceeds 2 MiB.");
       if (!validImported(pkg)) throw Error("Invalid package format.");
       if (
         panelCatalog.panels.some(function (m) {
@@ -945,7 +970,7 @@
       $("panel-import-status").textContent =
         "Could not load panel: " + e.message;
     } finally {
-      this.value = "";
+      if (generation === importGeneration) this.value = "";
     }
   };
   var panelDefault = panelCatalog.panels.map(function (panel) {

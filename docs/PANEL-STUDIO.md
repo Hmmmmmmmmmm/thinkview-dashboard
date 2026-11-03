@@ -81,3 +81,5 @@ Data API checks cover response matching, actual device-provider parsing, command
 Validated: all four exact frame sizes, opaque-origin isolation, real starter and Focus/Notes/Calendar interaction, notifications and cleanup, priority ordering/replacement, pinning, themes, declared expansion/restore, compressed ZIP import and source round trip without execution, JSON installation through the actual dashboard importer, mount/network diagnostics, manifest edits, draft recovery, and 1280×800, 800×1280 and 390×844 layouts. Native Android services/permissions, arbitrary third-party panels, and Firefox are not certified by these checks. Studio remains an unreleased developer tool; no dashboard release or device update is performed by its build.
 
 Wrapped-root selection and directory assets require browser verification across supported browsers; nested ZIP archives are not searched.
+
+Studio and dashboard builds embed the shared `logic/panel-package.js` helper. Dashboard Settings accepts single-package ZIPs and folder asset declarations; select or export one package in Studio when a ZIP has multiple roots.

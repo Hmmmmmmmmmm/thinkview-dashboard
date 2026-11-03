@@ -139,3 +139,13 @@ test("reads Python ZIP directory records and removes macOS metadata", async () =
   assert.deepEqual([...files.keys()], ["wrap/panel.json"]);
   assert.equal(P.packageRoots(files)[0].manifestPath, "wrap/panel.json");
 });
+test('runtime package preserves referenced and unused directory assets', () => {
+  const files = new Map([['assets/a.png', Uint8Array.from([0,255])], ['assets/nested/b.bin', Uint8Array.from([1,2,3])]]);
+  const m = {assets:['assets/'], entries:{html:'panel.html',css:'panel.css',js:'panel.js'}};
+  const pkg = P.toRuntimePackage(files, m, {html:'<img src="asset:assets/a.png">',css:'',js:''});
+  assert.equal(pkg.manifest.assets[0], 'assets/');
+  assert.equal(pkg.assetData['assets/nested/b.bin'], 'data:application/octet-stream;base64,AQID');
+  assert.match(pkg.entries.html, /data:image\/png;base64,AP8=/);
+  m.assets = ['assets/a.png'];
+  assert.deepEqual(Object.keys(P.toRuntimePackage(files,m,{html:'',css:'',js:''}).assetData), ['assets/a.png']);
+});

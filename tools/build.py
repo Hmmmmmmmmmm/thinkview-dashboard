@@ -29,6 +29,34 @@ def member(directory, name):
     return path
 
 
+def asset_members(directory, manifest):
+    reserved = {'panel.json', *manifest['entries'].values()}
+    if len(reserved) != 4:
+        raise ValueError('Manifest and entries must use distinct paths')
+    result = {}
+    for declaration in manifest['assets']:
+        name = declaration[:-1] if declaration.endswith('/') else declaration
+        if not name or len(name) > 240 or re.search(r'[\\\x00-\x1f:]', name) or any(part in ('', '.', '..') for part in name.split('/')):
+            raise ValueError(f'Unsafe package path: {declaration}')
+        candidate = directory / name
+        if not candidate.resolve().is_relative_to(directory.resolve()):
+            raise ValueError(f'Asset escapes package: {declaration}')
+        if candidate.is_file() and not declaration.endswith('/'):
+            names = [name]
+        elif candidate.is_dir():
+            names = [p.relative_to(directory).as_posix() for p in candidate.rglob('*') if p.is_file() or p.is_symlink()]
+        else:
+            names = []
+        if not names:
+            raise ValueError(f'Missing or empty asset: {declaration}')
+        for item in names:
+            path = member(directory, item)
+            if item in reserved or item in result:
+                raise ValueError(f'Manifest, entries, and assets must use distinct paths: {item}')
+            result[item] = path
+    return result
+
+
 def validate_expansion(manifest):
     e = manifest['expansion']
     def span(value):
@@ -91,7 +119,7 @@ def load_package(panel_id):
     entries = {key: member(directory, name).read_text() for key, name in manifest['entries'].items()}
     if not isinstance(manifest['assets'], list) or not all(isinstance(value, str) for value in manifest['assets']) or len(manifest['assets']) != len(set(manifest['assets'])):
         raise ValueError(f'{panel_id}: assets must be an array')
-    assets = {name: member(directory, name) for name in manifest['assets']}
+    assets = asset_members(directory, manifest)
     for key in ['html', 'css']:
         def embed(match):
             name = match.group(1)
@@ -173,8 +201,9 @@ def build(config_path=None):
     html = (ROOT / 'web/template.html').read_text()
     shared_css = (ROOT / 'web/styles/base.css').read_text() + '\n/* PANEL_STYLES */\n' + (ROOT / 'web/styles/theme.css').read_text() + '\n' + (ROOT / 'web/styles/panel-fit.css').read_text()
     html = html.replace('/* DASHBOARD_STYLES */', shared_css)
-    core_modules = '\n'.join((ROOT / 'logic' / name).read_text() for name in ['storage.js', 'layout.js', 'panel-expansion.js', 'panel-attention.js', 'calendar-service.js', 'companion-service.js', 'device-provider.js', 'panel-fit.js'])
+    core_modules = '\n'.join((ROOT / 'logic' / name).read_text() for name in ['panel-package.js', 'storage.js', 'layout.js', 'panel-expansion.js', 'panel-attention.js', 'calendar-service.js', 'companion-service.js', 'device-provider.js', 'panel-fit.js'])
     html = html.replace('/* CORE_MODULES */', core_modules)
+    html = html.replace('/* PANEL_SCHEMA */', json.dumps(json.loads((ROOT / 'schemas/panel.schema.json').read_text())).replace('<', '\\u003c'))
     html = html.replace('/* DASHBOARD_VERSION */', (ROOT / 'VERSION').read_text().strip())
     html = html.replace('/* PERSONALIZATION */', (ROOT / 'logic/personalization.js').read_text())
     html = html.replace('/* UPDATE_SCRIPT */', (ROOT / 'logic/update-ui.js').read_text())
@@ -225,7 +254,7 @@ def package(panel_id):
     manifest, _, directory = load_package(panel_id)
     target = ROOT / 'dist/packages' / f'{panel_id}-{manifest["version"]}.zip'
     target.parent.mkdir(parents=True, exist_ok=True)
-    names = ['panel.json'] + list(manifest['entries'].values()) + manifest['assets']
+    names = ['panel.json'] + list(manifest['entries'].values()) + list(asset_members(directory, manifest))
     with ZipFile(target, 'w', compression=ZIP_DEFLATED) as archive:
         for name in sorted(set(names)):
             info = ZipInfo(name, date_time=(1980, 1, 1, 0, 0, 0))
@@ -235,7 +264,8 @@ def package(panel_id):
     # A single-file variant embeds declared assets and is importable by the running dashboard.
     _, entries, _ = load_package(panel_id)
     portable = target.with_suffix('.json')
-    portable.write_text(json.dumps({'format': 'thinkview-panel-1', 'manifest': manifest, 'entries': entries}, ensure_ascii=False))
+    asset_data = {name: 'data:' + (mimetypes.guess_type(name)[0] or 'application/octet-stream') + ';base64,' + b64encode(path.read_bytes()).decode() for name, path in asset_members(directory, manifest).items()}
+    portable.write_text(json.dumps({'format': 'thinkview-panel-1', 'manifest': manifest, 'entries': entries, 'assetData': asset_data}, ensure_ascii=False))
     print(f'Runtime package: {portable.relative_to(PROJECT)}\nSHA-256: {sha256(portable.read_bytes()).hexdigest()}')
 
 

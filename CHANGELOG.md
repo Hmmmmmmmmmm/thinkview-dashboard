@@ -6,6 +6,8 @@ Newest release first. Record user-visible changes, compatibility requirements an
 
 ### Changes
 
+- Dashboard Settings supports trusted single-package ZIP imports and recursive asset directories; compressed ZIPs require deflate-raw DecompressionStream. Converted packages retain the 2 MiB limit. No Android permissions changed (2026-11-03).
+- Panel runtime JSON retains all declared asset files in optional `assetData`, including files not referenced by HTML or CSS. Legacy JSON remains supported; the complete converted package remains limited to 2 MiB.
 - Added a collapsible Material 3 color design reference below the Studio editor (2026-11-03), showing current theme swatches, role names, CSS token names, hex values and supported manifest colorRole tags. Search and click-to-copy support CSS authoring; the reference follows the preview theme and uses the checked-in token data.
 - Added an optional portable companion backend adapter for an explicit Open Dots handoff; drafts remain local and opening does not sign in, send a message or start a call.
 
@@ -26,6 +28,7 @@ Newest release first. Record user-visible changes, compatibility requirements an
 
 ### Validation
 
+- Dashboard asset packages: independent checks passed 78 JavaScript tests, 8 Python tests and validation of 14 panels. Chrome assertions verified wrapped ZIP import through Settings, nested SVG loading and mount behavior after reload, exact stored unused asset bytes, Studio directory-asset JSON and legacy JSON compatibility, and rejection without persistence for multi-root and oversized converted ZIPs. The near-limit accepted boundary, Firefox and Android remain unverified; the captured dashboard screenshot does not show the imported panel in its viewport.
 - Color reference: 72 JavaScript tests and 6 Python tests passed. Chrome checked all 35 token names/values in each theme, manifest tags, search/copy fallback, theme synchronization, collapse, and 1440×1000, 1280×800, 800×1280 and 390×844 layouts. Token data is embedded from the checked-in theme file; no theme generation or Android change was required.
 - Companion adapter automated tests cover capability validation, unavailable backends, explicit open, cancellation and transport boundaries. Device-native sign-in and opening require separate verification.
 

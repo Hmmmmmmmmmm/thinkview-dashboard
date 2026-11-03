@@ -64,3 +64,46 @@ class BuildTests(unittest.TestCase):
         self.assertNotIn('chatgpt.com/dots/', html)
 
 if __name__ == '__main__': unittest.main()
+
+class AssetMemberTests(unittest.TestCase):
+    def test_nested_and_invalid_assets(self):
+        with tempfile.TemporaryDirectory(dir=ROOT / 'dist') as folder:
+            d = Path(folder)
+            (d / 'assets/nested').mkdir(parents=True)
+            (d / 'assets/nested/a.bin').write_bytes(b'\x00\xff')
+            m = {'entries': {'html':'a.html','css':'a.css','js':'a.js'}, 'assets':['assets/']}
+            self.assertEqual(builder.asset_members(d,m)['assets/nested/a.bin'].read_bytes(), b'\x00\xff')
+            for declaration in ['missing/', '../escape', 'empty/']:
+                (d / 'empty').mkdir(exist_ok=True)
+                m['assets'] = [declaration]
+                with self.assertRaises(ValueError): builder.asset_members(d,m)
+            (d / 'assets/link').symlink_to(ROOT / 'tools/build.py')
+            m['assets'] = ['assets/']
+            with self.assertRaises(ValueError): builder.asset_members(d,m)
+            m['assets'] = ['panel.json']
+            (d / 'panel.json').write_text('{}')
+            with self.assertRaises(ValueError): builder.asset_members(d,m)
+
+class ExportFidelityTests(unittest.TestCase):
+    def test_actual_export_preserves_all_asset_bytes(self):
+        import base64
+        from zipfile import ZipFile
+        from unittest.mock import patch
+        work = ROOT.parent / '.work/panel-studio'
+        work.mkdir(parents=True, exist_ok=True)
+        with tempfile.TemporaryDirectory(dir=work) as tmp:
+            root = Path(tmp)
+            d = root / 'panels/mini'
+            (d / 'assets/nested').mkdir(parents=True)
+            manifest = {'schemaVersion':1,'id':'mini','title':'Mini','version':'1.0.0','rootClass':'mini','colorRole':'primary','entries':{'html':'panel.html','css':'panel.css','js':'panel.js'},'capabilities':[],'assets':['assets/'],'defaultEnabled':True}
+            files = {'panel.json':json.dumps(manifest).encode(),'panel.html':b'<img src="asset:assets/nested/a.svg">','panel.css':b'','panel.js':b'','assets/nested/a.svg':b'<svg xmlns="http://www.w3.org/2000/svg"/>','assets/unused.bin':b'\x00\xff\x01'}
+            for name, data in files.items(): (d / name).write_bytes(data)
+            with patch.object(builder,'ROOT',root), patch.object(builder,'PROJECT',root): builder.package('mini')
+            out=root/'dist/packages/mini-1.0.0'
+            with ZipFile(Path(str(out) + '.zip')) as z:
+                self.assertEqual(set(z.namelist()),set(files))
+                for name,data in files.items(): self.assertEqual(z.read(name),data)
+            pkg=json.loads(Path(str(out) + '.json').read_text())
+            self.assertEqual(set(pkg['assetData']),{'assets/nested/a.svg','assets/unused.bin'})
+            for name,value in pkg['assetData'].items(): self.assertEqual(base64.b64decode(value.split(',',1)[1]),files[name])
+            self.assertIn(pkg['assetData']['assets/nested/a.svg'],pkg['entries']['html'])

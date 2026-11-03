@@ -30,10 +30,10 @@ def build_studio():
     def inline_script(source):
         return re.sub(r'</script', lambda _: '<\\/script', source, flags=re.I)
 
-    replacements = {'/* STUDIO_STYLES */': read('studio/styles.css'), '/* STUDIO_DATA */': encoded(data), '/* STUDIO_PACKAGE */': inline_script(read('studio/package.js')), '/* STUDIO_EXPANSION */': inline_script(data['expansion']), '/* STUDIO_DATA_API */': inline_script(data['dataAPI']), '/* STUDIO_APP */': inline_script(read('studio/app.js'))}
+    replacements = {'/* STUDIO_STYLES */': read('studio/styles.css'), '/* STUDIO_DATA */': encoded(data), '/* STUDIO_PACKAGE */': inline_script(read('logic/panel-package.js')), '/* STUDIO_EXPANSION */': inline_script(data['expansion']), '/* STUDIO_DATA_API */': inline_script(data['dataAPI']), '/* STUDIO_APP */': inline_script(read('studio/app.js'))}
     for marker, value in replacements.items():
         html = html.replace(marker, value)
-    for source in ['studio/package.js', 'studio/app.js', 'studio/frame.js', 'studio/data-api.js']:
+    for source in ['logic/panel-package.js', 'studio/app.js', 'studio/frame.js', 'studio/data-api.js']:
         result = subprocess.run(['node', '--check', str(ROOT / source)], capture_output=True, text=True)
         if result.returncode:
             raise ValueError(result.stderr)

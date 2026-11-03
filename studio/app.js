@@ -1097,11 +1097,7 @@
       const result = validate();
       if (result.errors.length)
         throw Error("Fix validation errors before exporting");
-      const pkg = {
-        format: "thinkview-panel-1",
-        manifest: result.manifest,
-        entries: P.embedded(files, result.manifest, result.entries),
-      };
+      const pkg = P.toRuntimePackage(files, result.manifest, result.entries);
       const output = new Blob([JSON.stringify(pkg, null, 2)], {
         type: "application/json",
       });
