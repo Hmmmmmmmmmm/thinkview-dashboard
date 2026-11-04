@@ -71,6 +71,9 @@ Use shell tokens including `--ink`, `--muted`, `--accent`, `--line` and `--md-sy
 | -------------------------------- | ---------------------------------------------------------------------------- |
 | `ctx.root`                       | This package's root section. Query and update panel content here.            |
 | `ctx.manifest`                   | Validated package metadata.                                                  |
+| `ctx.data.device_info`           | Copy of the current shared device-info JSON object.                         |
+| `ctx.data.settings`              | Copy of this panel's settings JSON object.                                   |
+| `ctx.data.subscribe(fn)`         | Subscribe to fresh `{device_info, settings}` copies; returns unsubscribe.      |
 | `ctx.storage.get(key, fallback)` | JSON-safe browser storage under this panel's namespace.                      |
 | `ctx.storage.set(key, value)`    | Save a namespaced value; returns false when storage is unavailable.          |
 | `ctx.onCleanup(fn)`              | Register cleanup for resources created by this mount.                        |
@@ -89,6 +92,8 @@ return function () {
   input.removeEventListener("input", save);
 };
 ```
+
+`device_info.json` and `settings.json` are delivered as separate JSON objects in `ctx.data`, not as shared mutable objects or actual files. `device_info` is the existing device-provider snapshot (`available`, `status`, `commands`, and optional `musicLevelVersion`); it begins unavailable and updates asynchronously when the host provides data. No provider token is included. `settings` is read from the `settings` key in this panel's namespaced storage; missing or non-object values produce `{}`. A subscriber receives an initial snapshot and subsequent device updates and same-panel `ctx.storage.set("settings", value)` writes. Unsubscribe explicitly when no longer needed; runtime cleanup also removes the provider subscription and observers. Other code that writes storage directly does not produce a settings event: remount or use the panel's storage API. Treat both snapshots as read-only copies. All panels share device facts but receive their own settings. These namespacing conventions do not sandbox trusted panel code. Existing `ctx.host` APIs are unchanged.
 
 The shared `ctx.host.notifications` API offers `publish({id, title, message, priority, source, onActivate})`, `dismiss(id)`, `list()`, and `subscribe(callback)`. Priorities are `emergency`, `high`, `medium` (default), and `low`. Publishing an existing ID replaces that item; subscriptions return an unsubscribe function. Use stable IDs for real events and clean up subscriptions. Users choose how each priority is presented in Settings; the list is session-only.
 

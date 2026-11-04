@@ -1065,3 +1065,64 @@ body.dragging::after {
     display: none;
   }
 }
+
+/* Compact authoring workbench; controls reflow at large text sizes. */
+#m3-design { --m3e-effects-fast: 150ms cubic-bezier(0.31, 0.94, 0.34, 1); display: grid; gap: 12px; min-width: 0; }
+#m3-design .m3-controls, #m3-design .m3-gate { display: flex; flex-wrap: wrap; gap: 8px; align-items: end; }
+#m3-design label { display: grid; gap: 4px; min-width: min(100%, 12rem); flex: 1 1 12rem; }
+#m3-design input:not([type=checkbox]), #m3-design select, #m3-design button { min-height: 48px; max-width: 100%; }
+#m3-design summary { min-height: 48px; padding-block: 12px; }
+#m3-design input, #m3-design select, #m3-design textarea { width: 100%; }
+#m3-design :is(input,select,textarea,button,summary):focus-visible { outline: 3px solid var(--md-sys-color-primary); outline-offset: 2px; }
+#m3-design fieldset { display: flex; flex-wrap: wrap; gap: 4px 12px; }
+#m3-design .m3-check { display: flex; align-items: center; min-height: 48px; min-width: 10rem; }
+#m3-design .m3-check input { width: auto; }
+#m3-design .m3-specimen { border-radius: 16px; padding: 16px; font-size: 36px; line-height: 1.25; transition: color var(--m3e-effects-fast), background-color var(--m3e-effects-fast); }
+#m3-design .m3-specimen span { display: inline-block; border-radius: 9999px; padding: 0 12px; border: 1px solid currentColor; }
+#m3-design table { display: block; max-width: 100%; overflow-x: auto; text-align: left; }
+#m3-design th, #m3-design td { padding: 4px; }
+#m3-design details > label { margin: 8px 0; }
+@media (prefers-reduced-motion: reduce) { #m3-design .m3-specimen { transition: none; } }
+
+.visual-editor { overflow: auto; padding: 16px; }
+.visual-tree { max-height: 240px; overflow: auto; margin: 12px 0; border: 1px solid var(--line); }
+.visual-tree button { display: block; width: 100%; text-align: left; border: 0; border-radius: 0; padding: 6px; }
+.visual-tree button[aria-current="true"] { background: var(--md-sys-color-primary-container); }
+.visual-editor .settings-form { display: grid; gap: 8px; }
+.visual-editor .settings-form label { display: grid; gap: 3px; }
+.visual-editor .button-row { display: flex; flex-wrap: wrap; gap: 6px; }
+#source-view[hidden], #visual-view[hidden] { display: none; }
+
+.blueprint-viewport { overflow: auto; max-height: 500px; padding: 20px; background-color: #103c76; background-image: linear-gradient(#ffffff18 1px, transparent 1px), linear-gradient(90deg, #ffffff18 1px, transparent 1px); background-size: 16px 16px; border-radius: 12px; }
+#blueprint-wrap { position: relative; width: 260px; height: 220px; background: #e8f3ff; overflow: hidden; }
+#blueprint { width: 100%; height: 100%; border: 0; display: block; }
+#blueprint-selection { position: absolute; box-sizing: border-box; border: 2px solid #0d72f8; background: #0d72f822; cursor: move; touch-action: none; z-index: 10; }
+#blueprint-selection[hidden] { display: none; }
+.blueprint-label { position: absolute; bottom: 100%; left: -2px; background: #0d72f8; color: white; font-size: 10px; white-space: nowrap; padding: 2px 5px; pointer-events: none; }
+#blueprint-resize { position: absolute; width: 14px; height: 14px; min-width: 0; padding: 0; right: -2px; bottom: -2px; border: 2px solid white; border-radius: 2px; background: #0d72f8; cursor: nwse-resize; touch-action: none; }
+
+/* Keep the blueprint and its frequent controls visible; secondary tools fold away. */
+.selection-heading { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px 0; border-bottom:1px solid var(--line); }
+.selection-heading h2 { margin-top:4px; overflow-wrap:anywhere; }
+.selection-heading button { padding:6px 10px; }
+.visual-section { border-bottom:1px solid var(--line); padding:8px 0; }
+.visual-section summary, .validation summary, .debug-pane > summary, .runtime-options > summary { cursor:pointer; font-size:11px; font-weight:600; color:#58684a; padding:5px 0; }
+.visual-editor .settings-form { padding:10px 0; gap:8px; }
+.visual-editor .settings-form label { margin:0; }
+.visual-editor .settings-form .visual-section label { margin:8px 0; }
+.visual-editor .settings-form input { width:100%; }
+.validation summary { display:flex; justify-content:space-between; align-items:center; gap:8px; }
+.validation summary::before { content:"▸"; }
+.validation[open] summary::before { content:"▾"; }
+.validation summary strong { margin-right:auto; }
+.validation #validate { margin-top:8px; }
+.debug-pane { min-height:0; flex:0 0 auto; }
+.debug-pane > summary, .runtime-options > summary { padding:12px 18px; border-bottom:1px solid var(--line); }
+.debug-pane:not([open]) { overflow:visible; }
+.blueprint-label { top:0; bottom:auto; left:0; max-width:min(240px, 100%); overflow:hidden; text-overflow:ellipsis; }
+@media (max-width:850px) { .debug-pane { min-height:0; } }
+
+#color-seed { width: 52px; height: 33px; padding: 2px; cursor:pointer; }
+.color-engine-status { margin:0; padding:0 18px 9px; color:#6d7564; font-size:10px; }
+
+#color-seed-hex { width:90px; font-family:monospace; }

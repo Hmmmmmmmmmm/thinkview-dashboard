@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "weather",
   "title": "Weather",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "rootClass": "weather-panel",
   "colorRole": "secondary",
   "entries": {
@@ -10,12 +10,17 @@
     "css": "panel.css",
     "js": "panel.js"
   },
-  "capabilities": ["network", "location", "storage"],
+  "capabilities": [
+    "network",
+    "location",
+    "storage"
+  ],
   "assets": [],
   "defaultEnabled": true,
   "networkOrigins": [
     "https://api.open-meteo.com",
-    "https://geocoding-api.open-meteo.com"
+    "https://geocoding-api.open-meteo.com",
+    "https://api.caiyunapp.com"
   ],
   "type": "Weather",
   "grid": {
@@ -33,15 +38,33 @@
         "rows": 1
       },
       {
-        "columns": 2,
+        "columns": 1,
         "rows": 2
       },
       {
         "columns": 2,
-        "rows": 3
+        "rows": 2
       }
     ],
     "pinch": true,
-    "events": {}
+    "events": {
+      "showRaining": {
+        "action": "expand",
+        "size": {
+          "columns": 2,
+          "rows": 1
+        }
+      },
+      "show7Day": {
+        "action": "expand",
+        "size": {
+          "columns": 1,
+          "rows": 2
+        }
+      },
+      "restoreWeather": {
+        "action": "restore"
+      }
+    }
   }
 }

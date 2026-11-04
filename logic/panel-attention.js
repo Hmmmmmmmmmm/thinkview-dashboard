@@ -4,6 +4,18 @@
 })(typeof globalThis !== "undefined" ? globalThis : this, function () {
   "use strict";
   const priorities = ["emergency", "high", "medium", "low"];
+  // Only named, declared views are eligible for automatic attention.
+  function resolve(entry, manifest) {
+    if (!entry || !entry.panelId || !entry.occurrenceId || !entry.layoutEvent ||
+        !manifest || manifest.id !== entry.panelId) return null;
+    const expansion = manifest.expansion || {};
+    const event = expansion.events && expansion.events[entry.layoutEvent];
+    const target = event && event.action === "expand" && event.size;
+    if (!target || !Number.isInteger(target.columns) || !Number.isInteger(target.rows) ||
+        target.columns < 1 || target.rows < 1 || !Array.isArray(expansion.sizes) ||
+        !expansion.sizes.some((size) => size.columns === target.columns && size.rows === target.rows)) return null;
+    return { columns: target.columns, rows: target.rows };
+  }
   // Stable input order is FIFO among equals. No timers, persistence or panel policy.
   function select(entries, eligible) {
     return (
@@ -21,10 +33,10 @@
         )[0] || null
     );
   }
-  function size(base, active) {
-    return active
-      ? { columns: Math.max(base.columns, 2), rows: Math.max(base.rows, 2) }
-      : { ...base };
+  function size(base, target) {
+    if (target && Number.isInteger(target.columns) && Number.isInteger(target.rows))
+      return { columns: target.columns, rows: target.rows };
+    return target ? { columns: Math.max(base.columns, 2), rows: Math.max(base.rows, 2) } : { ...base };
   }
-  return { select, size };
+  return { select, size, resolve };
 });

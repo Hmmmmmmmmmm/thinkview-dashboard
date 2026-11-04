@@ -52,7 +52,13 @@ class BuildTests(unittest.TestCase):
         html = studio.build_studio()
         self.assertNotIn('/* STUDIO_', html)
         self.assertIn('sandbox="allow-scripts"', html)
-        self.assertNotIn('allow-same-origin', html)
+        import re
+        preview = re.search(r'<iframe\s+id="preview"[\s\S]*?</iframe>', html).group()
+        blueprint = re.search(r'<iframe\s+id="blueprint"[^>]*>', html).group()
+        self.assertIn('sandbox="allow-scripts"', preview)
+        self.assertNotIn('allow-same-origin', preview)
+        self.assertIn('sandbox="allow-same-origin"', blueprint)
+        self.assertNotIn('allow-scripts', blueprint)
         import re
         data = json.loads(re.search(r'<script id="studio-data" type="application/json">([\s\S]*?)</script>', html)[1])
         self.assertEqual(data['schema'], json.loads((ROOT / 'schemas/panel.schema.json').read_text()))

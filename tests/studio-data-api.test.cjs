@@ -10,6 +10,16 @@ const request = (command, value) => ({
   body: JSON.stringify({ command, value }),
 });
 
+test("Caiyun fixture diagnostics redact the credential", async () => {
+  const fixture = API.preset("backend");
+  const entries = [];
+  const api = API.create(fixture, { report: (entry) => entries.push(entry) });
+  const response = await api.fetch("https://api.caiyunapp.com/v2.6/test-secret/114.17,22.32/weather");
+  assert.equal(response.status, 404);
+  assert.equal(JSON.stringify(entries).includes("test-secret"), false);
+  assert.equal(JSON.stringify(await response.json()).includes("test-secret"), false);
+});
+
 test("device fixtures preserve response contracts, command modes, and status readback", async () => {
   const fixture = API.preset(),
     api = API.create(fixture);
@@ -284,4 +294,17 @@ test("actual device provider uses fixture fetch, validates payloads, confirms co
   await new Promise((r) => setImmediate(r));
   assert.equal(status.available, false);
   stop();
+});
+
+test('separate device info and panel settings fixture documents are bounded and validated', () => {
+ const fixture = API.preset('android');
+ fixture.device_info = {available:true, status:{model:'synthetic'}};
+ fixture.panel_settings = {weather:{city:'Hong Kong'},clock:{zones:['UTC']}};
+ const validated = API.validate(fixture);
+ assert.equal(validated.panel_settings.weather.city,'Hong Kong');
+ assert.equal(validated.device_info.status.model,'synthetic');
+ validated.panel_settings.weather.city='changed';
+ assert.equal(fixture.panel_settings.weather.city,'Hong Kong');
+ assert.throws(()=>API.validate({...fixture,panel_settings:{'../weather':{}}}));
+ assert.throws(()=>API.validate({...fixture,device_info:[]}));
 });

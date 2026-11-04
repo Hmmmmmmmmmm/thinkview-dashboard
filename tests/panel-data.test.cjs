@@ -1,0 +1,20 @@
+const {test} = require('node:test');
+const assert = require('node:assert/strict');
+const vm = require('node:vm');
+const fs = require('node:fs');
+const src = fs.readFileSync(require('node:path').join(__dirname,'../logic/panel-runtime.js'),'utf8');
+test('panel data delivers cloned shared device information and isolated settings with cleanup', () => {
+ const data = new Map(), roots = {one:{hidden:false}, two:{hidden:false}}, listeners = new Set(), contexts = {};
+ const context = {Map, Set, JSON, console, document:{querySelector(selector){const id=selector.match(/data-panel="([^"]+)/)[1]; return roots[id]}}, DashboardConfig:{storagePrefix:'test.'}, DashboardStorage:{local(prefix){return {available:true,get(key,fallback){return data.has(prefix+key)?data.get(prefix+key):fallback},set(key,value){data.set(prefix+key,value);return true}}}}, window:{addEventListener(){}}};
+ vm.createContext(context);vm.runInContext(src,context);const panels=context.window.DisplayPanels;
+ data.set('test.panel.one.settings',{city:'Hong Kong'});data.set('test.panel.two.settings',{city:'Paris'});
+ const service={subscribe(fn){listeners.add(fn);fn({available:true,status:{battery:{level:73}},commands:[]});return ()=>listeners.delete(fn)}};
+ panels.register({id:'one'},ctx=>{contexts.one=ctx});panels.register({id:'two'},ctx=>{contexts.two=ctx});panels.start({deviceInfo:service});
+ assert.equal(contexts.one.data.settings.city,'Hong Kong');assert.equal(contexts.two.data.settings.city,'Paris');
+ assert.equal(contexts.one.data.device_info.status.battery.level,73);assert.equal(contexts.two.data.device_info.status.battery.level,73);
+ const observed=[];contexts.one.data.subscribe(value=>observed.push(value));contexts.one.data.device_info.status.battery.level=5;
+ assert.equal(contexts.two.data.device_info.status.battery.level,73);contexts.one.data.settings.city='Changed';assert.equal(contexts.one.data.settings.city,'Hong Kong');
+ contexts.one.storage.set('settings',{city:'Tokyo'});assert.equal(observed.at(-1).settings.city,'Tokyo');assert.equal(contexts.two.data.settings.city,'Paris');
+ listeners.forEach(fn=>fn({available:false,status:null,commands:[]}));assert.equal(observed.at(-1).device_info.available,false);
+ panels.stop('one');panels.stop('two');assert.equal(listeners.size,0);
+});

@@ -33,6 +33,8 @@
     weatherBusy = false,
     weatherFailed = false,
     weatherCache = null;
+  var caiyunKey = "";
+  var modernWeather = !!document.querySelector('[data-panel="weather"] .weather-layout');
   var location = read("location");
   function validLocation(p) {
     return (
@@ -285,6 +287,7 @@
     return response.json();
   }
   async function refreshWeather() {
+    if (modernWeather) { window.dispatchEvent(new Event("thinkview-weather-settings-changed")); return; }
     var generation = ++weatherGeneration;
     if (weatherController) weatherController.abort();
     var controller = new AbortController();
@@ -332,11 +335,20 @@
     location = next;
     write("location", location);
     $("location-name").textContent = location.name;
-    loadCache();
+    if (!modernWeather) loadCache();
     refreshWeather();
     $("settings-status").textContent = "Weather set to " + location.name + ".";
   }
-  $("refresh-weather").onclick = refreshWeather;
+  if (!modernWeather) $("refresh-weather").onclick = refreshWeather;
+  $("caiyun-session-form").onsubmit = function (event) {
+    event.preventDefault();
+    var key = $("caiyun-session-key").value.trim();
+    if (key && !/^[A-Za-z0-9]+$/.test(key)) { $("caiyun-session-status").textContent = "Use a valid Caiyun API key."; return; }
+    caiyunKey = key;
+    $("caiyun-session-key").value = "";
+    $("caiyun-session-status").textContent = key ? "Key available for this session." : "Key cleared.";
+    refreshWeather();
+  };
   var panelReturn = null;
   function openSettings() {
     closePanelMenu();
@@ -1931,6 +1943,19 @@
       },
     },
     notifications: notificationHost,
+    deviceInfo: window.ThinkViewDevice,
+    data: {
+      get caiyun_weather_api() { return caiyunKey; },
+      get weatherLocation() { return { name: location.name, lat: location.lat, lon: location.lon }; },
+    },
+    http: {
+      get: function (value, options) {
+        var url = new URL(value);
+        if (url.protocol !== "https:" || url.host !== "api.caiyunapp.com" || !/^\/v2\.6\/[A-Za-z0-9]+\/-?\d+(?:\.\d+)?,-?\d+(?:\.\d+)?\/weather$/.test(url.pathname))
+          return Promise.reject(new Error("Weather URL not permitted"));
+        return fetch(url.href, {signal: options && options.signal, credentials:"omit", cache:"no-store", redirect:"error"});
+      },
+    },
     core: {
       clock: function () {
         clock();

@@ -89,6 +89,8 @@
         selected: ["fixture"],
         events: [],
       },
+      device_info: {},
+      panel_settings: {},
       routes: [],
     };
     if (name === "disabled") fixture.enabled = false;
@@ -122,6 +124,8 @@
         status: 200,
         body: { label: "Fixture reading", value: 42, unit: "%" },
       });
+    fixture.device_info = {available:fixture.enabled, status:fixture.enabled ? copy(fixture.device.status) : null, commands:fixture.enabled ? fixture.device.capabilities.commands.slice() : [], musicLevelVersion:fixture.enabled ? fixture.device.capabilities.musicLevelVersion : 0};
+    if (name === "unavailable") fixture.device_info = {available:false,status:null,commands:[]};
     return fixture;
   }
   function validate(value) {
@@ -141,10 +145,19 @@
       "refreshTimestamps",
       "device",
       "calendar",
+      "clockSettings",
+      "device_info",
+      "panel_settings",
       "routes",
     ];
     if (Object.keys(value).some((key) => !keys.includes(key)))
       throw Error("Unknown fixture field");
+    if (value.device_info !== undefined && !object(value.device_info)) throw Error("device_info must be a JSON object");
+    if (value.panel_settings !== undefined && (!object(value.panel_settings) || Object.keys(value.panel_settings).length > 100 || Object.keys(value.panel_settings).some(id => !/^[a-z][a-z0-9-]{0,39}$/.test(id) || !object(value.panel_settings[id])))) throw Error("panel_settings must map panel IDs to JSON objects");
+    if (value.clockSettings !== undefined) {
+      const c = value.clockSettings;
+      if (!object(c) || c.version !== 1 || !Array.isArray(c.zones) || c.zones.length > 24 || !Array.isArray(c.alarms) || c.alarms.length > 24 || !object(c.occurrences) || (c.activeAlarm !== null && !object(c.activeAlarm))) throw Error("Invalid Clock fixture settings");
+    }
     const delay = (v) =>
       v === undefined || (Number.isInteger(v) && v >= 0 && v <= 30000);
     if (!delay(value.delayMs))
@@ -363,7 +376,9 @@
         url:
           url.origin === "https://studio.invalid"
             ? url.pathname + url.search
-            : url.href,
+            : url.origin === "https://api.caiyunapp.com"
+              ? url.href.replace(/(\/v2\.6\/)[^/]+\//, "$1[redacted]/")
+              : url.href,
         source: "fixture",
         status: null,
         request: null,

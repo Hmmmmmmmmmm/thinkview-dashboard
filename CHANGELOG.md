@@ -4,6 +4,10 @@ Newest release first. Record user-visible changes, compatibility requirements an
 
 ## Unreleased
 
+- Added a panel-context data contract with separate shared `device_info` and panel-scoped `settings` JSON objects, change subscriptions, defensive copies and cleanup; Studio can supply each through fixtures. Existing device APIs remain available. No new native permissions.
+- Added the expanded Weather panel and a session-only Caiyun key entry; selected dashboard coordinates feed requests. Synthetic browser responses and package checks passed. Real Caiyun CORS, live credentials and Android behavior are not verified; no key is distributed.
+- Updated Panel Studio with blueprint editing, DevTools access, generated Material colors and preview-only expression controls. These authoring changes do not alter exported panel styles automatically. Chrome desktop and direct-file tests passed; device, touch and other browser behavior remain unverified.
+
 ### Changes
 
 - Dashboard Settings supports trusted single-package ZIP imports and recursive asset directories; compressed ZIPs require deflate-raw DecompressionStream. Converted packages retain the 2 MiB limit. No Android permissions changed (2026-11-03).

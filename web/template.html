@@ -315,6 +315,10 @@
         <label for="data-transfer">Dashboard data</label
         ><textarea id="data-transfer" rows="4" spellcheck="false"></textarea>
         <p id="data-status" role="status"></p>
+        <h2>Weather service</h2>
+        <p>Enter a Caiyun API key for this session. It is cleared when this page closes and is not included in data exports.</p>
+        <form id="caiyun-session-form" class="search-row"><label for="caiyun-session-key">Caiyun API key</label><input id="caiyun-session-key" type="password" autocomplete="off" /><button class="text-button" type="submit">Set key</button></form>
+        <p id="caiyun-session-status" role="status">No key set for this session.</p>
         <h2>Weather location</h2>
         <p>
           The first preview uses Hong Kong. Choose your city or use your current
@@ -336,8 +340,7 @@
         </button>
         <div class="settings-status" id="settings-status" role="status"></div>
         <small
-          >City search and weather use Open-Meteo. Current location is rounded
-          to two decimal places before requesting weather.</small
+          >City search uses Open-Meteo; weather uses Caiyun. The selected coordinates are rounded to two decimal places for weather requests.</small
         >
         <details>
           <summary style="margin-top: 18px; font-size: 13px; cursor: pointer">

@@ -32,8 +32,35 @@
       var notificationIds = new Set(),
         alive = true,
         notificationSequence = 0;
-      var cleanups = [],
-        ctx = {
+      var cleanups = [], storage = storageFor(id), observers = new Set(), deviceInfo = {available:false, status:null, commands:[]}, deviceStop = null;
+      function jsonCopy(value) { try { return JSON.parse(JSON.stringify(value)); } catch (_) { return {}; } }
+      function settingsSnapshot() {
+        var supplied = host.panelSettings && host.panelSettings(id);
+        var value = supplied === undefined ? storage.get("settings", {}) : supplied;
+        return value && typeof value === "object" && !Array.isArray(value) ? jsonCopy(value) : {};
+      }
+      function dataSnapshot() { return {device_info:jsonCopy(deviceInfo), settings:settingsSnapshot()}; }
+      function publishData() { observers.forEach(function (fn) { try { fn(dataSnapshot()); } catch (e) { console.error("Panel data listener failed:", id); } }); }
+      function ensureDevice() {
+        if (deviceStop || !host.deviceInfo || typeof host.deviceInfo.subscribe !== "function") return;
+        deviceStop = host.deviceInfo.subscribe(function (value) { deviceInfo = value && typeof value === "object" ? jsonCopy(value) : {available:false,status:null,commands:[]}; publishData(); });
+      }
+      var scopedData = {
+        get device_info() { ensureDevice(); return jsonCopy(deviceInfo); },
+        get settings() { return settingsSnapshot(); },
+        subscribe: function (fn) {
+          if (typeof fn !== "function") throw Error("Panel data subscriber must be a function");
+          ensureDevice(); observers.add(fn); fn(dataSnapshot());
+          return function () { observers.delete(fn); };
+        },
+      };
+      var scopedStorage = {
+        get available() { return storage.available; },
+        get: function (key, fallback) { return storage.get(key, fallback); },
+        set: function (key, value) { var ok = storage.set(key, value); if (ok && key === "settings") { if (host.setPanelSettings) host.setPanelSettings(id, value); publishData(); } return ok; },
+      };
+      cleanups.push(function () { observers.clear(); if (typeof deviceStop === "function") deviceStop(); deviceStop = null; });
+      var ctx = {
           root: root,
           host: host,
           manifest: def.manifest,
@@ -68,7 +95,8 @@
               }
             },
           },
-          storage: storageFor(id),
+          storage: scopedStorage,
+          data: scopedData,
           onCleanup: function (fn) {
             cleanups.push(fn);
           },

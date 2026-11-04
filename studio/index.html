@@ -52,7 +52,8 @@
       <section class="editor-pane" aria-label="Package editor">
         <div class="pane-heading">
           <div class="tabs" role="tablist" aria-label="Editor view">
-            <button id="source-tab" role="tab" aria-selected="true">
+            <button id="visual-tab" role="tab" aria-selected="true">
+              Design</button><button id="source-tab" role="tab" aria-selected="false">
               Source</button
             ><button id="manifest-tab" role="tab" aria-selected="false">
               Manifest</button
@@ -62,7 +63,16 @@
           </div>
           <span id="edit-status" class="muted">Saved</span>
         </div>
-        <div id="source-view" class="editor-view">
+        <div id="visual-view" class="editor-view visual-editor">
+          <h2>Blueprint</h2><p class="muted">Select an element, drag it to move, or drag its corner to resize. Arrow keys also move; hold Alt to resize.</p>
+          <div class="blueprint-viewport"><div id="blueprint-wrap"><iframe id="blueprint" title="Editable panel blueprint" sandbox="allow-same-origin"></iframe><div id="blueprint-selection" tabindex="0" role="group" aria-label="Selected element. Use arrow keys to move; hold Alt to resize." hidden><span id="blueprint-label" class="blueprint-label">Selected element</span><button id="blueprint-resize" type="button" aria-label="Resize selected element" title="Drag to resize"></button></div></div></div>
+          <p id="blueprint-status" role="status" class="muted">Run preview to compare your design with the live panel.</p>
+          <button id="visual-pick" type="button" aria-pressed="false" hidden>Select on preview: off</button>
+          <div class="selection-heading"><div><span class="section-label">SELECTED ELEMENT</span><h2 id="visual-selection" aria-live="polite">Select an element</h2></div><button type="button" id="visual-undo" disabled>Undo</button></div>
+          <details class="visual-section" id="layers-panel"><summary>Layers</summary><div id="visual-tree" class="visual-tree" aria-label="Element layers"></div><div class="button-row"><button type="button" id="visual-up">Move up</button><button type="button" id="visual-down">Move down</button></div></details>
+          <p id="visual-status" role="status" class="muted"></p>
+        </div>
+        <div id="source-view" class="editor-view" hidden>
           <div class="file-toolbar">
             <span id="file-name">panel.json</span>
             <div>
@@ -198,14 +208,12 @@ return () => button.removeEventListener('click', notify);</pre
             trusted code in the real dashboard.
           </p>
         </article>
-        <section class="validation">
-          <div class="file-header">
-            <h2>Validation</h2>
-            <button id="validate">Check package</button>
-          </div>
+        <details id="validation-panel" class="validation">
+          <summary><strong>Validation</strong><span id="validation-summary">Checking…</span></summary>
+          <button id="validate">Check package</button>
           <div id="validation-results" role="status"></div>
-        </section>
-        <details id="color-design" class="color-design" open>
+        </details>
+        <details id="color-design" class="color-design">
           <summary>
             <strong>Material 3 colors</strong><span id="color-count"></span>
           </summary>
@@ -239,6 +247,7 @@ return () => button.removeEventListener('click', notify);</pre
               aria-label="Supported Material 3 color tokens"
               tabindex="0"
             ></div>
+            <div class="button-row"><button id="export-colors" type="button">Export color schemes</button></div>
             <div class="color-copy-row">
               <label class="sr-only" for="color-copy"
                 >Selected CSS color variable</label
@@ -251,6 +260,10 @@ return () => button.removeEventListener('click', notify);</pre
               >
             </div>
           </div>
+        </details>
+        <details id="m3-workbench" class="color-design">
+          <summary><strong>Design workbench</strong></summary>
+          <div id="m3-design" class="color-design-body"></div>
         </details>
       </section>
       <section class="preview-pane" aria-label="Preview and debugging">
@@ -270,6 +283,9 @@ return () => button.removeEventListener('click', notify);</pre
               2 × 2
             </button>
           </div>
+          <label>Primary seed<input id="color-seed" type="color" value="#e2b62e" aria-label="Primary color seed" /></label>
+          <label>Seed hex<input id="color-seed-hex" type="text" value="#e2b62e" pattern="#[0-9a-fA-F]{6}" maxlength="7" spellcheck="false" aria-label="Primary color seed hex" /></label>
+          <label>Color style<select id="color-variant"><option value="expressive">Expressive</option><option value="tonalSpot">Tonal spot</option></select></label>
           <label
             >Theme<select id="theme">
               <option value="bright">Bright</option>
@@ -292,10 +308,11 @@ return () => button.removeEventListener('click', notify);</pre
               value="220"
           /></label>
         </div>
+        <p id="color-engine-status" class="color-engine-status" role="status">Preparing Material colors…</p>
         <div class="preview-stage" id="drop-zone">
           <div class="stage-meta">
             <span id="dimensions">260 × 220 px</span
-            ><span id="runtime-status">Ready to run</span>
+            ><span id="runtime-status">Ready to run</span><span id="expression-preview-status">Expressive · preview treatment</span>
           </div>
           <div id="frame-wrap">
             <iframe
@@ -313,7 +330,8 @@ return () => button.removeEventListener('click', notify);</pre
           </div>
           <div id="stage-toast" role="status" hidden></div>
         </div>
-        <div class="runtime-controls">
+        <button id="dismiss-attention" aria-label="Dismiss attention" hidden disabled>Dismiss attention</button>
+        <details class="runtime-options"><summary>Preview options</summary><div class="runtime-controls">
           <button id="mount" disabled>Disable panel</button
           ><button id="remount" disabled>Remount</button
           ><label class="check"
@@ -322,8 +340,8 @@ return () => button.removeEventListener('click', notify);</pre
             ><input id="allow-network" type="checkbox" /> Allow declared
             network</label
           ><button id="clear-storage">Reset preview storage</button>
-        </div>
-        <section class="debug-pane">
+        </div></details>
+        <details id="debug-panel" class="debug-pane"><summary>Testing &amp; diagnostics</summary>
           <div class="tabs" role="tablist" aria-label="Debug view">
             <button id="notifications-tab" role="tab" aria-selected="true">
               Notifications <span id="notification-count">0</span></button
@@ -400,6 +418,8 @@ return () => button.removeEventListener('click', notify);</pre
             <div id="console-output" role="log" aria-live="polite"></div>
           </div>
           <div id="events-view" class="debug-view" hidden>
+            <h3>Declared layout states</h3>
+            <div id="layout-states" class="button-row"></div>
             <h3>Declared layout events</h3>
             <div id="event-buttons"></div>
             <button id="restore-size">Restore base size</button>
@@ -434,6 +454,8 @@ return () => button.removeEventListener('click', notify);</pre
                 responses</label
               >
             </div>
+            <label for="caiyun-weather-api">Caiyun API key (session only)</label>
+            <input id="caiyun-weather-api" type="password" autocomplete="off" spellcheck="false" />
             <label for="api-source">Fixture JSON</label>
             <textarea
               id="api-source"
@@ -476,7 +498,7 @@ return () => button.removeEventListener('click', notify);</pre
             </div>
             <pre id="api-detail" tabindex="0">No request selected.</pre>
           </div>
-        </section>
+        </details>
       </section>
     </main>
     <footer>
@@ -525,6 +547,9 @@ return () => button.removeEventListener('click', notify);</pre
     </script>
     <script>
       /* STUDIO_DATA_API */
+    </script>
+    <script>
+      /* STUDIO_M3 */
     </script>
     <script>
       /* STUDIO_APP */
